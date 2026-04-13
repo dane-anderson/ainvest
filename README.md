@@ -1,74 +1,122 @@
-# AInvest 📈
 
-AI-powered stock analysis dashboard built with Streamlit, OpenAI, and live market data.
+# AInvest
+### AI-Powered Stock Insight Engine
 
-## Live App
-Add your Render link here after deployment.
+> AInvest transforms stock data into **clear, AI-generated insights** by combining model-driven signals, live market data, and natural language explanations.
 
-## Overview
-AInvest is an interactive market dashboard that ranks a live watchlist of stocks, identifies the current top model pick, and uses AI to explain why that stock ranks highest right now.
+---
 
-The app combines:
-- live market data from yfinance
-- momentum-based ranking logic
-- AI-generated market commentary
-- a clean trading-dashboard interface
+## 🚀 Live App  
+https://ainvest-8zkq.onrender.com  
 
-## Features
-- **Top Model Pick** hero card with live ranking
-- **Live Watchlist Ranking** table across major stocks
-- **AI Market Insight** explaining why the top stock ranks first
-- **Analyze a Stock** tool for ticker-level analysis
-- confidence, risk, daily change, and trend-vs-MA20 metrics
-- recent headlines for context
+---
 
-## Tech Stack
-- Python
-- Streamlit
-- OpenAI API
-- yfinance
-- pandas
+## 📸 Screenshots  
 
-## How It Works
-### 1. Live ranking engine
-The app pulls recent price history for a watchlist of stocks and scores each one using short-term momentum and trend signals.
+### Top Model Pick  
 
-### 2. Top pick selection
-The highest-ranked stock becomes the **Top Model Pick** shown at the top of the dashboard.
 
-### 3. AI explanation layer
-OpenAI generates a plain-English explanation for why the stock may be ranked highest, using:
-- ticker
-- confidence
-- risk
-- recent price move
-- recent headlines
 
-### 4. Drill-down analysis
-Users can type in a ticker to view:
-- signal
-- confidence
-- risk
-- latest price
-- daily change
-- chart
-- AI explanation
-- recent headlines
 
-## Example Watchlist
-The current live watchlist includes:
-- AAPL
-- MSFT
-- NVDA
-- AMZN
-- TSLA
-- META
-- GOOGL
-- F
-- GM
 
-## Run Locally
-Install dependencies:
 
-```bash
-pip install -r requirements.txt
+### Stock Analysis + AI Insight  
+
+
+
+---
+
+## 🧠 Overview  
+
+AInvest is an AI-powered stock analysis tool that:
+
+- Ranks stocks using a machine learning signal model  
+- Falls back to real-time market data when needed  
+- Generates **AI explanations** to interpret stock behavior  
+- Presents insights through a clean, interactive UI  
+
+Instead of just showing numbers, AInvest answers:
+
+**“What is actually happening with this stock?”**
+
+---
+
+## 🔥 Key Features  
+
+- 📊 Model-Based Rankings  
+  Precomputed signals rank top stocks by predicted return probability  
+
+- 🔁 Live Data Fallback (yfinance)  
+  Any ticker can be analyzed in real time  
+
+- 🤖 AI Market Insight Engine  
+  OpenAI generates contextual explanations of price movement  
+
+- ⚡ Fast UI with Precomputed Data  
+  Signals are loaded instantly from disk  
+
+- 📈 Interactive Price Charts  
+  Visualize recent price movement dynamically  
+
+---
+
+## 🏗️ Architecture  
+
+User Input  
+↓  
+Check Model Signals (CSV)  
+↓  
+If Found → Use Model Output  
+Else → Fetch Live Data (yfinance)  
+↓  
+Compute Metrics (price, change, confidence)  
+↓  
+Generate AI Explanation (OpenAI)  
+↓  
+Render UI (Streamlit)  
+
+---
+
+## ⚙️ Tech Stack  
+
+- Python  
+- Pandas  
+- Streamlit  
+- yfinance  
+- OpenAI API  
+
+---
+
+## ⚡ Performance Design  
+
+To ensure fast load times:
+
+- Signals are precomputed offline  
+- App reads results instantly from disk  
+- Avoids expensive real-time model computation  
+- Uses lightweight fallback for live queries  
+
+---
+
+## 💡 Key Insight  
+
+Separating model computation from the UI allows the app to remain fast while still delivering meaningful, AI-powered insights.
+
+---
+
+## 🧪 Running Locally  
+
+git clone https://github.com/dane-anderson/ainvest.git  
+cd ainvest  
+
+pip install -r requirements.txt  
+
+export OPENAI_API_KEY="your_key_here"  
+
+streamlit run app.py  
+
+---
+
+## ⚠️ Disclaimer  
+
+This project is for educational purposes only and does not constitute financial advice.
