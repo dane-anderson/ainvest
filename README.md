@@ -1,118 +1,90 @@
 
-# AInvest
-### AI-Powered Stock Insight Engine
+# 🚀 AInvest
 
-> AInvest transforms stock data into **clear, AI-generated insights** by combining model-driven signals, live market data, and natural language explanations.
+## AI-Powered Stock Insight Engine
 
----
-
-## 🚀 Live App  
-https://ainvest-8zkq.onrender.com  
-
----
-
-## 📸 Screenshots  
-
-### Top Model Pick
-![Top Pick](assets%20/top_pick.png)
-
-### Stock Analysis + AI Insight
-![Analysis](assets%20/analysis.png)
-
+AInvest transforms stock data into **clear, AI-generated insights** by combining:
+- 📊 Model-driven signals
+- 📡 Real-time market data (fallback)
+- 🤖 Natural language AI explanations
 
 ---
 
-## 🧠 Overview  
-
-AInvest is an AI-powered stock analysis tool that:
-
-- Ranks stocks using a machine learning signal model  
-- Falls back to real-time market data when needed  
-- Generates **AI explanations** to interpret stock behavior  
-- Presents insights through a clean, interactive UI  
-
-Instead of just showing numbers, AInvest answers:
-
-**“What is actually happening with this stock?”**
+## 🔗 Live App
+https://ainvest-8zkq.onrender.com
 
 ---
 
-## 🔥 Key Features  
+## 📸 Screenshots
 
-- 📊 Model-Based Rankings  
-  Precomputed signals rank top stocks by predicted return probability  
+### 🏆 Top Model Pick
+![Top Pick](assets/top_pick.png)
 
-- 🔁 Live Data Fallback (yfinance)  
-  Any ticker can be analyzed in real time  
-
-- 🤖 AI Market Insight Engine  
-  OpenAI generates contextual explanations of price movement  
-
-- ⚡ Fast UI with Precomputed Data  
-  Signals are loaded instantly from disk  
-
-- 📈 Interactive Price Charts  
-  Visualize recent price movement dynamically  
+### 📊 Stock Analysis + AI Insight
+![Analysis](assets/analysis.png)
 
 ---
 
-## 🏗️ Architecture  
+## 🧠 What Makes This Different
 
-User Input  
-↓  
-Check Model Signals (CSV)  
-↓  
-If Found → Use Model Output  
-Else → Fetch Live Data (yfinance)  
-↓  
-Compute Metrics (price, change, confidence)  
-↓  
-Generate AI Explanation (OpenAI)  
-↓  
-Render UI (Streamlit)  
+Most stock tools give you numbers.
+
+**AInvest explains them.**
+
+- Converts raw data → **human-readable insights**
+- Combines **quant signals + AI reasoning**
+- Handles missing data with **intelligent fallback logic**
+- Built to simulate **real-world fintech workflows**
 
 ---
 
-## ⚙️ Tech Stack  
+## ⚙️ How It Works
 
-- Python  
-- Pandas  
-- Streamlit  
-- yfinance  
-- OpenAI API  
-
----
-
-## ⚡ Performance Design  
-
-To ensure fast load times:
-
-- Signals are precomputed offline  
-- App reads results instantly from disk  
-- Avoids expensive real-time model computation  
-- Uses lightweight fallback for live queries  
+1. User enters a stock ticker  
+2. Model generates a **buy/hold signal + confidence score**  
+3. App fetches live data (or fallback dataset)  
+4. AI generates a **natural language explanation**  
+5. UI presents everything in a clean dashboard  
 
 ---
 
-## 💡 Key Insight  
+## 🧱 Tech Stack
 
-Separating model computation from the UI allows the app to remain fast while still delivering meaningful, AI-powered insights.
-
----
-
-## 🧪 Running Locally  
-
-git clone https://github.com/dane-anderson/ainvest.git  
-cd ainvest  
-
-pip install -r requirements.txt  
-
-export OPENAI_API_KEY="your_key_here"  
-
-streamlit run app.py  
+- Python
+- Streamlit
+- Pandas
+- OpenAI API (AI explanations)
+- Financial data APIs (fallback supported)
 
 ---
 
-## ⚠️ Disclaimer  
+## 🧪 Key Features
 
-This project is for educational purposes only and does not constitute financial advice.
+- 📈 Model-based stock ranking  
+- 🔁 Real-time + fallback data system  
+- 🧠 AI-generated explanations  
+- 🎨 Clean, interactive UI  
+- ⚡ Fast and lightweight deployment  
+
+---
+
+## ⚠️ Disclaimer
+
+This tool is for informational purposes only and is **not financial advice**.
+
+---
+
+## 👤 Author
+
+**Dane Anderson**  
+University of Colorado Boulder  
+Aspiring AI Engineer
+
+---
+
+## 💡 Future Improvements
+
+- Portfolio tracking
+- Multi-stock comparison
+- Improved model accuracy
+- Enhanced AI explanations (context-aware)
