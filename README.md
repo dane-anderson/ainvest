@@ -13,13 +13,11 @@ https://ainvest-8zkq.onrender.com
 
 ## 📸 Screenshots  
 
- ### Top Model Pick
-![Top Pick](assets/ainvest:assets:top_pick.png)
-
-
+### Top Model Pick
+![Top Pick](assets/top_pick.png)
 
 ### Stock Analysis + AI Insight
-![Analysis](assets/ainvest:assets:analysis.png)
+![Analysis](assets/analysis.png)
 
 
 ---
