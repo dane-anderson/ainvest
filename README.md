@@ -1,165 +1,117 @@
 
-🚀 AInvest
+# AInvest
+### AI-Powered Stock Insight Engine
 
-AI-Powered Stock Insight Engine
+> AInvest transforms stock data into **clear, AI-generated insights** by combining model-driven signals, live market data, and natural language explanations.
 
-AInvest transforms raw stock data into clear, explainable insights using machine learning signals, real-time market data, and AI-generated analysis.
+---
 
-⸻
+## 🚀 Live App  
+https://ainvest-8zkq.onrender.com  
 
-🚀 Live App
+---
 
-👉 [Insert your Streamlit link here]
+## 📸 Screenshots  
 
-⸻
-📸 App Preview
+### Top Model Pick  
+![Top Pick](assets/top_pick.png)
 
-(Add your screenshots here — this matters a LOT)
-🧠 Overview
+### Stock Analysis + AI Insight  
+![Analysis](assets/analysis.png)
 
-AInvest is a lightweight AI-driven stock analysis application designed to bridge the gap between data and understanding.
+---
 
-It combines:
-	•	Precomputed model signals
-	•	Real-time market data
-	•	AI-generated explanations
+## 🧠 Overview  
 
-to help users quickly interpret what’s happening in a stock — and why.
+AInvest is an AI-powered stock analysis tool that:
 
-Most tools show data.
-AInvest explains it.
+- Ranks stocks using a machine learning signal model  
+- Falls back to real-time market data when needed  
+- Generates **AI explanations** to interpret stock behavior  
+- Presents insights through a clean, interactive UI  
 
-⸻
+Instead of just showing numbers, AInvest answers:
 
-📊 Core Features
+**“What is actually happening with this stock?”**
 
-🔝 Model-Driven Top Pick
-	•	Displays the highest-confidence stock from a trained model
-	•	Based on probability outputs (top_signals.csv)
+---
 
-⸻
+## 🔥 Key Features  
 
-🔎 Analyze Any Stock
-	•	Enter any ticker (AAPL, MSFT, F, etc.)
-	•	Smart routing system:
-	•	Uses model data if available
-	•	Falls back to live data if not
+- 📊 Model-Based Rankings  
+  Precomputed signals rank top stocks by predicted return probability  
 
-⸻
+- 🔁 Live Data Fallback (yfinance)  
+  Any ticker can be analyzed in real time  
 
-📈 Real-Time Market Data
-	•	Powered by yfinance
-	•	Displays:
-	•	Latest price
-	•	Daily change
-	•	1-month price chart
+- 🤖 AI Market Insight Engine  
+  OpenAI generates contextual explanations of price movement  
 
-⸻
+- ⚡ Fast UI with Precomputed Data  
+  Signals are loaded instantly from disk  
 
-🤖 AI Explanation Layer
-	•	Generates natural-language insights using OpenAI
-	•	Explains:
-	•	Momentum
-	•	Risk vs confidence
-	•	What the signal actually means
+- 📈 Interactive Price Charts  
+  Visualize recent price movement dynamically  
 
-This is the core differentiator — turning numbers into understanding.
+---
 
-⸻
+## 🏗️ Architecture  
 
-🧠 Design Decisions
+User Input  
+↓  
+Check Model Signals (CSV)  
+↓  
+If Found → Use Model Output  
+Else → Fetch Live Data (yfinance)  
+↓  
+Compute Metrics (price, change, confidence)  
+↓  
+Generate AI Explanation (OpenAI)  
+↓  
+Render UI (Streamlit)  
 
-⚡ Precomputed vs Real-Time Signals
+---
 
-To optimize performance, AInvest uses precomputed model outputs instead of running live inference.
+## ⚙️ Tech Stack  
 
-This avoids:
-	•	Expensive API calls
-	•	Feature recomputation
-	•	Model latency
+- Python  
+- Pandas  
+- Streamlit  
+- yfinance  
+- OpenAI API  
 
-Result:
+---
 
-Instant load times with consistent, reliable signals.
+## ⚡ Performance Design  
 
-⸻
+To ensure fast load times:
 
-🔄 Fallback Data System
+- Signals are precomputed offline  
+- App reads results instantly from disk  
+- Avoids expensive real-time model computation  
+- Uses lightweight fallback for live queries  
 
-Not every ticker exists in the model output.
+---
 
-So the app:
-	•	Uses model data when available
-	•	Falls back to yfinance when not
+## 💡 Key Insight  
 
-This ensures:
+Separating model computation from the UI allows the app to remain fast while still delivering meaningful, AI-powered insights.
 
-Every ticker works — no dead ends for the user.
+---
 
-⸻
+## 🧪 Running Locally  
 
-🤖 AI as Interpretation (Not Prediction)
+git clone https://github.com/dane-anderson/ainvest.git  
+cd ainvest  
 
-AI is used to explain signals, not generate trading advice.
+pip install -r requirements.txt  
 
-This keeps:
-	•	Outputs grounded in real data
-	•	Explanations consistent and useful
+export OPENAI_API_KEY="your_key_here"  
 
-⸻
+streamlit run app.py  
 
-🏗️ Architecture
-User Input
-   ↓
-Check Model CSV
-   ↓
-[If Found] → Model Output
-   ↓
-[Else] → yfinance API
-   ↓
-Compute Metrics (price, change, confidence)
-   ↓
-OpenAI API (AI Explanation)
-   ↓
-Render UI (Streamlit)
+---
 
-⚙️ Tech Stack
-	•	Python
-	•	Pandas
-	•	Streamlit
-	•	yfinance
-	•	OpenAI API
+## ⚠️ Disclaimer  
 
-  
-⸻
-
-⚡ Performance Design
-	•	Signals precomputed offline
-	•	Instant loading from CSV
-	•	No real-time model execution
-	•	Minimal latency across interactions
-
-⸻
-
-🧠 Key Insight
-
-Separating computation from presentation dramatically improves performance and usability in ML applications.
-
-AInvest demonstrates how:
-
-A lightweight frontend can deliver complex insights instantly.
-
-⸻
-
-⚠️ Disclaimer
-
-This tool is for informational purposes only and does not constitute financial advice.
-
-⸻
-
-🔮 Future Improvements
-	•	More advanced model (multi-factor signals)
-	•	News + sentiment integration
-	•	Portfolio tracking
-	•	Enhanced UI components
-	•	Cloud deployment & scaling
+This project is for educational purposes only and does not constitute financial advice.
