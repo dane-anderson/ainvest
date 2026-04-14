@@ -1,7 +1,7 @@
 
 # 🚀 AInvest
 
-AI-powered stock insight engine that combines **model signals + real-time data + AI-generated explanations**.
+AI-powered stock insight engine that turns market data into **clear, actionable insights** using model signals + real-time data + AI.
 
 ## 🚀 Live App
 👉 https://ainvest-8zkq.onrender.com
