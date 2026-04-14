@@ -1,6 +1,10 @@
 
 # 🚀 AInvest
 
+## 🚀 Demo
+
+![AI Toolbox Demo](assets/demo.gif)
+
 ## AI-Powered Stock Insight Engine
 
 AInvest transforms stock data into **clear, AI-generated insights** by combining:
