@@ -5,7 +5,7 @@ AI-powered stock insight engine that turns market data into **clear, actionable 
 
 ## 🚀 Live App
 
-<p align="left">
+<p align="center">
   <a href="https://ainvest-8zkq.onrender.com">
     <img src="https://img.shields.io/badge/🚀%20Launch%20AInvest-0A66C2?style=for-the-badge&logo=streamlit&logoColor=white" />
   </a>
