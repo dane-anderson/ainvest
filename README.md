@@ -9,6 +9,7 @@ AI-powered stock insight engine that turns market data into **clear, actionable 
 
 
 
+<br>
 
 ## 🎬 Demo
 ![AI Demo](assets/Ainvestdemo.gif)
