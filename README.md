@@ -1,9 +1,7 @@
 
 # 🚀 AInvest
 
-## 🚀 Demo
 
-![AI Toolbox Demo](assets/demo.gif)
 
 ## AI-Powered Stock Insight Engine
 
@@ -17,17 +15,13 @@ AInvest transforms stock data into **clear, AI-generated insights** by combining
 ## 🔗 Live App
 https://ainvest-8zkq.onrender.com
 
+# 🚀 AInvest
+
+![AI Demo](assets/demo.gif)
+
+AI-powered stock insight engine that combines model signals + real-time data + AI explanations.
 ---
 
-## 📸 Screenshots
-
-### 🏆 Top Model Pick
-![Top Pick](assets%20/top_pick.png)
-
-### 📊 Stock Analysis + AI Insight
-![Analysis](assets%20/analysis.png)
-
----
 
 ## 🧠 What Makes This Different
 
