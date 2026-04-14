@@ -15,6 +15,9 @@ AInvest transforms stock data into **clear, AI-generated insights** by combining
 ## 🔗 Live App
 https://ainvest-8zkq.onrender.com
 
+
+
+## 🚀 Demo
 ![AI Demo](assets/Ainvestdemo.gif)
 
 AI-powered stock insight engine that combines model signals + real-time data + AI explanations.
