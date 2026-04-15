@@ -1,87 +1,100 @@
-
 # 🚀 AInvest
 
-AI-powered stock insight engine that turns market data into **clear, actionable insights** using model signals + real-time data + AI.
+AI-powered stock insight engine that turns market data into clear, actionable insights using model signals, real-time data, and AI explanations.
+
+---
 
 ## 🚀 Live App
 
-<p align="center"><b>Try the live app</b></p><p align="center">
-  <a href="https://ainvest-8zkq.onrender.com">
-    <img src="https://img.shields.io/badge/🚀%20Launch%20AInvest-0A66C2?style=for-the-badge&logo=streamlit&logoColor=white" />
-  </a>
-</p>
+👉 https://ainvest.onrender.com
 
-
-
-<br>
+---
 
 ## 🎬 Demo
 ![AI Demo](assets/Ainvestdemo.gif)
 
-AI-powered stock insight engine that combines model signals + real-time data + AI explanations.
 ---
 
+## 🧠 What It Does
 
-## 🧠 What Makes This Different
+AInvest combines quantitative signals, live market data, and AI-generated explanations to help users quickly understand stock opportunities.
 
-Most stock tools give you numbers.
+---
 
-**AInvest explains them.**
+## 🧠 Overview
 
-- Converts raw data → **human-readable insights**
-- Combines **quant signals + AI reasoning**
-- Handles missing data with **intelligent fallback logic**
-- Built to simulate **real-world fintech workflows**
+Most stock tools provide raw numbers.
+
+AInvest explains them.
+
+The system integrates:
+
+- Model-generated signals (buy/hold + confidence)  
+- Real-time market data with fallback handling  
+- AI-generated natural language explanations  
+
+This creates a simplified, user-friendly experience for understanding complex financial data.
+
+---
+
+## ✨ Features
+
+- 📈 Model-based stock signals with confidence scores  
+- 🔁 Real-time data + fallback system  
+- 🧠 AI-generated explanations for each stock  
+- 🎨 Clean and intuitive user interface  
+- ⚡ Fast and lightweight deployment  
 
 ---
 
 ## ⚙️ How It Works
 
 1. User enters a stock ticker  
-2. Model generates a **buy/hold signal + confidence score**  
-3. App fetches live data (or fallback dataset)  
-4. AI generates a **natural language explanation**  
-5. UI presents everything in a clean dashboard  
+2. Model generates a buy/hold signal with confidence  
+3. App fetches real-time data (or fallback dataset if needed)  
+4. AI generates a human-readable explanation  
+5. Results are displayed in a clean dashboard  
 
 ---
 
-## 🧱 Tech Stack
+## 🛠 Tech Stack
 
-- Python
-- Streamlit
-- Pandas
-- OpenAI API (AI explanations)
-- Financial data APIs (fallback supported)
+- Python  
+- Streamlit  
+- Pandas  
+- OpenAI API (AI explanations)  
+- Financial data APIs  
 
 ---
 
-## 🧪 Key Features
+## 📊 Example Output
 
-- 📈 Model-based stock ranking  
-- 🔁 Real-time + fallback data system  
-- 🧠 AI-generated explanations  
-- 🎨 Clean, interactive UI  
-- ⚡ Fast and lightweight deployment  
+Stock-level insight including:
+
+- Model signal (buy/hold)  
+- Confidence score  
+- Current market data  
+- AI-generated explanation  
 
 ---
 
 ## ⚠️ Disclaimer
 
-This tool is for informational purposes only and is **not financial advice**.
+This tool is for informational purposes only and does not constitute financial advice.
 
 ---
 
-## 👤 Author
+## 🚀 Future Improvements
 
-**Dane Anderson**  
-University of Colorado Boulder  
-Aspiring AI Engineer
+- Portfolio tracking and analysis  
+- Multi-stock comparison  
+- Improved model accuracy  
+- Context-aware AI explanations  
 
 ---
 
-## 💡 Future Improvements
+## 💡 Vision
 
-- Portfolio tracking
-- Multi-stock comparison
-- Improved model accuracy
-- Enhanced AI explanations (context-aware)
+AInvest is designed to simulate real-world fintech systems by combining data pipelines, model outputs, and AI reasoning into a single application.
+
+The long-term goal is to build intelligent financial tools that translate complex data into clear, actionable insights.
