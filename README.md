@@ -6,7 +6,7 @@ AI-powered stock insight engine that turns market data into clear, actionable in
 
 ## 🚀 Live App
 
-👉 https://ainvest.onrender.com
+👉 https://ainvest-8zkq.onrender.com/
 
 ---
 
