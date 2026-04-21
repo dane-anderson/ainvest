@@ -2,3 +2,4 @@ streamlit
 pandas
 yfinance
 openai
+plotly>=5.24.0
