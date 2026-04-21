@@ -47,10 +47,19 @@ AInvest is structured as a multi-layer decision pipeline:
 - Prevents UI breakage under API failure conditions
 
 ### 3. Reasoning Layer (AI)
-- Uses LLM (OpenAI) to:
-  - interpret signal + price behavior
-  - generate structured explanations
-- Converts quantitative outputs into **natural language insight**
+
+- LLM-driven interpretation layer conditioned on:
+  - model signal output  
+  - price structure and momentum context  
+
+- Generates **structured, desk-style commentary**:
+  - directional bias  
+  - strength of conviction  
+  - positioning context  
+
+- Translates quantitative signals into:
+  - **actionable, trader-facing insight**
+  - not narrative — **decision support**
 
 ### 4. Presentation Layer
 - Clean UI that surfaces:
