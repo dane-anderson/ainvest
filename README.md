@@ -17,13 +17,9 @@ Built to simulate how modern fintech systems combine quantitative models + AI re
 ![AInvest Preview](aipreview.png)
 
 ---
+![Portfolio Lab](AInvest.png)
 
-### 📊 Portfolio Lab View
-[View Portfolio Lab](AInvest.pdf)
-
-### 🧠 Portfolio Intelligence
-[View Portfolio Insights](AInvest2.pdf)
-
+![Portfolio Insights](AInvest2.png)
 ---
 
 ## ⚡ What This Is
