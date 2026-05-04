@@ -1,8 +1,9 @@
+
 # 🚀 AInvest
 
-**AI-powered market decision engine** that transforms raw financial data into structured signals and actionable insight.
+AI-powered market decision engine that turns raw financial data into structured signals and actionable insight.
 
-Built to simulate real-world quantitative + AI systems used in modern fintech.
+Built to simulate how modern fintech systems combine quantitative models + AI reasoning into a single decision layer.
 
 ---
 
@@ -21,82 +22,131 @@ Built to simulate real-world quantitative + AI systems used in modern fintech.
 
 Most retail tools show charts.
 
-AInvest **makes decisions interpretable.**
+AInvest explains decisions.
 
 It sits between:
+
 - raw market data  
 - quantitative signals  
-- human-readable reasoning  
+- AI interpretation  
 
-and turns them into a single, unified output.
+and outputs a clear, decision-ready view of the market.
+
+---
+
+## 🧩 Core Features
+
+### 🔍 Stock Lens
+Single-ticker analysis engine:
+
+- Signal (Bullish / Neutral / Bearish)
+- Conviction score
+- Risk level
+- AI trader-style insight
+- Real-time price + structure
+
+---
+
+### 📊 Portfolio Lab (NEW)
+Multi-asset portfolio analysis system:
+
+- Add multiple tickers dynamically
+- Equal weight or custom weighting
+- Portfolio-level metrics:
+  - Return
+  - Volatility
+  - Sharpe
+  - Max drawdown
+- Benchmark comparison (SPY + strategies)
+- Stress scenario simulation
+- AI portfolio brief (PM-style insight)
+
+👉 This is the foundation for portfolio intelligence tooling, not just stock analysis.
 
 ---
 
 ## 🧠 System Architecture
 
-AInvest is structured as a multi-layer decision pipeline:
+AInvest runs as a layered decision pipeline:
 
 ### 1. Signal Layer
-- Model generates **buy / hold classification**
-- Outputs **confidence score (conviction)**
-- Designed to mimic lightweight quant signal generation
+- Generates directional bias (buy / hold / sell style)
+- Outputs conviction score
+- Mimics lightweight quant signals
 
 ### 2. Data Layer
-- Pulls **real-time market data**
-- Includes **fallback dataset system** to ensure reliability
-- Prevents UI breakage under API failure conditions
+- Real-time market data (yfinance)
+- Fallback handling for reliability
+- Prevents UI/data failures
 
 ### 3. Reasoning Layer (AI)
+LLM interprets:
+- signals  
+- price action  
+- context  
 
-- LLM acts as an interpretation engine over:
-  - model-derived signals  
-  - real-time price behavior  
+Outputs:
+- bias  
+- conviction  
+- structural narrative  
 
-- Produces **concise, trader-style readouts**:
-  - bias (long / neutral / defensive)  
-  - conviction strength  
-  - structural context  
-
-- Converts raw model output into:
-  - **decision-ready intelligence**
-  - optimized for speed and clarity under uncertainty
+→ Converts raw data into human-readable intelligence
 
 ### 4. Presentation Layer
-- Clean UI that surfaces:
-  - signal
-  - conviction
-  - risk context
-  - explanation
+- Streamlit UI
+- Decision-first layout
+- Clean, institutional-style interface
 
 ---
 
 ## 🔁 End-to-End Flow
 
-1. User inputs ticker  
+1. User inputs ticker(s)  
 2. Signal engine evaluates position  
-3. Market data is retrieved (or fallback triggered)  
-4. AI generates contextual explanation  
-5. Unified output displayed  
+3. Market data is retrieved  
+4. AI generates context + reasoning  
+5. Unified output is displayed  
 
 ---
 
-## ✨ Core Capabilities
+## ✨ Capabilities
 
-- 📊 **Quant-style signal generation**
-- 🔁 **Resilient data pipeline (fallback logic)**
-- 🧠 **AI reasoning layer on top of model outputs**
-- ⚡ **Low-latency, real-time response**
-- 🎯 **Decision-focused UI (not just data display)**
+- 📊 Quant-style signal generation  
+- 🧠 AI interpretation layer  
+- 📉 Portfolio analytics + benchmarking  
+- ⚡ Real-time processing  
+- 🛡 Resilient data handling  
 
 ---
 
 ## 🛠 Tech Stack
 
-- Python  
-- Streamlit (frontend + app layer)  
-- Pandas (data processing)  
-- OpenAI API (reasoning layer)  
-- External financial data APIs  
+- Python
+- Streamlit
+- Pandas / NumPy
+- yfinance
+- OpenAI API
+- Plotly
+
+---
+
+## 🚀 Running Locally
+
+bash git clone https://github.com/dane-anderson/ainvest.git cd ainvest pip install -r requirements.txt streamlit run app.py 
+
+Create a .streamlit/secrets.toml:
+
+toml OPENAI_API_KEY = "your-key-here" 
+
+---
+
+## 🚀 Deployment
+
+Deployed on Render:
+
+- Auto-deploy from GitHub
+- Python web service
+- Streamlit app entry: app.py
 
 ---
 
@@ -105,16 +155,17 @@ AInvest is structured as a multi-layer decision pipeline:
 AInvest is not built to predict markets.
 
 It is built to:
-> **structure uncertainty into interpretable signals.**
+
+> structure uncertainty into interpretable signals.
 
 ---
 
-## 🚀 Future Expansion
+## 🔮 Future Expansion
 
-- Multi-asset / portfolio-level reasoning  
-- Signal aggregation across timeframes  
-- Risk modeling layer (volatility + exposure)  
-- Agentic workflows for automated analysis  
+- Portfolio optimization engine (Allocation Engine)
+- Multi-timeframe signal aggregation
+- Risk modeling (beta, factor exposure)
+- AI agents for automated analysis
 
 ---
 
@@ -122,17 +173,18 @@ It is built to:
 
 AInvest represents a shift from:
 
-**data dashboards → decision systems**
+> dashboards → decision systems
 
-The long-term goal is to build AI systems that:
+The goal is to build tools that:
+
 - ingest complex financial data  
 - reason over it  
-- and output clear, actionable intelligence  
+- output clear, actionable insight  
 
-similar to internal tooling used at quantitative firms.
+similar to internal tools used at quantitative firms.
 
 ---
 
 ## ⚠️ Disclaimer
 
-For educational and informational purposes only. Not financial advice.
+For educational purposes only. Not financial advice
