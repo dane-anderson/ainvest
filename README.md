@@ -19,7 +19,7 @@ Built to simulate how modern fintech systems combine quantitative models + AI re
 ---
 
 ## 🔍 Stock Lens
-[![Stock Lens](assets/page 2.png)](assets/page 2.png)
+[![Stock Lens](assets/page%202.png)](assets/page%202.png)
 
 ---
 
