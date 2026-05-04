@@ -7,6 +7,7 @@ import streamlit as st
 import yfinance as yf
 from openai import OpenAI
 from chart_module import render_chart_module
+import plotly.graph_objects as go
 
 # -----------------------------
 # Page config
@@ -35,7 +36,7 @@ client = OpenAI(api_key=api_key) if api_key else None
 # Session state
 # -----------------------------
 if "active_ticker" not in st.session_state:
-    st.session_state.active_ticker = None
+    st.session_state.active_ticker = "F"
 
 if "chart_timeframe" not in st.session_state:
     st.session_state.chart_timeframe = "Today"
@@ -643,6 +644,276 @@ div[data-testid="stRadio"] div {
     }
 }
 
+
+/* Segmented Control (Mode Toggle) */
+div[data-baseweb="button-group"] {
+    display: flex !important;
+    gap: 12px !important;
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255,255,255,0.10);
+    padding-bottom: 6px;
+}
+
+div[data-baseweb="button-group"] button {
+    background: transparent !important;
+    border: none !important;
+    color: rgba(255,255,255,0.65) !important;
+    font-weight: 600 !important;
+    padding: 6px 4px !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+div[data-baseweb="button-group"] {
+    pointer-events: auto !important;
+}
+/* selected tab */
+div[data-baseweb="button-group"] button[aria-pressed="true"] {
+    color: #FFFFFF !important;
+    border-bottom: 2px solid #FFB020 !important;
+}
+
+/* underline selected radio (safe version) */
+div[role="radiogroup"] label {
+    border-bottom: 2px solid transparent;
+    padding-bottom: 4px;
+}
+
+div[role="radiogroup"] label:has(input:checked) {
+    border-bottom: 2px solid #FFB020;
+}
+/* hide radio circle ONLY */
+div[role="radiogroup"] label > div:first-child {
+    display: none !important;
+}
+
+/* Portfolio Lab cards */
+.portfolio-card {
+    background: rgba(10, 18, 40, 0.88);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    padding: 18px 18px 16px 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+}
+
+.portfolio-card h3 {
+    margin: 0 0 8px 0;
+    color: #F5F7FB;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.portfolio-subtext {
+    color: rgba(231,238,249,0.68);
+    font-size: 0.88rem;
+    margin-bottom: 12px;
+}
+
+.portfolio-placeholder {
+    background: rgba(20, 36, 78, 0.65);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    min-height: 70px;
+    padding: 14px;
+    color: rgba(231,238,249,0.5);
+    font-size: 0.9rem;
+}
+
+.portfolio-placeholder.tall {
+    min-height: 220px;
+}
+
+.portfolio-placeholder.medium {
+    min-height: 150px;
+}
+
+/* Portfolio buttons (default state) */
+div[data-testid="stButton"] button {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    color: #E7EEF9 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease;
+}
+
+/* Hover = subtle blue hint */
+div[data-testid="stButton"] button:hover {
+    background: rgba(58, 189, 255, 0.10) !important;
+    border-color: rgba(58, 189, 255, 0.35) !important;
+    color: #FFFFFF !important;
+}
+
+/* ACTIVE / SELECTED (this is the magic) */
+div[data-testid="stButton"] button[kind="primary"] {
+    background: rgba(58, 189, 255, 0.14) !important;
+    border: 1px solid rgba(58, 189, 255, 0.75) !important;
+    color: #73CFFF !important;
+    box-shadow: 0 0 14px rgba(58, 189, 255, 0.22) !important;
+}
+
+/* Dark input (base) */
+div[data-testid="stTextInput"] input {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    color: #E7EEF9 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease;
+}
+
+/* Focus = subtle glow (like your reference UI) */
+div[data-testid="stTextInput"] input:focus {
+    outline: none !important;
+    border: 1px solid rgba(58, 189, 255, 0.55) !important;
+    box-shadow: 0 0 10px rgba(58, 189, 255, 0.18) !important;
+}
+
+/* Placeholder styling */
+div[data-testid="stTextInput"] input::placeholder {
+    color: rgba(231,238,249,0.45) !important;
+}
+
+/* Kill ALL white input backgrounds */
+div[data-testid="stTextInput"] {
+    background: transparent !important;
+}
+
+div[data-testid="stTextInput"] > div {
+    background: transparent !important;
+}
+
+/* Force dark styling on the actual input */
+div[data-testid="stTextInput"] input {
+    background-color: rgba(255,255,255,0.04) !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    color: #E7EEF9 !important;
+}
+/* Fix white Streamlit input box (FINAL fix) */
+div[data-testid="stTextInput"] > div > div {
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    border-radius: 8px !important;
+}
+
+div[data-testid="stTextInput"] input {
+    background: transparent !important;
+    color: #E7EEF9 !important;
+}
+
+div[data-testid="stTextInput"] input:focus {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: 0 0 8px rgba(58,189,255,0.18) !important;
+}
+/* Remove white border from Add Ticker input */
+div[data-testid="stTextInput"] div[data-baseweb="input"] {
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+div[data-testid="stTextInput"] div[data-baseweb="input"]:focus-within {
+    border: 1px solid rgba(58,189,255,0.35) !important;
+    box-shadow: 0 0 8px rgba(58,189,255,0.12) !important;
+    outline: none !important;
+}
+
+div[data-testid="stTextInput"] div[data-baseweb="input"] input {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* -----------------------------
+   Compact Portfolio Controls
+------------------------------*/
+
+/* Reduce vertical spacing inside left panel */
+.portfolio-card,
+div[data-testid="stVerticalBlock"]:has(button[key="portfolio_analyze"]) {
+    gap: 6px !important;
+}
+
+/* Ticker chips */
+button[key^="remove_"] {
+    height: 18px !important;
+    min-height: 18px !important;
+    font-size: 0.65rem !important;
+    padding: 0px 2px !important;
+    line-height: 1 !important;
+    border-radius: 5px !important;
+    box-shadow: none !important;
+}
+
+/* Add ticker input */
+div[data-testid="stTextInput"] input {
+    min-height: 36px !important;
+    font-size: 0.9rem !important;
+}
+
+/* + Add button */
+button[key="portfolio_add_ticker"] {
+    height: 15px !important;          /* 🔥 controls actual height */
+    min-height: 15px !important;
+
+    font-size: 0.65rem !important;    /* text size */
+
+    padding: 0px 2px !important;      /* 🔥 biggest size driver */
+    line-height: 1 !important;
+
+    border-radius: 4px !important;
+    box-shadow: none !important;
+}
+
+/* Weight buttons */
+button[key="portfolio_equal_weight"],
+button[key="portfolio_custom_weights"] {
+    height: 18px !important;
+    min-height: 18px !important;
+    font-size: 0.65rem !important;
+    padding: 0px 2px !important;
+    line-height: 1 !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+}
+
+/* Analyze button */
+button[key="portfolio_analyze"] {
+    height: 18px !important;
+    min-height: 18px !important;
+    font-size: 0.65rem !important;
+    padding: 0px 2px !important;
+    line-height: 1 !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+}
+
+/* Section titles smaller */
+h3 {
+    font-size: 1.05rem !important;
+}
+
+/* Reduce spacing under "Build Your Portfolio" */
+.stMarkdown + div {
+    margin-top: 6px !important;
+}
+
+/* Reduce chip grid spacing */
+div[data-testid="stHorizontalBlock"] {
+    gap: 6px !important;
+}
+
+/* Compact ALL Portfolio Lab buttons */
+div[data-testid="stButton"] button {
+    min-height: 22px !important;
+    height: 22px !important;
+    padding: 0px 8px !important;
+    font-size: 0.72rem !important;
+    line-height: 1 !important;
+}
+
+/
 </style>
 """,
     unsafe_allow_html=True,
@@ -766,9 +1037,17 @@ def get_welcome_tickers() -> list[dict[str, str]]:
         {"symbol": "BTC-USD", "name": "Bitcoin", "price": "$64,812.45", "change": "+1.87%", "cls": "ticker-change-pos"},
     ]
 
+def get_stress_bg(color):
+    if color == "#FF4D6D":
+        return "rgba(255,77,109,0.08)"
+    if color == "#2EE59D":
+        return "rgba(46,229,157,0.08)"
+    if color == "#FFB020":
+        return "rgba(255,176,32,0.08)"
+    return "rgba(255,255,255,0.03)"
 
 # -----------------------------
-# AI helper
+#  Stock Lens AI — Trader Desk Voic
 # -----------------------------
 @st.cache_data(show_spinner=False, ttl=300)
 def generate_ai_explanation(
@@ -834,7 +1113,322 @@ Recent headlines:
         return text if text else "AI trader insight unavailable right now."
     except Exception:
         return "AI trader insight unavailable right now."
+    
+# -----------------------------
+# Portfolio Lab AI — Portfolio Manager Voice
+# -----------------------------
 
+
+@st.cache_data(show_spinner=False, ttl=300)
+def generate_portfolio_brief(tickers, metrics, timeframe):
+    if not api_key or client is None:
+        return "AI portfolio brief unavailable because OPENAI_API_KEY is not set."
+
+    if not metrics:
+        return "Portfolio brief unavailable until portfolio metrics load."
+
+    holdings_text = ", ".join([f"{t}: {w:.1f}%" for t, w in metrics["weights"].items()])
+
+    prompt = f"""
+   
+    You are a portfolio manager reviewing a portfolio on your desk.
+
+    Write like internal PM notes — concise, sharp, slightly informal.
+
+    Focus on:
+    - what this portfolio actually is
+    - what is driving returns
+    - where risk is concentrated
+    - what would break the setup
+    - what matters next
+
+    Portfolio:
+    Tickers: {", ".join(tickers)}
+    Holdings: {holdings_text}
+    Timeframe: {timeframe}
+
+    Rules:
+    - 1 tight paragraph (no fluff)
+    - then 2–3 short bullets
+    - bullets should be punchy (not full sentences if possible)
+    - do NOT restate metrics already shown above
+    - avoid phrases like "this suggests", "this indicates"
+    - no generic advice
+    - no textbook language
+    - no hype
+
+    Tone:
+    - internal
+    - efficient
+    - slightly blunt
+    - write in fragments when possible (not full sentences)
+    - avoid full sentences — prefer fragmented desk-style thoughts
+
+    Add ONE final line:
+
+    - a blunt takeaway (max 12 words)
+
+    - think: "Concentrated tech risk. SPY won’t save you."
+    """
+
+    try:
+        response = client.responses.create(
+            model="gpt-4.1-mini",
+            input=prompt,
+        )
+        return (response.output_text or "").strip()
+    except Exception:
+        return "AI portfolio brief unavailable right now."
+    
+@st.cache_data(show_spinner=False, ttl=900)
+def build_portfolio_benchmark_chart(tickers, timeframe):
+    period_map = {
+        "1Y": "1y",
+        "3Y": "3y",
+        "5Y": "5y",
+        "10Y": "10y",
+    }
+
+    period = period_map.get(timeframe, "5y")
+
+    benchmark_sets = {
+        "SPY": ["SPY"],
+        "Growth Strategy": ["QQQ", "SMH"],
+        "Concentrated Alpha": ["NVDA", "MSFT", "AAPL", "AMZN", "GOOGL"],
+        "Defensive Allocation": ["SPY", "TLT"],
+    }
+
+    all_tickers = list(set(tickers + ["SPY", "QQQ", "SMH", "NVDA", "MSFT", "AAPL", "AMZN", "GOOGL", "TLT"]))
+
+    prices = yf.download(
+        all_tickers,
+        period=period,
+        auto_adjust=True,
+        progress=False
+    )["Close"]
+
+    if isinstance(prices, pd.Series):
+        prices = prices.to_frame()
+
+    prices = prices.dropna(axis=1, how="all").ffill().dropna()
+
+    returns = prices.pct_change().dropna()
+
+    portfolio_returns = returns[tickers].mean(axis=1)
+
+    benchmark_returns = {}
+
+    benchmark_returns["SPY"] = returns[["SPY"]].mean(axis=1)
+
+    if "QQQ" in returns.columns and "SMH" in returns.columns:
+        benchmark_returns["Growth Strategy"] = returns[["QQQ", "SMH"]].dot([0.7, 0.3])
+
+    alpha_names = [t for t in ["NVDA", "MSFT", "AAPL", "AMZN", "GOOGL"] if t in returns.columns]
+    if alpha_names:
+        benchmark_returns["Concentrated Alpha"] = returns[alpha_names].mean(axis=1)
+
+    if "SPY" in returns.columns and "TLT" in returns.columns:
+        benchmark_returns["Defensive Allocation"] = returns[["SPY", "TLT"]].dot([0.6, 0.4])
+
+    chart_df = pd.DataFrame({
+        "Your Portfolio": portfolio_returns,
+        **benchmark_returns
+    }).dropna()
+
+    growth = (1 + chart_df).cumprod() * 100
+
+    return growth
+
+@st.cache_data(show_spinner=False, ttl=900)
+def calculate_portfolio_metrics(tickers, timeframe, custom_weights=None):
+    period_map = {
+        "1Y": "1y",
+        "3Y": "3y",
+        "5Y": "5y",
+        "10Y": "10y",
+    }
+
+    period = period_map.get(timeframe, "5y")
+
+    all_tickers = list(set(tickers + ["SPY"]))
+
+    prices = yf.download(
+        all_tickers,
+        period=period,
+        auto_adjust=True,
+        progress=False
+    )["Close"]
+
+    if isinstance(prices, pd.Series):
+        prices = prices.to_frame()
+
+    prices = prices.dropna(axis=1, how="all").ffill().dropna()
+
+    valid_tickers = [t for t in tickers if t in prices.columns]
+
+    if not valid_tickers or "SPY" not in prices.columns:
+        return None
+
+    returns = prices.pct_change().dropna()
+
+    if custom_weights:
+        total = sum(custom_weights.values())
+        norm_weights = {k: v / total for k, v in custom_weights.items()}
+
+        portfolio_returns = sum(
+            returns[ticker] * norm_weights.get(ticker, 0)
+            for ticker in valid_tickers
+        )
+    else:
+        portfolio_returns = returns[valid_tickers].mean(axis=1)
+    spy_returns = returns["SPY"]
+
+    annual_return = ((1 + portfolio_returns).prod() ** (252 / len(portfolio_returns)) - 1) * 100
+    volatility = portfolio_returns.std() * np.sqrt(252) * 100
+
+    cumulative = (1 + portfolio_returns).cumprod()
+    running_max = cumulative.cummax()
+    drawdown = (cumulative / running_max - 1) * 100
+    max_drawdown = drawdown.min()
+
+    sharpe = annual_return / volatility if volatility != 0 else 0
+
+    spy_annual_return = ((1 + spy_returns).prod() ** (252 / len(spy_returns)) - 1) * 100
+    vs_spy = annual_return - spy_annual_return
+
+    beta = portfolio_returns.cov(spy_returns) / spy_returns.var()
+
+    if custom_weights:
+        weights = {ticker: custom_weights.get(ticker, 0) for ticker in valid_tickers}
+    else:
+        weights = {ticker: round(100 / len(valid_tickers), 1) for ticker in valid_tickers}
+
+    concentration = max(weights.values()) if weights else 0
+    diversification_score = max(0, min(100, round(100 - concentration)))
+
+    if volatility >= 25 or concentration >= 35:
+        risk_level = "High"
+    elif volatility >= 16:
+        risk_level = "Medium"
+    else:
+        risk_level = "Low"
+
+    return {
+        "annual_return": annual_return,
+        "volatility": volatility,
+        "max_drawdown": max_drawdown,
+        "sharpe": sharpe,
+        "spy_annual_return": spy_annual_return,
+        "vs_spy": vs_spy,
+        "beta": beta,
+        "risk_level": risk_level,
+        "diversification_score": diversification_score,
+        "concentration": concentration,
+        "weights": weights,
+        "valid_tickers": valid_tickers,
+    }
+
+@st.cache_data(show_spinner=False, ttl=900)
+def calculate_strategy_benchmark_metrics(tickers, timeframe):
+    period_map = {
+        "1Y": "1y",
+        "3Y": "3y",
+        "5Y": "5y",
+        "10Y": "10y",
+    }
+
+    period = period_map.get(timeframe, "5y")
+
+    strategies = {
+        "Market Benchmark": ["SPY"],
+        "Growth Strategy": ["QQQ", "SMH"],
+        "Concentrated Alpha": ["NVDA", "MSFT", "AAPL", "AMZN", "GOOGL"],
+        "Defensive Allocation": ["SPY", "TLT"],
+    }
+
+    all_tickers = sorted(list(set(sum(strategies.values(), []))))
+
+    prices = yf.download(
+        all_tickers,
+        period=period,
+        auto_adjust=True,
+        progress=False
+    )["Close"]
+
+    if isinstance(prices, pd.Series):
+        prices = prices.to_frame()
+
+    prices = prices.dropna(axis=1, how="all").ffill().dropna()
+    returns = prices.pct_change().dropna()
+
+    results = {}
+
+    for name, basket in strategies.items():
+        valid = [t for t in basket if t in returns.columns]
+
+        if not valid:
+            continue
+
+        strategy_returns = returns[valid].mean(axis=1)
+
+        annual_return = ((1 + strategy_returns).prod() ** (252 / len(strategy_returns)) - 1) * 100
+        volatility = strategy_returns.std() * np.sqrt(252) * 100
+
+        cumulative = (1 + strategy_returns).cumprod()
+        drawdown = (cumulative / cumulative.cummax() - 1) * 100
+        max_drawdown = drawdown.min()
+
+        sharpe = annual_return / volatility if volatility != 0 else 0
+
+        results[name] = {
+            "annual_return": annual_return,
+            "volatility": volatility,
+            "max_drawdown": max_drawdown,
+            "sharpe": sharpe,
+            "holdings": " + ".join(valid)
+        }
+
+    return results
+
+def benchmark_takeaway(title, bench_metrics, portfolio_metrics):
+    if not bench_metrics or not portfolio_metrics:
+        return "Benchmark read unavailable."
+
+    br = bench_metrics["annual_return"]
+    bv = bench_metrics["volatility"]
+    bd = bench_metrics["max_drawdown"]
+
+    pr = portfolio_metrics["annual_return"]
+    pv = portfolio_metrics["volatility"]
+    pd = portfolio_metrics["max_drawdown"]
+
+    if title == "Market Benchmark":
+        if pr > br and pv > bv:
+            return "Beating SPY, but taking more heat."
+        if pr > br:
+            return "Clean market outperformance."
+        return "SPY is still the hurdle."
+
+    if title == "Growth Strategy":
+        if abs(pr - br) < 3:
+            return "Portfolio is tracking growth beta."
+        if pr > br:
+            return "Outrunning growth beta."
+        return "Lagging growth despite similar risk."
+
+    if title == "Concentrated Alpha":
+        if abs(pr - br) < 3 and abs(pd - bd) < 5:
+            return "Mega-cap tech in disguise."
+        if pd > bd:
+            return "Less fragile than pure mega-cap tech."
+        return "Concentration risk is doing the work."
+
+    if title == "Defensive Allocation":
+        if pv > bv:
+            return "You’re trading sleep for upside."
+        return "Lower-volatility floor."
+
+    return "Benchmark context loaded."
 
 # -----------------------------
 # Load base data
@@ -847,28 +1441,49 @@ df = load_top_signals()
 brand_col, input_col, button_col = st.columns([1.25, 3.6, 0.95], gap="medium")
 
 with brand_col:
-    with brand_col:
-        st.markdown("<div style='margin-top:-4px;'>", unsafe_allow_html=True)
-        st.image("assets/logo.png", width=230)
-        st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top:-4px;'>", unsafe_allow_html=True)
+    st.image("assets/logo.png", width=230)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-with input_col:
-    typed_ticker = st.text_input(
-        "",
-        value=st.session_state.active_ticker or "",
-        placeholder="Enter ticker (AAPL, NVDA, BTC-USD)",
-        label_visibility="collapsed",
-    ).strip().upper()
 
-with button_col:
-    analyze_clicked = st.button("Analyze", use_container_width=True)
 
-if analyze_clicked and typed_ticker:
-    st.session_state.active_ticker = typed_ticker
+mode = st.radio(
+    "",
+    ["Stock Lens", "Portfolio Lab", "Allocation Engine"],
+    horizontal=True,
+    key="mode_toggle"
+)
+
+if mode == "Stock Lens":
+    input_col, button_col = st.columns([4, 1], gap="medium")
+
+    with input_col:
+        typed_ticker = st.text_input(
+            "",
+            value=st.session_state.active_ticker or "",
+            placeholder="Enter ticker (AAPL, NVDA, BTC-USD)",
+            label_visibility="collapsed",
+            key="stock_lens_ticker_input",
+        ).strip().upper()
+
+    with button_col:
+        analyze_clicked = st.button(
+            "Analyze",
+            use_container_width=True,
+            key="stock_lens_analyze_button",
+        )
+
+    if analyze_clicked and typed_ticker:
+        st.session_state.active_ticker = typed_ticker
+        st.rerun()
+
+st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+
+
 
 active_ticker = st.session_state.active_ticker
 
-if not active_ticker:
+if mode == "Stock Lens" and not active_ticker:
     welcome_html = (
         f'<div class="welcome-hero">'
             f'<div class="welcome-grid">'
@@ -989,7 +1604,9 @@ if not active_ticker:
 # -----------------------------
 # Main analyzed layout
 # -----------------------------
-if active_ticker:
+
+
+if mode == "Stock Lens" and active_ticker:
     match = df[df["Ticker"] == active_ticker].copy()
     snapshot: dict[str, Any] = {"explanation_inputs": []}
 
@@ -1251,3 +1868,506 @@ if active_ticker:
             """,
             unsafe_allow_html=True,
         )
+    
+    
+   
+if "Portfolio" in str(mode):
+    st.markdown("## Portfolio Lab")
+
+    if "portfolio_tickers" not in st.session_state:
+        st.session_state.portfolio_tickers = []
+
+    if "portfolio_weight_mode" not in st.session_state:
+        st.session_state.portfolio_weight_mode = "Equal Weight"
+
+    if "portfolio_analyzed" not in st.session_state:
+        st.session_state.portfolio_analyzed = False
+
+    if "portfolio_timeframe" not in st.session_state:
+        st.session_state.portfolio_timeframe = "5Y"
+
+    if st.session_state.get("clear_portfolio_new_ticker", False):
+        st.session_state.portfolio_new_ticker = ""
+        st.session_state.clear_portfolio_new_ticker = False
+
+    portfolio_ready = len(st.session_state.portfolio_tickers) >= 2
+    
+
+    portfolio_ready = len(st.session_state.portfolio_tickers) >= 2
+
+    portfolio_metrics = None
+
+    strategy_metrics = None
+
+    main_col, right_col = st.columns([3, 1], gap="medium")
+
+    with main_col:
+        build_col, outlook_col = st.columns([1, 2.1], gap="medium")
+
+        # -----------------------------
+        # Build Panel (FIXED HEIGHT)
+        # -----------------------------
+        with build_col:
+            build_box = st.container(height=390)
+
+            with build_box:
+                st.markdown("### Build Your Portfolio")
+                st.caption("Add 2+ stocks to analyze performance vs benchmarks")
+
+                chip_cols = st.columns(4)
+                for i, ticker in enumerate(st.session_state.portfolio_tickers):
+                    with chip_cols[i % 4]:
+                        if st.button(f"{ticker} ×", key=f"remove_{ticker}", use_container_width=True):
+                            st.session_state.portfolio_tickers.remove(ticker)
+                            st.rerun()
+
+                add_col, button_col = st.columns([4, 1])
+
+                with add_col:
+                    new_ticker = st.text_input(
+                        "",
+                        placeholder="Add ticker",
+                        key="portfolio_new_ticker",
+                        label_visibility="collapsed"
+                    )
+
+                if len(st.session_state.portfolio_tickers) == 0:
+                    st.caption("Enter ticker symbols, not company names. Examples: MSFT, GM, AAPL, SPY, BTC-USD.")
+
+                if len(st.session_state.portfolio_tickers) == 1:
+                    st.caption("Add at least 2 tickers to analyze a portfolio.")
+
+                with button_col:
+                    if st.button("+ Add", key="portfolio_add_ticker", use_container_width=True):
+                        ticker = new_ticker.strip().upper()
+                        if ticker and ticker not in st.session_state.portfolio_tickers:
+                            st.session_state.portfolio_tickers.append(ticker)
+                            st.session_state.clear_portfolio_new_ticker = True
+                            st.rerun()
+
+                st.markdown("**Weighting**")
+
+                weight_col1, weight_col2 = st.columns(2)
+
+                with weight_col1:
+                    if st.button(
+                        "Equal Weight",
+                        key="portfolio_equal_weight",
+                        use_container_width=True,
+                        type="primary" if st.session_state.portfolio_weight_mode == "Equal Weight" else "secondary"
+                    ):
+                        st.session_state.portfolio_weight_mode = "Equal Weight"
+                        st.rerun()
+
+                with weight_col2:
+                    if st.button(
+                        "Custom Weights",
+                        key="portfolio_custom_weights",
+                        use_container_width=True,
+                        type="primary" if st.session_state.portfolio_weight_mode == "Custom Weights" else "secondary"
+                    ):
+                        st.session_state.portfolio_weight_mode = "Custom Weights"
+                        st.rerun()
+
+                       # AFTER Equal Weight + Custom Weight buttons
+                    active_weights = None
+
+                    if st.session_state.portfolio_weight_mode == "Custom Weights":
+                        st.markdown("**Set target weights**")
+
+                        custom_weights = {}
+
+                        cols = st.columns(2)
+
+                        for i, ticker in enumerate(st.session_state.portfolio_tickers):
+                            with cols[i % 2]:
+                                custom_weights[ticker] = st.number_input(
+                                    f"{ticker} %",
+                                    min_value=0,
+                                    max_value=100,
+                                    value=round(100 / len(st.session_state.portfolio_tickers)),
+                                    step=1,
+                                    key=f"weight_{ticker}",
+                                )
+
+                        total = sum(custom_weights.values())
+                        st.caption(f"Total weight: {total}%")
+
+                        if total != 100:
+                            st.warning("Total weight must equal 100%")
+
+                        
+
+                        
+
+                        
+                                            
+
+                    if portfolio_ready:
+                        st.caption("Portfolio updates automatically as tickers and weights change.")
+                    else:
+                        st.caption("Add at least 2 tickers to analyze a portfolio.")
+
+                        st.caption(f"{len(st.session_state.portfolio_tickers)} assets • {st.session_state.portfolio_weight_mode}")
+
+            # -----------------------------
+            # ALWAYS CALCULATE (Fix)
+            # -----------------------------
+            active_weights = None
+
+            if st.session_state.portfolio_weight_mode == "Custom Weights":
+                active_weights = {
+                    ticker: st.session_state.get(f"weight_{ticker}", 0)
+                    for ticker in st.session_state.portfolio_tickers
+                }
+
+            portfolio_metrics = calculate_portfolio_metrics(
+                st.session_state.portfolio_tickers,
+                st.session_state.portfolio_timeframe,
+                active_weights
+            ) if portfolio_ready else None
+
+            strategy_metrics = calculate_strategy_benchmark_metrics(
+                st.session_state.portfolio_tickers,
+                st.session_state.portfolio_timeframe
+            ) if portfolio_ready else None
+
+        # -----------------------------
+        # Outlook + Stress Scenarios
+        # -----------------------------
+        with outlook_col:
+            title_col, time_col = st.columns([3, 2])
+
+            with title_col:
+                st.markdown("### Portfolio Outlook")
+
+            with time_col:
+                time_cols = st.columns(4)
+                for i, tf in enumerate(["1Y", "3Y", "5Y", "10Y"]):
+                    with time_cols[i]:
+                        if st.button(
+                            tf,
+                            key=f"portfolio_timeframe_{tf}",
+                            use_container_width=True,
+                            type="primary" if st.session_state.portfolio_timeframe == tf else "secondary"
+                        ):
+                            st.session_state.portfolio_timeframe = tf
+                            st.rerun()
+
+            metric_cols = st.columns(5)
+
+            labels = [
+                "Annualized Return",
+                "Volatility",
+                "Max Drawdown",
+                "Sharpe Ratio",
+                "Vs. S&P 500"
+            ]
+
+            metric_values = ["—", "—", "—", "—", "—"]
+
+            if portfolio_metrics:
+                metric_values = [
+                    f"{portfolio_metrics['annual_return']:.2f}%",
+                    f"{portfolio_metrics['volatility']:.2f}%",
+                    f"{portfolio_metrics['max_drawdown']:.2f}%",
+                    f"{portfolio_metrics['sharpe']:.2f}",
+                    f"{portfolio_metrics['vs_spy']:+.2f}%"
+                ]
+
+            for i, label in enumerate(labels):
+                with metric_cols[i]:
+                    st.caption(label)
+                    st.markdown(f"### {metric_values[i]}")
+
+           
+            # -----------------------------
+            # Stress Scenarios (NEW FEATURE)
+            # -----------------------------
+            st.markdown("### Stress Scenarios")
+            st.caption("Estimated 1-day portfolio impact under key market moves")
+
+            scenario_cols = st.columns(4)
+
+            scenarios = [
+                ("Market -2%", "-3.1%", "#FF4D6D"),
+                ("Tech Selloff", "-4.8%", "#FF4D6D"),
+                ("Rates Spike", "-1.6%", "#FFB020"),
+                ("Risk-On Rally", "+3.9%", "#2EE59D"),
+            ]
+
+            for i, (name, impact, color) in enumerate(scenarios):
+                with scenario_cols[i]:
+
+                    bg = get_stress_bg(color)
+
+                    st.markdown(
+                        f"""
+                        <div class="portfolio-card" style="padding:10px; min-height:72px; background:{bg}; border:1px solid rgba(255,255,255,0.08);">
+                            <div style="font-size:0.72rem; color:rgba(231,238,249,0.70);">{name}</div>
+                            <div style="font-size:1.25rem; font-weight:800; color:{color}; margin-top:4px;">{impact}</div>
+                            <div style="font-size:0.66rem; color:rgba(231,238,249,0.55);">Impact</div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+
+        # -----------------------------
+        # CHART
+        # -----------------------------
+        st.markdown("### Portfolio vs Benchmarks")
+
+        try:
+            chart_data = build_portfolio_benchmark_chart(
+                st.session_state.portfolio_tickers,
+                st.session_state.portfolio_timeframe
+            )
+
+            fig = go.Figure()
+
+            colors = {
+                "Your Portfolio": "#3A8DFF",
+                "SPY": "rgba(255,255,255,0.65)",
+                "Growth Strategy": "#2EE59D",
+                "Concentrated Alpha": "#9B5CF6",
+                "Defensive Allocation": "#F59E0B",
+            }
+
+            for col in chart_data.columns:
+                fig.add_trace(
+                    go.Scatter(
+                        x=chart_data.index,
+                        y=chart_data[col],
+                        mode="lines",
+                        name=col,
+                        line=dict(
+                            color=colors.get(col),
+                            width=3 if col == "Your Portfolio" else 1.6
+                        )
+                    )
+                )
+
+            fig.update_layout(
+                height=390,
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#E7EEF9"),
+                margin=dict(l=10, r=10, t=10, b=10),
+                legend=dict(
+                    orientation="h",
+                    y=1.05,
+                    x=0,
+                    font=dict(size=13, color="#FFFFFF"),
+                    bgcolor="rgba(0,0,0,0.35)"
+                ),
+                xaxis=dict(gridcolor="rgba(255,255,255,0.06)"),
+                yaxis=dict(
+                    gridcolor="rgba(255,255,255,0.06)",
+                    title="Growth of $100"
+                ),
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
+
+        except Exception:
+            st.info("Chart will appear once data loads.")
+
+        # -----------------------------
+        # STRATEGY BENCHMARKS
+        # -----------------------------
+        st.markdown("### Strategy Benchmarks")
+
+        bench_cols = st.columns(4)
+
+        benchmark_cards = [
+                ("Market Benchmark", "SPY", "Did you beat the market?"),
+                ("Growth Strategy", "QQQ + SMH", "Checks tech-beta exposure."),
+                ("Concentrated Alpha", "Mega-cap tech", "Tests concentration risk."),
+                ("Defensive Allocation", "SPY + TLT", "Shows lower-risk alternative."),
+            ]
+
+        for i, (title, subtitle, _) in enumerate(benchmark_cards):
+            with bench_cols[i]:
+                metrics = strategy_metrics.get(title) if strategy_metrics else None
+                takeaway = benchmark_takeaway(title, metrics, portfolio_metrics)
+
+                if metrics:
+                    card_body = (
+                        f'<div style="display:flex; justify-content:space-between; margin-top:8px;">'
+                        f'<span>Return</span><span>{metrics["annual_return"]:.2f}%</span>'
+                        f'</div>'
+                        f'<div style="display:flex; justify-content:space-between;">'
+                        f'<span>Volatility</span><span>{metrics["volatility"]:.2f}%</span>'
+                        f'</div>'
+                        f'<div style="display:flex; justify-content:space-between;">'
+                        f'<span>Max Drawdown</span><span>{metrics["max_drawdown"]:.2f}%</span>'
+                        f'</div>'
+                        f'<div style="display:flex; justify-content:space-between;">'
+                        f'<span>Sharpe</span><span>{metrics["sharpe"]:.2f}</span>'
+                        f'</div>'
+                    )
+                else:
+                    card_body = (
+                        f'<div class="portfolio-placeholder">Metrics unavailable.</div>'
+                    )
+
+                benchmark_card = (
+                    f'<div class="portfolio-card">'
+                    f'<h3>{title}</h3>'
+                    f'<div class="portfolio-subtext">{subtitle}</div>'
+                    f'{card_body}'
+                    f'<div style="margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.08); color:#73CFFF; font-size:0.78rem; font-weight:700;">'
+                    f'{takeaway}'
+                    f'</div>'
+                    f'</div>'
+                )
+
+                st.markdown(benchmark_card, unsafe_allow_html=True)
+
+    # -----------------------------
+    # RIGHT PANEL
+    # -----------------------------
+    with right_col:
+        st.markdown("### Risk Profile")
+
+        risk_color = "#FF4D6D"
+
+        if portfolio_metrics:
+            if portfolio_metrics["risk_level"] == "Low":
+                risk_color = "#2EE59D"
+            elif portfolio_metrics["risk_level"] == "Medium":
+                risk_color = "#FFB020"
+
+        st.markdown(
+            f"""
+            <div class="portfolio-card" style="padding:16px; text-align:center;">
+                <div style="color:rgba(231,238,249,0.7); font-size:0.9rem;">Risk Level</div>
+                <div style="margin-top:8px; font-size:1.4rem; font-weight:700; color:{risk_color};">{portfolio_metrics['risk_level'] if portfolio_metrics else "—"}</div>
+                <div style="margin-top:12px; height:8px; border-radius:6px; background:linear-gradient(90deg,#2EE59D,#FFB020,#FF4D6D); opacity:0.4;"></div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f"""
+            <div class="portfolio-card" style="margin-top:10px;">
+                <div style="display:flex; justify-content:space-between;"><span>Volatility ({st.session_state.portfolio_timeframe})</span><span>{f"{portfolio_metrics['volatility']:.2f}%" if portfolio_metrics else "—"}</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>Beta vs S&P 500</span><span>{f"{portfolio_metrics['beta']:.2f}" if portfolio_metrics else "—"}</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>Diversification Score</span><span>{portfolio_metrics['diversification_score'] if portfolio_metrics else "—"}</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>Concentration Risk</span><span>{f"{portfolio_metrics['concentration']:.1f}%" if portfolio_metrics else "—"}</span></div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        top_holdings_html = ""
+
+        if portfolio_metrics and portfolio_metrics["weights"]:
+            top_holdings = sorted(
+                portfolio_metrics["weights"].items(),
+                key=lambda x: x[1],
+                reverse=True
+            )[:3]
+
+            for ticker, weight in top_holdings:
+                top_holdings_html += (
+                    f'<div style="display:flex; justify-content:space-between;">'
+                    f'<span>{ticker}</span>'
+                    f'<span>{weight:.1f}%</span>'
+                    f'</div>'
+                )
+        else:
+            top_holdings_html = (
+                f'<div style="display:flex; justify-content:space-between;"><span>—</span><span>—</span></div>'
+                f'<div style="display:flex; justify-content:space-between;"><span>—</span><span>—</span></div>'
+                f'<div style="display:flex; justify-content:space-between;"><span>—</span><span>—</span></div>'
+            )
+
+        top_holdings_card = (
+            f'<div class="portfolio-card" style="margin-top:10px;">'
+            f'<div style="font-weight:700; margin-bottom:8px;">Top 3 Holdings</div>'
+            f'{top_holdings_html}'
+            f'</div>'
+        )
+
+        st.markdown(top_holdings_card, unsafe_allow_html=True)
+
+        st.markdown("### Portfolio Composition")
+
+        if portfolio_metrics and portfolio_metrics["weights"]:
+            labels = list(portfolio_metrics["weights"].keys())
+            values = list(portfolio_metrics["weights"].values())
+
+            fig_comp = go.Figure(
+                data=[
+                    go.Pie(
+                        labels=labels,
+                        values=values,
+                        hole=0.58,
+                        textinfo="percent",
+                        textfont=dict(size=11),
+                        hoverinfo="label+percent",
+                        marker=dict(
+                            colors=[
+                                "#3A8DFF",  # blue
+                                "#2EE59D",  # green
+                                "#FF4D6D",  # red
+                                "#9B5CF6",  # purple
+                                "#F59E0B",  # amber
+                            ]
+                        )
+                     )  
+                ]  
+            )
+
+            fig_comp.update_layout(
+                height=240,
+                margin=dict(l=10, r=10, t=10, b=10),
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#E7EEF9", size=11),
+                showlegend=True,
+                legend=dict(
+                    orientation="h",
+                    y=-0.15,
+                    font=dict(size=10, color="#E7EEF9"),
+                )
+            )
+
+            st.plotly_chart(fig_comp, width="stretch")
+
+        else:
+            composition_card = (
+                f'<div class="portfolio-placeholder medium">'
+                f'Portfolio composition will appear once data loads.'
+                f'</div>'
+            )
+            st.markdown(composition_card, unsafe_allow_html=True)
+
+        portfolio_brief = generate_portfolio_brief(
+            st.session_state.portfolio_tickers,
+            portfolio_metrics,
+            st.session_state.portfolio_timeframe
+        )
+
+        portfolio_brief_card = (
+            f'<div class="bottom-card" style="margin-top:10px;">'
+            f'<div class="card-heading">'
+            f'<div class="card-title">AI Portfolio Brief</div>'
+            f'</div>'
+            f'<div class="card-body" style="font-size:0.9rem; line-height:1.55;">'
+            f'{portfolio_brief.replace(chr(10), "<br>")}'
+            f'</div>'
+            f'</div>'
+        )
+
+        st.markdown(portfolio_brief_card, unsafe_allow_html=True)
+
+if mode == "Allocation Engine":
+    st.markdown("## Allocation Engine")
+
+    st.markdown("### Build Your Portfolio")
+    st.caption("Construct a portfolio based on risk and time horizon")
+
+    st.info("Allocation Engine coming next...")
