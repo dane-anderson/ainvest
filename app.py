@@ -1050,6 +1050,24 @@ def get_stress_bg(color):
         return "rgba(255,176,32,0.08)"
     return "rgba(255,255,255,0.03)"
 
+
+# -----------------------------
+# Disclaimers
+# -----------------------------
+DISCLAIMER_SMALL = """
+<div class="footer-note">
+    For educational purposes only. Not investment advice.
+</div>
+"""
+
+DISCLAIMER_FULL = """
+<div style="margin-top:16px; text-align:center; color:rgba(231,238,249,0.55); font-size:0.8rem;">
+    This tool is for educational and informational purposes only and does not constitute
+    investment advice. Outputs are generated from models and data and may be inaccurate.
+    Past performance is not indicative of future results.
+</div>
+"""
+
 # -----------------------------
 #  Stock Lens AI — Trader Desk Voic
 # -----------------------------
@@ -2376,7 +2394,7 @@ if "Portfolio" in str(mode):
         )
 
         st.markdown(portfolio_brief_card, unsafe_allow_html=True)
-
+        st.markdown(DISCLAIMER_SMALL, unsafe_allow_html=True)
 
 @st.cache_data(show_spinner=False, ttl=900)
 def calculate_allocation_risk_contribution(allocation, assets, timeframe):
@@ -3317,6 +3335,17 @@ if mode == "Allocation Engine":
                 <div style="font-size:0.9rem; line-height:1.6; color:#E7EEF9;">
                     {allocation_ai_text.replace(chr(10), "<br>")}
                 </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+            <div style="margin-top:16px; text-align:center; color:rgba(231,238,249,0.55); font-size:0.8rem;">
+                This tool is for educational and informational purposes only and does not constitute
+                investment advice. Outputs are generated from models and data and may be inaccurate.
+                Past performance is not indicative of future results.
             </div>
             """,
             unsafe_allow_html=True
