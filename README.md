@@ -55,6 +55,35 @@ Single-ticker analysis engine:
 
 ---
 
+⚙️ Allocation Engine (NEW)
+Institutional-style capital allocation system:
+
+Dynamic portfolio construction based on:
+- mandate (growth, defensive, opportunistic)
+- risk budget
+- time horizon
+
+Automatically builds:
+- capital deployment plan (what to buy, how much)
+- allocation map across strategy buckets
+- projected performance vs SPY
+- benchmark comparison vs:
+  - Growth Strategy
+  - Concentrated Alpha
+  - Defensive Allocation
+
+Advanced analytics:
+- risk contribution breakdown by bucket
+- stress testing across macro scenarios
+- projected capital growth + edge vs market
+
+Includes:
+- AI allocation brief (PM-style decision note)
+- live price-based position sizing
+- portfolio-level performance simulation
+
+👉 This transforms AInvest from analysis → full portfolio construction engine.
+
 ### 📊 Portfolio Lab (NEW)
 Multi-asset portfolio analysis system:
 
