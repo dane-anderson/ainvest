@@ -138,6 +138,15 @@ Outputs:
 
 ---
 
+## 🛡️ Security & Reliability
+
+- API keys are stored securely using Streamlit secrets / environment variables
+- No API keys or secrets are hardcoded in the codebase
+- Basic request rate limiting helps prevent rapid API abuse
+- OpenAI spend alerts are configured to monitor usage
+- External API calls use defensive error handling to prevent app crashes
+- Market data fallback logic helps keep the UI stable during data issues
+
 ## 🚀 Running Locally
 
 bash git clone https://github.com/dane-anderson/ainvest.git cd ainvest pip install -r requirements.txt streamlit run app.py 
