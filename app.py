@@ -9,7 +9,7 @@ from openai import OpenAI
 from chart_module import render_chart_module
 import plotly.graph_objects as go
 import time
-
+import streamlit.components.v1 as components
 if "last_call" not in st.session_state:
     st.session_state.last_call = 0
 
@@ -2377,10 +2377,947 @@ if "Portfolio" in str(mode):
 
         st.markdown(portfolio_brief_card, unsafe_allow_html=True)
 
+
+@st.cache_data(show_spinner=False, ttl=900)
+def calculate_allocation_risk_contribution(allocation, assets, timeframe):
+    period_map = {
+        "1Y": "1y",
+        "3Y": "3y",
+        "5Y": "5y",
+        "10Y": "10y",
+    }
+
+    period = period_map.get(timeframe, "5y")
+
+    bucket_vols = {}
+
+    for bucket, asset_text in assets.items():
+        tickers = [
+            t.strip()
+            for t in asset_text.replace("/", ",").replace("+", ",").split(",")
+            if t.strip() and t.strip().upper() not in ["CASH", "SHY"]
+        ]
+
+        if not tickers:
+            bucket_vols[bucket] = 2.0
+            continue
+
+        try:
+            prices = yf.download(
+                tickers,
+                period=period,
+                auto_adjust=True,
+                progress=False
+            )["Close"]
+
+            if isinstance(prices, pd.Series):
+                prices = prices.to_frame()
+
+            returns = prices.dropna(axis=1, how="all").ffill().pct_change().dropna()
+
+            if returns.empty:
+                bucket_vols[bucket] = 10.0
+            else:
+                bucket_returns = returns.mean(axis=1)
+                bucket_vols[bucket] = float(bucket_returns.std() * np.sqrt(252) * 100)
+
+        except Exception:
+            bucket_vols[bucket] = 10.0
+
+    raw_risk = {
+        bucket: allocation[bucket] * bucket_vols[bucket]
+        for bucket in allocation
+    }
+
+    total_risk = sum(raw_risk.values())
+
+    if total_risk == 0:
+        return {}
+
+    return {
+        bucket: (value / total_risk) * 100
+        for bucket, value in raw_risk.items()
+    }
+
+@st.cache_data(show_spinner=False, ttl=300)
+def build_recommended_buys(allocation, assets, portfolio_size):
+    pools = {
+        "Core Beta": ["SPY", "VTI"],
+        "Growth Tilt": ["QQQ", "NVDA", "MSFT", "AMZN", "SMH"],
+        "Defensive Hedge": ["TLT", "GLD"],
+        "Alpha Sleeve": ["MSTR", "TSLA"],
+        "Liquidity": ["SHY"],
+    }
+
+    all_tickers = sorted({t for tickers in pools.values() for t in tickers})
+
+    prices = yf.download(
+        all_tickers,
+        period="5d",
+        auto_adjust=True,
+        progress=False
+    )["Close"]
+
+    if isinstance(prices, pd.Series):
+        prices = prices.to_frame()
+
+    latest_prices = prices.ffill().iloc[-1]
+
+    results = []
+
+    for bucket, weight in allocation.items():
+        tickers = pools.get(bucket, [])
+        if not tickers:
+            continue
+
+        bucket_dollars = portfolio_size * (weight / 100)
+        dollars_per_stock = bucket_dollars / len(tickers)
+
+        for ticker in tickers:
+            if ticker not in latest_prices.index:
+                continue
+
+            price = float(latest_prices[ticker])
+
+            if price <= 0:
+                continue
+
+            shares = dollars_per_stock / price
+
+            results.append({
+                "ticker": ticker,
+                "bucket": bucket,
+                "price": price,
+                "shares": shares,
+                "dollars": dollars_per_stock,
+            })
+
+    return results
+
+@st.cache_data(show_spinner=False, ttl=900)
+def calculate_allocation_live_performance(recommendations, timeframe):
+    period_map = {
+        "1Y": "1y",
+        "3Y": "3y",
+        "5Y": "5y",
+        "10Y": "10y",
+    }
+
+    period = period_map.get(timeframe, "5y")
+
+    tickers = [p["ticker"] for p in recommendations if p["ticker"] != "CASH"]
+
+    benchmark_tickers = [
+        "SPY",
+        "QQQ",
+        "SMH",
+        "NVDA",
+        "MSFT",
+        "AAPL",
+        "AMZN",
+        "GOOGL",
+        "TLT",
+    ]
+
+    tickers = sorted(list(set(tickers + benchmark_tickers)))
+    prices = yf.download(
+        tickers,
+        period=period,
+        auto_adjust=True,
+        progress=False
+    )["Close"]
+
+    if isinstance(prices, pd.Series):
+        prices = prices.to_frame()
+
+    prices = prices.dropna(axis=1, how="all").ffill().dropna()
+
+    valid_picks = [p for p in recommendations if p["ticker"] in prices.columns]
+
+    if not valid_picks or "SPY" not in prices.columns:
+        return None
+
+    returns = prices.pct_change().dropna()
+
+    total_dollars = sum(p["dollars"] for p in valid_picks)
+
+    weights = {
+        p["ticker"]: p["dollars"] / total_dollars
+        for p in valid_picks
+    }
+
+    portfolio_returns = sum(
+        returns[ticker] * weight
+        for ticker, weight in weights.items()
+        if ticker in returns.columns
+    )
+
+    benchmark_returns = {}
+
+    # SPY
+    if "SPY" in returns.columns:
+        benchmark_returns["SPY"] = returns["SPY"]
+
+    # Growth Strategy
+    if "QQQ" in returns.columns and "SMH" in returns.columns:
+        benchmark_returns["Growth Strategy"] = returns[["QQQ", "SMH"]].dot([0.7, 0.3])
+
+    # Concentrated Alpha
+    alpha_names = [t for t in ["NVDA", "MSFT", "AAPL", "AMZN", "GOOGL"] if t in returns.columns]
+    if alpha_names:
+        benchmark_returns["Concentrated Alpha"] = returns[alpha_names].mean(axis=1)
+
+    # Defensive Allocation
+    if "SPY" in returns.columns and "TLT" in returns.columns:
+        benchmark_returns["Defensive Allocation"] = returns[["SPY", "TLT"]].dot([0.6, 0.4])
+
+    spy_returns = returns["SPY"]
+
+    annual_return = ((1 + portfolio_returns).prod() ** (252 / len(portfolio_returns)) - 1) * 100
+    volatility = portfolio_returns.std() * np.sqrt(252) * 100
+
+    cumulative = (1 + portfolio_returns).cumprod()
+    running_max = cumulative.cummax()
+    drawdown_series = (cumulative / running_max - 1) * 100
+    max_drawdown = drawdown_series.min()
+
+    sharpe = annual_return / volatility if volatility != 0 else 0
+
+    spy_annual_return = ((1 + spy_returns).prod() ** (252 / len(spy_returns)) - 1) * 100
+    vs_spy = annual_return - spy_annual_return
+
+    chart_df = pd.DataFrame({
+    "Allocation Engine": portfolio_returns,
+    **benchmark_returns
+    }).dropna()
+
+    growth = (1 + chart_df).cumprod() * 100
+
+    return {
+        "annual_return": annual_return,
+        "volatility": volatility,
+        "max_drawdown": max_drawdown,
+        "sharpe": sharpe,
+        "spy_annual_return": spy_annual_return,
+        "vs_spy": vs_spy,
+        "growth": growth,
+        "weights": weights,
+    }
+
+@st.cache_data(show_spinner=False, ttl=300)
+def generate_allocation_brief(
+    portfolio_type,
+    risk_level,
+    expected_return,
+    volatility,
+    drawdown,
+    sharpe,
+    vs_spy,
+    best_strategy,
+    closest,
+    gap_driver,
+    outperformance,
+    timeframe
+):
+    if not api_key or client is None:
+        return "AI allocation brief unavailable because OPENAI_API_KEY is not set."
+
+    prompt = f"""
+You are a senior portfolio manager designing an institutional allocation.
+
+This is YOUR portfolio construction.
+
+Write like you built it.
+
+Tone:
+- internal desk note (not client-facing)
+- sharp and compressed
+- avoid full sentences when possible
+- prefer fragments over explanations
+- no polished or academic language
+- no “designed to”, “aims to”, “intended to”
+- write like a PM thinking, not presenting
+
+Structure EXACTLY like this:
+
+[Positioning]
+1 short paragraph explaining how capital is intentionally allocated and why.
+
+[Exposure]
+- 2–3 bullets
+- where capital is concentrated
+- what factors drive performance
+
+[Risk]
+- 2 bullets
+- where this allocation fails
+
+[Adjustment]
+- 1–2 bullets
+- what YOU would change if conditions shift
+
+[Takeaway]
+ONE line, blunt (max 10 words)
+
+Data:
+Portfolio type: {portfolio_type}
+Risk level: {risk_level}
+Timeframe: {timeframe}
+Expected return: {expected_return}
+Volatility: {volatility}
+Max drawdown: {drawdown}
+Sharpe: {sharpe}
+Vs SPY: {vs_spy}
+
+Benchmark context:
+Top performer: {best_strategy}
+Closest match: {closest}
+Gap driver: {gap_driver}
+Performance gap: {outperformance:.1f} pts
+"""
+
+    try:
+        response = client.responses.create(
+            model="gpt-4.1-mini",
+            input=prompt,
+        )
+        return (response.output_text or "").strip()
+    except Exception:
+        return "AI allocation brief unavailable right now."
+
 if mode == "Allocation Engine":
     st.markdown("## Allocation Engine")
+    st.caption("Live capital allocation engine using suggested buys, historical performance, and benchmark comparison.")
 
-    st.markdown("### Build Your Portfolio")
-    st.caption("Construct a portfolio based on risk and time horizon")
+    if "allocation_mandate" not in st.session_state:
+        st.session_state.allocation_mandate = "Growth"
+    if "allocation_risk" not in st.session_state:
+        st.session_state.allocation_risk = "Medium"
+    if "allocation_horizon" not in st.session_state:
+        st.session_state.allocation_horizon = "5Y"
+    if "allocation_portfolio_size" not in st.session_state:
+        st.session_state.allocation_portfolio_size = 100000
 
-    st.info("Allocation Engine coming next...")
+    mandate = st.session_state.allocation_mandate
+    risk = st.session_state.allocation_risk
+    portfolio_size = st.session_state.allocation_portfolio_size
+
+    if mandate == "Defensive" or risk == "Low":
+        allocation = {
+            "Core Beta": 40,
+            "Defensive Hedge": 35,
+            "Growth Tilt": 15,
+            "Alpha Sleeve": 5,
+            "Liquidity": 5,
+        }
+        assets = {
+            "Core Beta": "SPY",
+            "Defensive Hedge": "TLT, GLD",
+            "Growth Tilt": "QQQ",
+            "Alpha Sleeve": "Low beta equities",
+            "Liquidity": "Cash / SHY",
+        }
+        portfolio_type = "Defensive Multi-Asset Allocation"
+        risk_level = "Low-Medium"
+
+    elif mandate == "Opportunistic" or risk == "High":
+        allocation = {
+            "Core Beta": 35,
+            "Growth Tilt": 35,
+            "Alpha Sleeve": 20,
+            "Defensive Hedge": 5,
+            "Liquidity": 5,
+        }
+        assets = {
+            "Core Beta": "SPY",
+            "Growth Tilt": "QQQ, SMH",
+            "Alpha Sleeve": "MSTR, NVDA",
+            "Defensive Hedge": "GLD",
+            "Liquidity": "Cash / SHY",
+        }
+        portfolio_type = "Aggressive Growth / Alpha Allocation"
+        risk_level = "High"
+
+    else:
+        allocation = {
+            "Core Beta": 45,
+            "Growth Tilt": 25,
+            "Defensive Hedge": 15,
+            "Alpha Sleeve": 10,
+            "Liquidity": 5,
+        }
+        assets = {
+            "Core Beta": "SPY",
+            "Growth Tilt": "QQQ, SMH",
+            "Defensive Hedge": "TLT, GLD",
+            "Alpha Sleeve": "MSTR / selective tech",
+            "Liquidity": "Cash / SHY",
+        }
+        portfolio_type = "Balanced Growth Allocation"
+        risk_level = "Medium"
+
+    bucket_colors = {
+        "Core Beta": "#3A8DFF",
+        "Growth Tilt": "#2EE59D",
+        "Defensive Hedge": "#FFB020",
+        "Alpha Sleeve": "#9B5CF6",
+        "Liquidity": "#94A3B8",
+    }
+
+    risk_color = "#FF4D6D" if risk_level == "High" else "#FFB020" if "Medium" in risk_level else "#2EE59D"
+
+    recommendations = build_recommended_buys(
+        allocation,
+        assets,
+        portfolio_size
+    )
+
+    live_perf = calculate_allocation_live_performance(
+        recommendations,
+        st.session_state.allocation_horizon
+    )
+
+    if live_perf:
+        expected_return = f"{live_perf['annual_return']:.1f}%"
+        volatility = f"{live_perf['volatility']:.1f}%"
+        drawdown = f"{live_perf['max_drawdown']:.1f}%"
+        sharpe = f"{live_perf['sharpe']:.2f}"
+        vs_spy = f"{live_perf['vs_spy']:+.1f}%"
+
+        years = int(st.session_state.allocation_horizon.replace("Y", ""))
+        projected_value = portfolio_size * ((1 + live_perf["annual_return"] / 100) ** years)
+        projected_gain = projected_value - portfolio_size
+        projected_value_text = f"${projected_value:,.0f}"
+        projected_gain_text = f"${projected_gain:,.0f}"
+    else:
+        expected_return = "—"
+        volatility = "—"
+        drawdown = "—"
+        sharpe = "—"
+        vs_spy = "—"
+        projected_value_text = "—"
+        projected_gain_text = "—"
+
+    # -----------------------------
+    # Top hero
+    # -----------------------------
+    hero_html = (
+        f'<div class="portfolio-card" style="margin:14px 0 18px 0; padding:22px 24px; '
+        f'background:radial-gradient(700px 260px at 80% 20%, rgba(58,141,255,0.18), transparent 60%), '
+        f'linear-gradient(180deg, rgba(10,18,40,0.96), rgba(5,11,26,0.98)); '
+        f'border:1px solid rgba(255,255,255,0.10); border-radius:22px;">'
+
+        f'<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:22px;">'
+        f'<div>'
+        f'<div style="color:#73CFFF; font-size:0.78rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase;">'
+        f'Live Allocation Command Center'
+        f'</div>'
+        f'<div style="font-size:2.15rem; font-weight:900; color:#E7EEF9; margin-top:8px; letter-spacing:-0.03em;">'
+        f'{portfolio_type}'
+        f'</div>'
+        f'<div style="color:rgba(231,238,249,0.68); font-size:0.95rem; margin-top:8px; max-width:760px; line-height:1.55;">'
+        f'Suggested portfolio built from live market prices, mandate, horizon, and risk budget.'
+        f'</div>'
+        f'</div>'
+
+        f'<div style="text-align:right;">'
+        f'<div style="color:rgba(231,238,249,0.62); font-size:0.75rem; text-transform:uppercase; font-weight:700;">Risk Profile</div>'
+        f'<div style="color:{risk_color}; font-size:1.55rem; font-weight:900; margin-top:6px;">{risk_level}</div>'
+        f'</div>'
+        f'</div>'
+
+        f'<div style="display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); gap:12px; margin-top:20px;">'
+
+        f'<div class="metric-tile"><div class="metric-label">Portfolio Size</div><div class="metric-value">${portfolio_size:,.0f}</div></div>'
+        f'<div class="metric-tile"><div class="metric-label">Projected Value</div><div class="metric-value">{projected_value_text}</div></div>'
+        f'<div class="metric-tile"><div class="metric-label">Projected Gain</div><div class="metric-value" style="color:#2EE59D;">{projected_gain_text}</div></div>'
+        f'<div class="metric-tile"><div class="metric-label">Expected Return</div><div class="metric-value">{expected_return}</div></div>'
+        f'<div class="metric-tile"><div class="metric-label">Volatility</div><div class="metric-value">{volatility}</div></div>'
+        f'<div class="metric-tile"><div class="metric-label">Max Drawdown</div><div class="metric-value" style="color:#FF4D6D;">{drawdown}</div></div>'
+        f'<div class="metric-tile"><div class="metric-label">Vs SPY</div><div class="metric-value">{vs_spy}</div></div>'
+
+        f'</div>'
+        f'</div>'
+    )
+
+    st.markdown(hero_html, unsafe_allow_html=True)
+
+    # -----------------------------
+    # Main layout
+    # -----------------------------
+    left_col, center_col, right_col = st.columns([1.15, 2.7, 1.15], gap="medium")
+
+    # -----------------------------
+    # Left controls
+    # -----------------------------
+    with left_col:
+        st.markdown("### 1. Set Your Plan")
+
+        st.markdown("**Portfolio Size ($)**")
+        st.number_input(
+            "",
+            min_value=1000,
+            max_value=10000000,
+            step=1000,
+            value=100000,
+            key="allocation_portfolio_size",
+            label_visibility="collapsed"
+        )
+
+        st.markdown("**Mandate**")
+        mandate_cols = st.columns(2)
+
+        for i, mandate_option in enumerate(["Growth", "Defensive", "Absolute Return", "Opportunistic"]):
+            with mandate_cols[i % 2]:
+                if st.button(
+                    mandate_option,
+                    key=f"allocation_mandate_{mandate_option}",
+                    use_container_width=True,
+                    type="primary" if st.session_state.allocation_mandate == mandate_option else "secondary"
+                ):
+                    st.session_state.allocation_mandate = mandate_option
+                    st.rerun()
+
+        st.markdown("**Risk Budget**")
+        risk_cols = st.columns(3)
+
+        for i, risk_option in enumerate(["Low", "Medium", "High"]):
+            with risk_cols[i]:
+                if st.button(
+                    risk_option,
+                    key=f"allocation_risk_{risk_option}",
+                    use_container_width=True,
+                    type="primary" if st.session_state.allocation_risk == risk_option else "secondary"
+                ):
+                    st.session_state.allocation_risk = risk_option
+                    st.rerun()
+
+        st.markdown("**Time Horizon**")
+        horizon_cols = st.columns(4)
+
+        for i, horizon in enumerate(["1Y", "3Y", "5Y", "10Y"]):
+            with horizon_cols[i]:
+                if st.button(
+                    horizon,
+                    key=f"allocation_horizon_{horizon}",
+                    use_container_width=True,
+                    type="primary" if st.session_state.allocation_horizon == horizon else "secondary"
+                ):
+                    st.session_state.allocation_horizon = horizon
+                    st.rerun()
+
+        st.markdown("### 2. Capital Deployment Plan")
+        buy_rows = ""
+        total_buy = 0
+
+        for pick in recommendations:
+            total_buy += pick["dollars"]
+            
+        buy_rows = ""
+        total_buy = 0
+
+        for pick in recommendations:
+            total_buy += pick["dollars"]
+
+            buy_rows += (
+                f'<tr>'
+                f'<td style="padding:6px; font-weight:800;">{pick["ticker"]}</td>'
+                f'<td style="padding:6px;">{pick["shares"]:.2f}</td>'
+                f'<td style="padding:6px; text-align:right;">${pick["dollars"]:,.0f}</td>'
+                f'</tr>'
+            )
+        leftover_cash = portfolio_size - total_buy
+
+        if leftover_cash > 1:
+            buy_rows += (
+                f'<tr>'
+                f'<td style="padding:8px;">CASH</td>'
+                f'<td style="padding:8px;">Unallocated</td>'
+                f'<td style="padding:8px;">—</td>'
+                f'<td style="padding:8px;">—</td>'
+                f'<td style="padding:8px; text-align:right;">${leftover_cash:,.0f}</td>'
+                f'</tr>'
+            )
+            total_buy += leftover_cash
+
+        copy_text = "Ticker, Shares, Price, Amount\n"
+        for pick in recommendations:
+            copy_text += f"{pick['ticker']}, {pick['shares']:.2f}, {pick['price']:.2f}, {pick['dollars']:.0f}\n"
+
+        components.html(
+            f"""
+            <button onclick="navigator.clipboard.writeText(`{copy_text}`); this.innerText='Copied ✓';"
+                style="
+                    float:right;
+                    background:#0B1633;
+                    color:#73CFFF;
+                    border:1px solid rgba(115,207,255,0.35);
+                    border-radius:8px;
+                    padding:4px 8px;
+                    cursor:pointer;
+                    font-size:12px;
+                    margin-bottom:6px;
+                ">
+                📋 Copy
+            </button>
+            """,
+            height=35,
+        )
+
+        buy_table = (
+            f'<div class="portfolio-card" style="margin-top:8px;">'
+            f'<table style="width:100%; border-collapse:collapse;">'
+            f'<thead>'
+            f'<tr style="color:rgba(231,238,249,0.65); text-align:left;">'
+            f'<th style="padding:6px;">Ticker</th>'
+            f'<th style="padding:6px;">Shares</th>'
+            f'<th style="padding:6px; text-align:right;">Allocation</th>'
+            f'</tr>'
+            f'</thead>'
+            f'<tbody style="color:#E7EEF9;">'
+            f'{buy_rows}'
+            f'</tbody>'
+            f'</table>'
+            f'<div style="margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; font-weight:900;">'
+            f'<span>Total Portfolio Buy</span>'
+            f'<span>${total_buy:,.0f}</span>'
+            f'</div>'
+            f'</div>'
+            f'<div style="margin-top:8px; font-size:0.75rem; color:rgba(231,238,249,0.55);">'
+            f'Assumes full deployment at current market prices. Fractional shares enabled.'
+            f'</div>'
+        )
+
+        st.markdown(buy_table, unsafe_allow_html=True)
+
+
+    # -----------------------------
+    # Center chart + trade table
+    # -----------------------------
+    with center_col:
+        st.markdown("### 2. Suggested Portfolio vs SPY")
+
+        if live_perf and "growth" in live_perf:
+            growth = live_perf["growth"]
+
+            fig_growth = go.Figure()
+            fig_growth.update_layout(hovermode="x unified")
+
+            colors = {
+                "Allocation Engine": "#3A8DFF",
+                "SPY": "rgba(255,255,255,0.65)",
+                "Growth Strategy": "#2EE59D",
+                "Concentrated Alpha": "#9B5CF6",
+                "Defensive Allocation": "#F59E0B",
+            }
+
+            for col in growth.columns:
+                fig_growth.add_trace(
+                    go.Scatter(
+                        x=growth.index,
+                        y=growth[col],
+                        mode="lines",
+                        name=col,
+                        line=dict(
+                            color=colors.get(col, "#E7EEF9"),
+                            width=3 if col == "Allocation Engine" else 1.6
+                        )
+                    )
+                )
+
+            
+
+            fig_growth.update_layout(
+                height=390,
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#E7EEF9"),
+                margin=dict(l=10, r=10, t=10, b=10),
+                legend=dict(
+                    orientation="h",
+                    y=1.08,
+                    x=0,
+                    font=dict(size=12, color="#FFFFFF"),
+                    bgcolor="rgba(0,0,0,0)"
+                ),
+                xaxis=dict(gridcolor="rgba(255,255,255,0.06)"),
+                yaxis=dict(
+                    gridcolor="rgba(255,255,255,0.06)",
+                    title="Growth of $100"
+                ),
+            )
+
+            st.plotly_chart(fig_growth, use_container_width=True)
+        else:
+            st.info("Live performance chart will appear once market data loads.")
+
+        if live_perf:
+            spy_return = live_perf["annual_return"] - live_perf["vs_spy"]
+            years = int(st.session_state.allocation_horizon.replace("Y", ""))
+
+            spy_projected_value = portfolio_size * ((1 + spy_return / 100) ** years)
+            outperformance = projected_value - spy_projected_value
+
+            st.markdown(
+                f"""
+                <div class="portfolio-card" style="margin-top:12px; padding:16px 18px; display:grid; grid-template-columns:repeat(4, 1fr); gap:14px;">
+                    <div>
+                        <div style="color:rgba(231,238,249,0.6); font-size:0.78rem;">Starting Capital</div>
+                        <div style="font-size:1.1rem; font-weight:900;">${portfolio_size:,.0f}</div>
+                    </div>
+                    <div>
+                        <div style="color:rgba(231,238,249,0.6); font-size:0.78rem;">Suggested Portfolio</div>
+                        <div style="font-size:1.1rem; font-weight:900; color:#3A8DFF;">${projected_value:,.0f}</div>
+                    </div>
+                    <div>
+                        <div style="color:rgba(231,238,249,0.6); font-size:0.78rem;">SPY Benchmark</div>
+                        <div style="font-size:1.1rem; font-weight:900;">${spy_projected_value:,.0f}</div>
+                    </div>
+                    <div>
+                        <div style="color:rgba(231,238,249,0.6); font-size:0.78rem;">Projected Edge</div>
+                        <div style="font-size:1.1rem; font-weight:900; color:#2EE59D;">${outperformance:,.0f}</div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+
+        latest = growth.iloc[-1]
+
+        best_strategy = latest.drop("Allocation Engine").idxmax()
+        best_value = latest[best_strategy]
+
+        your_value = latest["Allocation Engine"]
+        outperformance = best_value - your_value
+
+        closest = (latest.drop("Allocation Engine") - your_value).abs().idxmin()
+
+        if best_strategy == "Concentrated Alpha":
+            gap_driver = "High-concentration tech exposure is driving the performance gap."
+        elif best_strategy == "Growth Strategy":
+            gap_driver = "Growth and semiconductor exposure is driving the performance gap."
+        elif best_strategy == "Defensive Allocation":
+            gap_driver = "Lower volatility positioning is reducing drawdowns but capping upside."
+        else:
+            gap_driver = "Portfolio composition differences are driving the performance gap."
+
+        st.markdown(
+            f'<div class="portfolio-card" style="margin-top:10px; padding:14px 16px;">'
+
+                f'<div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">'
+
+                    f'<div>'
+                        f'<div style="color:rgba(231,238,249,0.62); font-size:0.78rem; font-weight:700;">'
+                            f'Top Performer'
+                        f'</div>'
+                        f'<div style="color:#E7EEF9; font-weight:900; font-size:1.05rem; margin-top:3px;">'
+                            f'{best_strategy}'
+                        f'</div>'
+                        f'<div style="color:#2EE59D; font-weight:800; font-size:0.86rem; margin-top:5px;">'
+                            f'+{outperformance:.1f} pts vs allocation'
+                        f'</div>'
+                    f'</div>'
+
+                    f'<div>'
+                        f'<div style="color:rgba(231,238,249,0.62); font-size:0.78rem; font-weight:700;">'
+                            f'Closest Match'
+                        f'</div>'
+                        f'<div style="color:#E7EEF9; font-weight:900; font-size:1.05rem; margin-top:3px;">'
+                            f'{closest}'
+                        f'</div>'
+                        f'<div style="color:#E7EEF9; font-weight:700; font-size:0.86rem; margin-top:5px;">'
+                            f'Gap driver: {gap_driver}'
+                        f'</div>'
+                    f'</div>'
+
+                f'</div>'
+
+            f'</div>',
+            unsafe_allow_html=True
+        )
+
+       
+          
+        st.markdown("### 3. Capital Deployment Map")
+
+        map_cols = st.columns(5)
+
+        for i, (bucket, weight) in enumerate(allocation.items()):
+            dollar_value = portfolio_size * (weight / 100)
+
+            with map_cols[i]:
+                st.markdown(
+                    f"""
+                    <div class="portfolio-card" style="min-height:110px;">
+                        <div style="font-size:0.72rem; color:rgba(231,238,249,0.65);">{bucket}</div>
+                        <div style="font-size:1.45rem; font-weight:850; color:{bucket_colors.get(bucket, "#E7EEF9")}; margin-top:8px;">
+                            {weight}%
+                        </div>
+                        <div style="font-size:0.8rem; color:rgba(231,238,249,0.65); margin-top:4px;">
+                            ${dollar_value:,.0f}
+                        </div>
+                        <div style="font-size:0.68rem; color:rgba(231,238,249,0.55); margin-top:8px;">
+                            {assets[bucket]}
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+         
+        
+        # -----------------------------
+        # Risk & Scenario Analysis
+        # -----------------------------
+        st.markdown("### 4. Risk & Scenario Analysis")
+
+        risk_col, stress_col = st.columns(2, gap="medium")
+
+        with risk_col:
+            risk_contrib = calculate_allocation_risk_contribution(
+                allocation,
+                assets,
+                st.session_state.allocation_horizon
+            )
+
+            if risk_contrib:
+                sorted_risk = sorted(risk_contrib.items(), key=lambda x: x[1], reverse=True)
+
+                risk_rows = ""
+                for name, value in sorted_risk:
+                    color = bucket_colors.get(name, "#E7EEF9")
+                    risk_rows += (
+                        f'<div style="margin-top:10px;">'
+                        f'<div style="display:flex; justify-content:space-between; font-size:0.85rem;">'
+                        f'<span>{name}</span><span>{value:.1f}%</span>'
+                        f'</div>'
+                        f'<div style="height:7px; border-radius:6px; background:rgba(255,255,255,0.08); margin-top:5px;">'
+                        f'<div style="width:{value}%; height:100%; border-radius:6px; background:{color};"></div>'
+                        f'</div>'
+                        f'</div>'
+                    )
+
+                st.markdown(
+                    f"""
+                    <div class="portfolio-card">
+                        <div style="font-weight:800; margin-bottom:10px;">Risk Contribution</div>
+                        {risk_rows}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+        with stress_col:
+            stress = [
+                ("Market -2%", "-2.6%", "#FF4D6D"),
+                ("Tech Selloff", "-3.8%", "#FF4D6D"),
+                ("Rates Spike", "-1.4%", "#FFB020"),
+                ("Risk-On Rally", "+3.2%", "#2EE59D"),
+            ]
+
+            stress_rows = ""
+            for name, impact, color in stress:
+                stress_rows += (
+                    f'<tr>'
+                    f'<td style="padding:8px;">{name}</td>'
+                    f'<td style="padding:8px; color:{color}; font-weight:900;">{impact}</td>'
+                    f'</tr>'
+                )
+
+            st.markdown(
+                f"""
+                <div class="portfolio-card">
+                    <div style="font-weight:800; margin-bottom:10px;">Allocation Stress Test</div>
+                    <table style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            <tr style="color:rgba(231,238,249,0.65); text-align:left;">
+                                <th style="padding:8px;">Scenario</th>
+                                <th style="padding:8px;">Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody style="color:#E7EEF9;">
+                            {stress_rows}
+                        </tbody>
+                    </table>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+    # -----------------------------
+    # Right Panel
+    # -----------------------------
+    with right_col:
+        st.markdown("### Risk Profile")
+
+        st.markdown(
+            f"""
+            <div class="portfolio-card" style="padding:16px; text-align:center;">
+                <div style="color:rgba(231,238,249,0.7); font-size:0.9rem;">Risk Level</div>
+                <div style="margin-top:8px; font-size:1.45rem; font-weight:800; color:{risk_color};">{risk_level}</div>
+                <div style="margin-top:12px; height:8px; border-radius:6px; background:linear-gradient(90deg,#2EE59D,#FFB020,#FF4D6D);"></div>
+                <div style="margin-top:10px; color:rgba(231,238,249,0.7); font-size:0.8rem;">
+                    Risk Budget: <b>{st.session_state.allocation_risk}</b> | Horizon: <b>{st.session_state.allocation_horizon}</b>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.markdown("### Allocation Mix")
+
+        fig_alloc = go.Figure(
+            data=[
+                go.Pie(
+                    labels=list(allocation.keys()),
+                    values=list(allocation.values()),
+                    hole=0.58,
+                    textinfo="percent",
+                    hoverinfo="label+percent",
+                    marker=dict(colors=[bucket_colors.get(k, "#E7EEF9") for k in allocation.keys()])
+                )
+            ]
+        )
+
+        fig_alloc.update_layout(
+            height=250,
+            margin=dict(l=10, r=10, t=10, b=10),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="#E7EEF9", size=11),
+            showlegend=True,
+            legend=dict(
+                orientation="h",
+                y=-0.12,
+                font=dict(size=10, color="#E7EEF9"),
+            )
+        )
+
+        st.plotly_chart(fig_alloc, use_container_width=True)
+
+        allocation_ai_text = generate_allocation_brief(
+            portfolio_type,
+            risk_level,
+            expected_return,
+            volatility,
+            drawdown,
+            sharpe,
+            vs_spy,
+            best_strategy,
+            closest,
+            gap_driver,
+            outperformance,
+            st.session_state.allocation_horizon
+        )
+
+        st.markdown(
+            f"""
+            <div class="portfolio-card" style="margin-top:10px;">
+                <div style="font-weight:800; margin-bottom:10px;">AI Allocation Brief</div>
+                <div style="font-size:0.9rem; line-height:1.6; color:#E7EEF9;">
+                    {allocation_ai_text.replace(chr(10), "<br>")}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
