@@ -8,6 +8,10 @@ import yfinance as yf
 from openai import OpenAI
 from chart_module import render_chart_module
 import plotly.graph_objects as go
+import time
+
+if "last_call" not in st.session_state:
+    st.session_state.last_call = 0
 
 # -----------------------------
 # Page config
@@ -1104,6 +1108,8 @@ Recent headlines:
 {headline_block}
 """
 
+
+
     try:
         response = client.responses.create(
             model="gpt-4.1-mini",
@@ -1742,6 +1748,13 @@ if mode == "Stock Lens" and active_ticker:
             chart_hist["VWAP_TEMP"] = np.where(cum_vol > 0, cum_pv / cum_vol, np.nan)
             if not pd.isna(chart_hist["VWAP_TEMP"].iloc[-1]):
                 vwap = float(chart_hist["VWAP_TEMP"].iloc[-1])
+
+    current_time = time.time()
+
+    if current_time - st.session_state.last_call < 5:
+        ai_text = "AI insight paused briefly to prevent too many requests. Try again in a few seconds."
+    else:
+        st.session_state.last_call = current_time
 
         ai_text = generate_ai_explanation(
             ticker=active_ticker,
