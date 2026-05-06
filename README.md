@@ -27,7 +27,7 @@ Built to simulate how modern fintech systems combine quantitative models + AI re
 [![Portfolio Lab](assets/page3.png)](assets/page3.png)
 
 ---
-## 🧠 Allocation Engine
+## ⚙️ Allocation Engine
 
 ![Allocation Engine Preview](assets/page4.png)
 
@@ -60,7 +60,7 @@ Single-ticker analysis engine:
 
 ---
 
-⚙️ Allocation Engine (NEW)
+## ⚙️ Allocation Engine (NEW)
 Institutional-style capital allocation system:
 
 Dynamic portfolio construction based on:
@@ -88,6 +88,8 @@ Includes:
 - portfolio-level performance simulation
 
 👉 This transforms AInvest from analysis → full portfolio construction engine.
+
+---
 
 ### 📊 Portfolio Lab (NEW)
 Multi-asset portfolio analysis system:
