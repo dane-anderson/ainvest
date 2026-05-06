@@ -1,9 +1,9 @@
 
 # 🚀 AInvest
 
-AI-powered market decision engine that turns raw financial data into structured signals and actionable insight.
+AI-powered investment intelligence platform that transforms raw financial data into structured signals, portfolio strategy, and capital allocation insight.
 
-Built to simulate how modern fintech systems combine quantitative models + AI reasoning into a single decision layer.
+Built to simulate how modern institutional fintech systems combine quantitative models, portfolio analytics, and AI reasoning into a unified decision layer.
 
 ---
 
