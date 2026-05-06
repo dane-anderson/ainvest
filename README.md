@@ -14,7 +14,7 @@ Built to simulate how modern fintech systems combine quantitative models + AI re
 
 ## 🖼 System Preview
 
-![AInvest Preview](aipreview.png)
+![AInvest Preview](assets/preview.png)
 
 ---
 
