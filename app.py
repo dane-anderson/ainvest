@@ -10,6 +10,7 @@ from chart_module import render_chart_module
 import plotly.graph_objects as go
 import time
 import streamlit.components.v1 as components
+import base64
 if "last_call" not in st.session_state:
     st.session_state.last_call = 0
 
@@ -40,7 +41,7 @@ client = OpenAI(api_key=api_key) if api_key else None
 # Session state
 # -----------------------------
 if "active_ticker" not in st.session_state:
-    st.session_state.active_ticker = "F"
+    st.session_state.active_ticker = ""
 
 if "chart_timeframe" not in st.session_state:
     st.session_state.chart_timeframe = "Today"
@@ -1050,6 +1051,11 @@ def get_stress_bg(color):
         return "rgba(255,176,32,0.08)"
     return "rgba(255,255,255,0.03)"
 
+def image_to_base64(path):
+    with open(path, "rb") as f:
+        data = base64.b64encode(f.read()).decode()
+    return f"data:image/png;base64,{data}"
+
 
 # -----------------------------
 # Disclaimers
@@ -1462,28 +1468,46 @@ df = load_top_signals()
 # -----------------------------
 # Top header / controls
 # -----------------------------
-brand_col, input_col, button_col = st.columns([1.25, 3.6, 0.95], gap="medium")
-
-with brand_col:
-    st.markdown("<div style='margin-top:-4px;'>", unsafe_allow_html=True)
-    st.image("assets/logo.png", width=230)
-    st.markdown("</div>", unsafe_allow_html=True)
+active_ticker = st.session_state.active_ticker
 
 
+if active_ticker:
+    brand_col, input_col, button_col = st.columns([1.25, 3.6, 0.95], gap="medium")
+
+    with brand_col:
+        st.markdown("<div style='margin-top:-4px;'>", unsafe_allow_html=True)
+        st.image("assets/logo.png", width=230)
+        st.markdown("</div>", unsafe_allow_html=True)
 
 mode = st.radio(
     "",
     ["Stock Lens", "Portfolio Lab", "Allocation Engine"],
     horizontal=True,
-    key="mode_toggle"
+    key="mode_toggle",
 )
 
-if mode == "Stock Lens":
+active_ticker = st.session_state.active_ticker
+
+is_landing = mode == "Stock Lens" and not active_ticker
+
+if is_landing:
+    st.markdown(
+        """
+        <style>
+        div[data-testid="stRadio"] {
+            display: none !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+if mode == "Stock Lens" and active_ticker:
     input_col, button_col = st.columns([4, 1], gap="medium")
 
     with input_col:
         typed_ticker = st.text_input(
-            "",
+            "Ticker Input",
             value=st.session_state.active_ticker or "",
             placeholder="Enter ticker (AAPL, NVDA, BTC-USD)",
             label_visibility="collapsed",
@@ -1501,129 +1525,245 @@ if mode == "Stock Lens":
         st.session_state.active_ticker = typed_ticker
         st.rerun()
 
-st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-
-
-
-active_ticker = st.session_state.active_ticker
-
+# -----------------------------
+# Landing Page
+# -----------------------------
 if mode == "Stock Lens" and not active_ticker:
-    welcome_html = (
-        f'<div class="welcome-hero">'
-            f'<div class="welcome-grid">'
+    logo_src = image_to_base64("assets/logo.png")
 
-                f'<div>'
-                    f'<div class="welcome-pill">AI-POWERED MARKET INTELLIGENCE</div>'
+    landing_html = (
+        f'<div style="min-height:820px; margin-top:10px; padding:0; position:relative; overflow:hidden; '
+        f'border-radius:0; background:#020713;">'
 
-                    f'<div class="welcome-title">'
-                        f'Welcome to <span class="accent">AInvest</span>'
+            f'<div style="position:absolute; inset:0; opacity:0.32; '
+            f'background:radial-gradient(900px 520px at 50% 34%, rgba(58,141,255,0.22), transparent 65%), '
+            f'radial-gradient(650px 420px at 18% 52%, rgba(46,229,157,0.08), transparent 62%), '
+            f'linear-gradient(180deg, rgba(3,10,24,0.98), rgba(1,4,12,1));"></div>'
+
+            f'<div style="position:absolute; inset:0; opacity:0.15; background-image:'
+            f'linear-gradient(rgba(58,141,255,0.18) 1px, transparent 1px),'
+            f'linear-gradient(90deg, rgba(58,141,255,0.18) 1px, transparent 1px); '
+            f'background-size:56px 56px;"></div>'
+
+            f'<div style="position:absolute; left:-40px; bottom:170px; width:38%; height:360px; opacity:0.18; '
+            f'background:linear-gradient(110deg, transparent 0%, rgba(58,141,255,0.22) 50%, transparent 100%); '
+            f'clip-path:polygon(0 72%, 10% 58%, 18% 66%, 28% 43%, 38% 51%, 48% 30%, 58% 42%, 72% 18%, 100% 10%, 100% 100%, 0 100%);"></div>'
+
+            f'<div style="position:absolute; right:-40px; bottom:150px; width:42%; height:420px; opacity:0.20; '
+            f'background:linear-gradient(105deg, transparent 0%, rgba(58,141,255,0.25) 55%, transparent 100%); '
+            f'clip-path:polygon(0 80%, 8% 70%, 18% 74%, 28% 52%, 38% 58%, 48% 34%, 60% 39%, 72% 18%, 84% 22%, 100% 0, 100% 100%, 0 100%);"></div>'
+
+            f'<div style="position:absolute; left:0; right:0; top:0; height:76px; border-bottom:1px solid rgba(255,255,255,0.07); '
+            f'background:rgba(2,7,19,0.44); backdrop-filter:blur(10px);"></div>'
+
+            f'<div style="position:relative; z-index:3; height:76px; display:flex; align-items:center; justify-content:space-between; padding:0 52px;">'
+                f'<img src="{logo_src}" style="width:154px;">'
+                f'<div style="display:flex; gap:72px; color:rgba(231,238,249,0.82); font-size:0.86rem; letter-spacing:0.15em; font-weight:700;">'
+                    f'<div>STOCK LENS</div>'
+                    f'<div>PORTFOLIO LAB</div>'
+                    f'<div>ALLOCATION ENGINE</div>'
+                f'</div>'
+                f'<div style="color:#39A8FF; font-size:0.80rem; letter-spacing:0.08em; font-weight:900;">AI-POWERED MARKET INTELLIGENCE</div>'
+            f'</div>'
+
+            f'<div style="position:absolute; inset:0; pointer-events:none; opacity:0.18; z-index:1;">'
+
+                f'<div style="position:absolute; left:3%; top:22%; display:flex; gap:22px; align-items:flex-end;">'
+                    f'<div style="position:relative; height:180px; width:18px;">'
+                        f'<div style="position:absolute; left:8px; top:0; width:2px; height:180px; background:rgba(90,140,255,0.42);"></div>'
+                        f'<div style="position:absolute; left:0; top:42px; width:18px; height:76px; background:rgba(90,140,255,0.55); border-radius:3px; box-shadow:0 0 12px rgba(90,140,255,0.32);"></div>'
                     f'</div>'
-
-                    f'<div class="welcome-subtitle">'
-                        f'Get AI-powered market analysis, real-time signals, and institutional-grade insights '
-                        f'for any stock or crypto.'
+                    f'<div style="position:relative; height:120px; width:18px;">'
+                        f'<div style="position:absolute; left:8px; top:0; width:2px; height:120px; background:rgba(90,140,255,0.36);"></div>'
+                        f'<div style="position:absolute; left:0; top:30px; width:18px; height:46px; background:rgba(90,140,255,0.48); border-radius:3px; box-shadow:0 0 10px rgba(90,140,255,0.28);"></div>'
                     f'</div>'
-
-                    f'<div class="welcome-features">'
-
-                        f'<div class="welcome-feature">'
-                            f'<div class="welcome-feature-icon">📈</div>'
-                            f'<div>'
-                                f'<div class="welcome-feature-title">Market Structure</div>'
-                                f'<div class="welcome-feature-text">Real-time trend and structure</div>'
-                            f'</div>'
-                        f'</div>'
-
-                        f'<div class="welcome-feature">'
-                            f'<div class="welcome-feature-icon">📊</div>'
-                            f'<div>'
-                                f'<div class="welcome-feature-title">AI Signals</div>'
-                                f'<div class="welcome-feature-text">AI-driven insights and alerts</div>'
-                            f'</div>'
-                        f'</div>'
-
-                        f'<div class="welcome-feature">'
-                            f'<div class="welcome-feature-icon">🛡️</div>'
-                            f'<div>'
-                                f'<div class="welcome-feature-title">Risk Analysis</div>'
-                                f'<div class="welcome-feature-text">Conviction, risk level and key levels</div>'
-                            f'</div>'
-                        f'</div>'
-
+                    f'<div style="position:relative; height:210px; width:18px;">'
+                        f'<div style="position:absolute; left:8px; top:0; width:2px; height:210px; background:rgba(90,140,255,0.46);"></div>'
+                        f'<div style="position:absolute; left:0; top:56px; width:18px; height:88px; background:rgba(90,140,255,0.62); border-radius:3px; box-shadow:0 0 14px rgba(90,140,255,0.34);"></div>'
+                    f'</div>'
+                    f'<div style="position:relative; height:150px; width:18px;">'
+                        f'<div style="position:absolute; left:8px; top:0; width:2px; height:150px; background:rgba(90,140,255,0.34);"></div>'
+                        f'<div style="position:absolute; left:0; top:38px; width:18px; height:58px; background:rgba(90,140,255,0.44); border-radius:3px; box-shadow:0 0 10px rgba(90,140,255,0.24);"></div>'
+                    f'</div>'
+                    f'<div style="position:relative; height:260px; width:18px;">'
+                        f'<div style="position:absolute; left:8px; top:0; width:2px; height:260px; background:rgba(90,140,255,0.52);"></div>'
+                        f'<div style="position:absolute; left:0; top:74px; width:18px; height:102px; background:rgba(90,140,255,0.70); border-radius:3px; box-shadow:0 0 16px rgba(90,140,255,0.40);"></div>'
                     f'</div>'
                 f'</div>'
 
-                f'<div class="welcome-art">'
-                    f'<div class="welcome-bars">'
-                        f'<div class="welcome-bar" style="height:12%"></div>'
-                        f'<div class="welcome-bar" style="height:18%"></div>'
-                        f'<div class="welcome-bar" style="height:22%"></div>'
-                        f'<div class="welcome-bar" style="height:30%"></div>'
-                        f'<div class="welcome-bar" style="height:26%"></div>'
-                        f'<div class="welcome-bar" style="height:34%"></div>'
-                        f'<div class="welcome-bar" style="height:40%"></div>'
-                        f'<div class="welcome-bar" style="height:48%"></div>'
-                        f'<div class="welcome-bar" style="height:60%"></div>'
+                f'<div style="position:absolute; right:3%; top:18%; display:flex; gap:22px; align-items:flex-end;">'
+                    f'<div style="position:relative; height:240px; width:18px;">'
+                        f'<div style="position:absolute; left:8px; top:0; width:2px; height:240px; background:rgba(90,140,255,0.46);"></div>'
+                        f'<div style="position:absolute; left:0; top:66px; width:18px; height:92px; background:rgba(90,140,255,0.62); border-radius:3px; box-shadow:0 0 14px rgba(90,140,255,0.34);"></div>'
+                    f'</div>'
+                    f'<div style="position:relative; height:160px; width:18px;">'
+                        f'<div style="position:absolute; left:8px; top:0; width:2px; height:160px; background:rgba(90,140,255,0.34);"></div>'
+                        f'<div style="position:absolute; left:0; top:44px; width:18px; height:60px; background:rgba(90,140,255,0.44); border-radius:3px; box-shadow:0 0 10px rgba(90,140,255,0.24);"></div>'
+                    f'</div>'
+                    f'<div style="position:relative; height:300px; width:18px;">'
+                        f'<div style="position:absolute; left:8px; top:0; width:2px; height:300px; background:rgba(90,140,255,0.58);"></div>'
+                        f'<div style="position:absolute; left:0; top:88px; width:18px; height:116px; background:rgba(90,140,255,0.78); border-radius:3px; box-shadow:0 0 18px rgba(90,140,255,0.44);"></div>'
+                    f'</div>'
+                    f'<div style="position:relative; height:210px; width:18px;">'
+                        f'<div style="position:absolute; left:8px; top:0; width:2px; height:210px; background:rgba(90,140,255,0.42);"></div>'
+                        f'<div style="position:absolute; left:0; top:60px; width:18px; height:78px; background:rgba(90,140,255,0.54); border-radius:3px; box-shadow:0 0 12px rgba(90,140,255,0.30);"></div>'
+                    f'</div>'
+                    f'<div style="position:relative; height:340px; width:18px;">'
+                        f'<div style="position:absolute; left:8px; top:0; width:2px; height:340px; background:rgba(90,140,255,0.64);"></div>'
+                        f'<div style="position:absolute; left:0; top:102px; width:18px; height:128px; background:rgba(90,140,255,0.86); border-radius:3px; box-shadow:0 0 20px rgba(90,140,255,0.48);"></div>'
                     f'</div>'
                 f'</div>'
 
             f'</div>'
-        f'</div>'
-    )
-    st.markdown(welcome_html, unsafe_allow_html=True)
 
-    popular_html = (
-        f'<div class="ticker-section">'
-            f'<div class="ticker-section-title">Popular Tickers</div>'
-            f'<div class="ticker-section-subtitle">Explore these active markets</div>'
-
-            f'<div class="ticker-grid">'
-                f'<div class="ticker-card">'
-                    f'<div class="ticker-symbol">AAPL</div>'
-                    f'<div class="ticker-name">Apple Inc.</div>'
-                    f'<div class="ticker-price">$175.43</div>'
-                    f'<div class="ticker-change-pos">+1.28%</div>'
+            f'<div style="position:relative; z-index:3; text-align:center; padding-top:165px;">'
+                f'<img src="{logo_src}" style="width:520px; max-width:78%; margin-bottom:24px; filter:drop-shadow(0 0 24px rgba(58,141,255,0.35));">'
+                f'<div style="font-size:2.35rem; line-height:1.2; font-weight:500; letter-spacing:-0.035em; color:#F5F7FB;">'
+                    f'Institutional-grade market <span style="color:#39A8FF;">intelligence.</span>'
+                f'</div>'
+                f'<div style="margin:22px auto 0 auto; max-width:650px; color:rgba(231,238,249,0.64); font-size:1.16rem; line-height:1.55;">'
+                    f'Real-time signals, AI-driven insights, and advanced analytics<br>for any stock or crypto.'
                 f'</div>'
 
-                f'<div class="ticker-card">'
-                    f'<div class="ticker-symbol">NVDA</div>'
-                    f'<div class="ticker-name">NVIDIA Corp.</div>'
-                    f'<div class="ticker-price">$932.17</div>'
-                    f'<div class="ticker-change-pos">+2.14%</div>'
+                f'<div style="height:94px;"></div>'
+
+                f'<div style="position:relative; z-index:3; display:grid; grid-template-columns:repeat(5,1fr); gap:0; '
+                f'margin:112px 58px 0 58px; padding-top:22px;">'
+
+                    f'<div style="text-align:center; border-right:1px solid rgba(255,255,255,0.08); padding:0 22px;">'
+                        f'<div style="margin-bottom:28px; display:flex; justify-content:center; align-items:center;">'
+                            f'<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#3A98FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 10px rgba(58,152,255,0.35));">'
+                                f'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>'
+                            f'</svg>'
+                        f'</div>'
+                        f'<div style="margin-top:16px; color:white; font-weight:900;">REAL-TIME DATA</div>'
+                        f'<div style="margin-top:12px; color:rgba(231,238,249,0.55); line-height:1.45;">Live market feeds<br>and price updates</div>'
+                    f'</div>'
+
+                    f'<div style="text-align:center; border-right:1px solid rgba(255,255,255,0.08); padding:0 22px;">'
+                        f'<div style="margin-bottom:28px; display:flex; justify-content:center; align-items:center;">'
+                            f'<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#3A98FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 10px rgba(58,152,255,0.35));">'
+                                f'<path d="M9.5 2.5C7 2.5 5 4.5 5 7c0 1 .3 1.9.9 2.6C4.1 10.2 3 12 3 14c0 3 2.2 5 5 5h1"/>'
+                                f'<path d="M14.5 2.5C17 2.5 19 4.5 19 7c0 1-.3 1.9-.9 2.6C19.9 10.2 21 12 21 14c0 3-2.2 5-5 5h-1"/>'
+                                f'<path d="M9 8h.01"/><path d="M15 8h.01"/><path d="M8 13h8"/><path d="M12 8v10"/>'
+                            f'</svg>'
+                        f'</div>'
+                        f'<div style="margin-top:16px; color:white; font-weight:900;">AI SIGNALS</div>'
+                        f'<div style="margin-top:12px; color:rgba(231,238,249,0.55); line-height:1.45;">Model-driven insight<br>and signal context</div>'
+                    f'</div>'
+
+                    f'<div style="text-align:center; border-right:1px solid rgba(255,255,255,0.08); padding:0 22px;">'
+                        f'<div style="margin-bottom:28px; display:flex; justify-content:center; align-items:center;">'
+                            f'<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#3A98FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 10px rgba(58,152,255,0.35));">'
+                                f'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'
+                                f'<path d="M9 12l2 2 4-4"/>'
+                            f'</svg>'
+                        f'</div>'
+                        f'<div style="margin-top:16px; color:white; font-weight:900;">RISK ANALYSIS</div>'
+                        f'<div style="margin-top:12px; color:rgba(231,238,249,0.55); line-height:1.45;">Volatility tracking<br>and risk scoring</div>'
+                    f'</div>'
+
+                    f'<div style="text-align:center; border-right:1px solid rgba(255,255,255,0.08); padding:0 22px;">'
+                        f'<div style="margin-bottom:28px; display:flex; justify-content:center; align-items:center;">'
+                            f'<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#3A98FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 10px rgba(58,152,255,0.35));">'
+                                f'<path d="M21.21 15.89A10 10 0 1 1 12 2v10z"/>'
+                                f'<path d="M22 12A10 10 0 0 0 12 2v10z"/>'
+                            f'</svg>'
+                        f'</div>'
+                        f'<div style="margin-top:16px; color:white; font-weight:900;">PORTFOLIO LAB</div>'
+                        f'<div style="margin-top:12px; color:rgba(231,238,249,0.55); line-height:1.45;">Backtest portfolios<br>against benchmarks</div>'
+                    f'</div>'
+
+                    f'<div style="text-align:center; padding:0 22px;">'
+                        f'<div style="margin-bottom:28px; display:flex; justify-content:center; align-items:center;">'
+                            f'<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#3A98FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 10px rgba(58,152,255,0.35));">'
+                                f'<rect x="3" y="3" width="7" height="7" rx="1"/>'
+                                f'<rect x="14" y="3" width="7" height="7" rx="1"/>'
+                                f'<rect x="3" y="14" width="7" height="7" rx="1"/>'
+                                f'<rect x="14" y="14" width="7" height="7" rx="1"/>'
+                            f'</svg>'
+                        f'</div>'
+                        f'<div style="margin-top:16px; color:white; font-weight:900;">ALLOCATION ENGINE</div>'
+                        f'<div style="margin-top:12px; color:rgba(231,238,249,0.55); line-height:1.45;">Smart allocation<br>across asset sleeves</div>'
+                    f'</div>'
+
                 f'</div>'
 
-                f'<div class="ticker-card">'
-                    f'<div class="ticker-symbol">TSLA</div>'
-                    f'<div class="ticker-name">Tesla, Inc.</div>'
-                    f'<div class="ticker-price">$168.22</div>'
-                    f'<div class="ticker-change-neg">-0.73%</div>'
+                f'<div style="position:relative; z-index:3; margin-top:62px; text-align:center; color:rgba(231,238,249,0.38); font-size:0.86rem;">'
+                    f'© 2026 AInvest. For educational purposes only. Not investment advice.'
                 f'</div>'
 
-                f'<div class="ticker-card">'
-                    f'<div class="ticker-symbol">MSFT</div>'
-                    f'<div class="ticker-name">Microsoft Corp.</div>'
-                    f'<div class="ticker-price">$420.15</div>'
-                    f'<div class="ticker-change-pos">+0.91%</div>'
-                f'</div>'
-
-                f'<div class="ticker-card">'
-                    f'<div class="ticker-symbol">BTC-USD</div>'
-                    f'<div class="ticker-name">Bitcoin</div>'
-                    f'<div class="ticker-price">$64,812.45</div>'
-                    f'<div class="ticker-change-pos">+1.87%</div>'
-                f'</div>'
             f'</div>'
-        f'</div>'
-    )
-    st.markdown(popular_html, unsafe_allow_html=True)
 
-    tip_html = (
-        f'<div class="welcome-tip">'
-            f'<div class="welcome-tip-icon">💡</div>'
-            f'<div><b>Tip:</b> Enter any ticker above and click Analyze to launch the full dashboard.</div>'
         f'</div>'
     )
-    st.markdown(tip_html, unsafe_allow_html=True)
+
+    st.markdown(landing_html, unsafe_allow_html=True)
+
+    st.markdown(
+    """
+    <style>
+    div[data-testid="stTextInput"]:has(input[aria-label="Landing Ticker Input"]) {
+        width: 650px !important;
+        max-width: 88% !important;
+        margin: -455px auto 360px auto !important;
+        position: relative !important;
+        z-index: 999 !important;
+    }
+
+    div[data-testid="stTextInput"]:has(input[aria-label="Landing Ticker Input"]) > div {
+        min-height: 62px !important;
+    }
+
+    div[data-testid="stTextInput"]:has(input[aria-label="Landing Ticker Input"]) div[data-baseweb="input"] {
+        height: 62px !important;
+        min-height: 62px !important;
+        border-radius: 12px !important;
+        border: 1px solid rgba(115,207,255,0.72) !important;
+        background: rgba(5,14,32,0.78) !important;
+        box-shadow: 0 0 28px rgba(58,141,255,0.20) !important;
+    }
+
+    div[data-testid="stTextInput"]:has(input[aria-label="Landing Ticker Input"]) input {
+        height: 62px !important;
+        min-height: 62px !important;
+        color: #E7EEF9 !important;
+        font-size: 1.05rem !important;
+        padding-left: 52px !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+    landing_ticker = st.text_input(
+        "Landing Ticker Input",
+        placeholder="›   Enter ticker (AAPL, NVDA, BTC-USD)",
+        label_visibility="collapsed",
+        key="landing_ticker_input",
+    ).strip().upper()
+
+    if landing_ticker:
+        st.session_state.active_ticker = landing_ticker
+        st.rerun()
+
+    st.markdown(
+        """
+        <div style="
+            text-align:center;
+            margin-top:-415px;
+            margin-bottom:385px;
+            color:#39A8FF;
+            font-size:0.90rem;
+            letter-spacing:0.04em;
+            font-weight:500;
+        ">
+            Press Enter to run analysis
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    
 
 # -----------------------------
 # Main analyzed layout
