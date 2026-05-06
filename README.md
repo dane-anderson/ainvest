@@ -26,6 +26,11 @@ Built to simulate how modern fintech systems combine quantitative models + AI re
 ## 📊 Portfolio Lab
 [![Portfolio Lab](assets/page3.png)](assets/page3.png)
 
+---
+## 🧠 Allocation Engine
+
+![Allocation Engine Preview](assets/page4.png)
+
 ## ⚡ What This Is
 
 Most retail tools show charts.
