@@ -1,5 +1,6 @@
 from allocation_engine import get_ranked_candidates
 from database import get_engine
+from datetime import datetime
 
 # Generate rankings
 ranked = get_ranked_candidates(
@@ -13,8 +14,12 @@ ranked.to_csv(
     index=False
 )
 
+
+
 # Save to database
 engine = get_engine()
+
+ranked["Last_Updated"] = datetime.utcnow()
 
 ranked.to_sql(
     "ranked_candidates",
