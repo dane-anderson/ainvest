@@ -108,6 +108,41 @@ Multi-asset portfolio analysis system:
 👉 This is the foundation for portfolio intelligence tooling, not just stock analysis.
 
 ---
+
+## 🧠 System Architecture
+
+AInvest runs as a layered decision pipeline:
+
+### 1. Signal Layer
+- Generates directional bias (buy / hold / sell style)
+- Outputs conviction score
+- Mimics lightweight quant signals
+
+### 2. Data Layer
+- Real-time market data (yfinance)
+- Fallback handling for reliability
+- Prevents UI/data failures
+
+### 3. Reasoning Layer (AI)
+LLM interprets:
+- signals  
+- price action  
+- context  
+
+Outputs:
+- bias  
+- conviction  
+- structural narrative  
+
+→ Converts raw data into human-readable intelligence
+
+### 4. Presentation Layer
+- Streamlit UI
+- Decision-first layout
+- Clean, institutional-style interface
+
+---
+
 ## ☁️ Cloud Infrastructure & Data Pipeline (NEW)
 
 AInvest now operates on a cloud-backed architecture designed for scalable financial computation workflows.
@@ -147,39 +182,6 @@ Recent upgrades introduced:
 
 ---
 
-## 🧠 System Architecture
-
-AInvest runs as a layered decision pipeline:
-
-### 1. Signal Layer
-- Generates directional bias (buy / hold / sell style)
-- Outputs conviction score
-- Mimics lightweight quant signals
-
-### 2. Data Layer
-- Real-time market data (yfinance)
-- Fallback handling for reliability
-- Prevents UI/data failures
-
-### 3. Reasoning Layer (AI)
-LLM interprets:
-- signals  
-- price action  
-- context  
-
-Outputs:
-- bias  
-- conviction  
-- structural narrative  
-
-→ Converts raw data into human-readable intelligence
-
-### 4. Presentation Layer
-- Streamlit UI
-- Decision-first layout
-- Clean, institutional-style interface
-
----
 
 ## 🔁 End-to-End Flow
 
