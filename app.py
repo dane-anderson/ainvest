@@ -1914,6 +1914,8 @@ if mode == "Stock Lens" and active_ticker:
     else:
         st.session_state.last_call = current_time
 
+        confidence = snapshot.get("confidence", 50)
+
         ai_text = generate_ai_explanation(
             ticker=active_ticker,
             confidence=confidence,
