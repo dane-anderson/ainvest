@@ -108,6 +108,44 @@ Multi-asset portfolio analysis system:
 👉 This is the foundation for portfolio intelligence tooling, not just stock analysis.
 
 ---
+## ☁️ Cloud Infrastructure & Data Pipeline (NEW)
+
+AInvest now operates on a cloud-backed architecture designed for scalable financial computation workflows.
+
+### Infrastructure Upgrades
+- PostgreSQL database integration (Render)
+- Autonomous cron-based ranking pipeline
+- Persistent cloud storage for ranked candidates
+- Background precomputation of allocation datasets
+- Environment-based secret management
+- Auto-deploy CI workflow through GitHub + Render
+
+### Ranking Pipeline
+The allocation engine no longer computes all market rankings on-demand.
+
+Instead:
+1. A scheduled cloud cron job scans and ranks securities
+2. Rankings are stored in PostgreSQL
+3. The UI retrieves precomputed datasets instantly
+4. Allocation Engine consumes ranked candidates in real time
+
+This architecture significantly improves:
+- response speed
+- scalability
+- reliability
+- separation of compute vs presentation layers
+
+### Reliability Engineering
+Recent upgrades introduced:
+- ticker failure handling
+- defensive runtime safeguards
+- fallback-ready data architecture
+- production bug tracking / hotfix workflow
+- groundwork for future multi-provider market data routing
+
+👉 These upgrades move AInvest closer to a real-world fintech systems architecture rather than a simple dashboard application.
+
+---
 
 ## 🧠 System Architecture
 
