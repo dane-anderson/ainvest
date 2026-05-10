@@ -1,5 +1,6 @@
 import os
 from typing import Any
+from monte_carlo_engine import run_monte_carlo
 
 import numpy as np
 import pandas as pd
@@ -21,6 +22,7 @@ st.set_page_config(
     page_title="AInvest",
     layout="wide",
 )
+
 
 # -----------------------------
 # API key / OpenAI client
@@ -678,15 +680,21 @@ div[data-baseweb="button-group"] button[aria-pressed="true"] {
 }
 
 /* underline selected radio (safe version) */
+div[role="radiogroup"] {
+    background: transparent !important;
+    border: none !important;
+}
+
 div[role="radiogroup"] label {
-    border-bottom: 2px solid transparent;
-    padding-bottom: 4px;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 14px 6px 0 !important;
 }
 
 div[role="radiogroup"] label:has(input:checked) {
-    border-bottom: 2px solid #FFB020;
+    border-bottom: 2px solid #FFB020 !important;
 }
-/* hide radio circle ONLY */
+
 div[role="radiogroup"] label > div:first-child {
     display: none !important;
 }
@@ -916,6 +924,35 @@ div[data-testid="stButton"] button {
     padding: 0px 8px !important;
     font-size: 0.72rem !important;
     line-height: 1 !important;
+}
+
+.stSlider span {
+    color: #E7EEF9 !important;
+    font-weight: 700 !important;
+}
+
+.stSlider [data-baseweb="slider"] div {
+    color: #E7EEF9 !important;
+}
+
+.stNumberInput input {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    background-color: #091733 !important;
+}
+
+.stNumberInput button {
+    color: #E7EEF9 !important;
+    background-color: #091733 !important;
+}
+
+.stSlider > div > div {
+    color: #E7EEF9 !important;
+}
+
+label, .stNumberInput label, .stSlider label {
+    color: #E7EEF9 !important;
+    font-weight: 700 !important;
 }
 
 /
@@ -1502,28 +1539,6 @@ if is_landing:
         unsafe_allow_html=True,
     )
 
-if mode == "Stock Lens" and active_ticker:
-    input_col, button_col = st.columns([4, 1], gap="medium")
-
-    with input_col:
-        typed_ticker = st.text_input(
-            "Ticker Input",
-            value=st.session_state.active_ticker or "",
-            placeholder="Enter ticker (AAPL, NVDA, BTC-USD)",
-            label_visibility="collapsed",
-            key="stock_lens_ticker_input",
-        ).strip().upper()
-
-    with button_col:
-        analyze_clicked = st.button(
-            "Analyze",
-            use_container_width=True,
-            key="stock_lens_analyze_button",
-        )
-
-    if analyze_clicked and typed_ticker:
-        st.session_state.active_ticker = typed_ticker
-        st.rerun()
 
 # -----------------------------
 # Landing Page
@@ -1738,9 +1753,9 @@ if mode == "Stock Lens" and not active_ticker:
 
     landing_ticker = st.text_input(
         "Landing Ticker Input",
-        placeholder="›   Enter ticker (AAPL, NVDA, BTC-USD)",
-        label_visibility="collapsed",
-        key="landing_ticker_input",
+            placeholder="›   Enter ticker (AAPL, NVDA, BTC-USD)",
+            label_visibility="collapsed",
+            key="landing_ticker_input",
     ).strip().upper()
 
     if landing_ticker:
@@ -1764,7 +1779,28 @@ if mode == "Stock Lens" and not active_ticker:
         unsafe_allow_html=True,
     )
     
+if mode == "Stock Lens" and active_ticker:
+    input_col, button_col = st.columns([4, 1], gap="medium")
 
+    with input_col:
+        typed_ticker = st.text_input(
+            "Ticker Input",
+            value=active_ticker,
+            placeholder="Enter ticker",
+            label_visibility="collapsed",
+            key="stock_lens_ticker_input",
+        ).strip().upper()
+
+    with button_col:
+        analyze_clicked = st.button(
+            "Analyze",
+            use_container_width=True,
+            key="stock_lens_analyze_button",
+        )
+
+    if analyze_clicked and typed_ticker:
+        st.session_state.active_ticker = typed_ticker
+        st.rerun()
 # -----------------------------
 # Main analyzed layout
 # -----------------------------
@@ -2844,11 +2880,328 @@ Performance gap: {outperformance:.1f} pts
         return (response.output_text or "").strip()
     except Exception:
         return "AI allocation brief unavailable right now."
+    
+@st.cache_data(show_spinner=False, ttl=900)
+def calculate_allocation_correlation_matrix(recommendations, timeframe):
+    period_map = {
+        "1Y": "1y",
+        "3Y": "3y",
+        "5Y": "5y",
+        "10Y": "10y",
+    }
+
+    period = period_map.get(timeframe, "5y")
+
+    tickers = [p["ticker"] for p in recommendations if p["ticker"] != "CASH"]
+
+    if len(tickers) < 2:
+        return None
+
+    prices = yf.download(
+        tickers,
+        period=period,
+        auto_adjust=True,
+        progress=False
+    )["Close"]
+
+    if isinstance(prices, pd.Series):
+        prices = prices.to_frame()
+
+    prices = prices.dropna(axis=1, how="all").ffill().dropna()
+
+    if prices.shape[1] < 2:
+        return None
+
+    returns = prices.pct_change().dropna()
+
+    if returns.empty:
+        return None
+
+    corr = returns.corr()
+
+    return corr
+
+@st.cache_data(show_spinner=False, ttl=900)
+def calculate_market_regime():
+    tickers = ["SPY", "QQQ", "TLT", "GLD", "UUP", "^VIX"]
+
+    try:
+        prices = yf.download(
+            tickers,
+            period="6mo",
+            auto_adjust=True,
+            progress=False
+        )["Close"]
+
+        if isinstance(prices, pd.Series):
+            prices = prices.to_frame()
+
+        prices = prices.dropna(axis=1, how="all").ffill().dropna()
+
+        spy_return = (prices["SPY"].iloc[-1] / prices["SPY"].iloc[0] - 1) * 100 if "SPY" in prices else 0
+        qqq_return = (prices["QQQ"].iloc[-1] / prices["QQQ"].iloc[0] - 1) * 100 if "QQQ" in prices else 0
+        tlt_return = (prices["TLT"].iloc[-1] / prices["TLT"].iloc[0] - 1) * 100 if "TLT" in prices else 0
+        gld_return = (prices["GLD"].iloc[-1] / prices["GLD"].iloc[0] - 1) * 100 if "GLD" in prices else 0
+        vix_level = float(prices["^VIX"].iloc[-1]) if "^VIX" in prices else 18
+
+        risk_on_score = 50
+        risk_on_score += 20 if spy_return > 5 else -10 if spy_return < -5 else 0
+        risk_on_score += 15 if qqq_return > spy_return else -8
+        risk_on_score += 10 if vix_level < 18 else -20 if vix_level > 25 else 0
+        risk_on_score += 5 if tlt_return < spy_return else -5
+
+        risk_on_score = max(0, min(100, risk_on_score))
+
+        if risk_on_score >= 70:
+            regime = "Risk-On Expansion"
+            color = "#2EE59D"
+        elif risk_on_score >= 55:
+            regime = "Late-Cycle Growth"
+            color = "#FFB020"
+        elif risk_on_score >= 40:
+            regime = "Mixed / Transition"
+            color = "#73CFFF"
+        else:
+            regime = "Risk-Off Stress"
+            color = "#FF4D6D"
+
+        recession_prob = max(3, min(45, 100 - risk_on_score))
+        risk_off_prob = max(5, min(35, 75 - risk_on_score))
+        late_cycle_prob = max(10, min(35, 100 - abs(risk_on_score - 60)))
+        risk_on_prob = max(5, min(85, risk_on_score))
+
+        total = risk_on_prob + late_cycle_prob + risk_off_prob + recession_prob
+
+        probabilities = {
+            "Risk-On": risk_on_prob / total * 100,
+            "Late Cycle": late_cycle_prob / total * 100,
+            "Risk-Off": risk_off_prob / total * 100,
+            "Recession": recession_prob / total * 100,
+        }
+
+        return {
+            "regime": regime,
+            "color": color,
+            "score": risk_on_score,
+            "vix": vix_level,
+            "spy_return": spy_return,
+            "qqq_return": qqq_return,
+            "tlt_return": tlt_return,
+            "gld_return": gld_return,
+            "probabilities": probabilities,
+        }
+
+    except Exception:
+        return {
+            "regime": "Regime Unavailable",
+            "color": "#94A3B8",
+            "score": 0,
+            "vix": 0,
+            "spy_return": 0,
+            "qqq_return": 0,
+            "tlt_return": 0,
+            "gld_return": 0,
+            "probabilities": {
+                "Risk-On": 0,
+                "Late Cycle": 0,
+                "Risk-Off": 0,
+                "Recession": 0,
+            },
+        }
+    
+  # =========================================================
+# 🟢 MARKET REGIME AI PROMPT ENGINE
+# Institutional macro / trading desk interpretation system
+# =========================================================  
+@st.cache_data(show_spinner=False, ttl=300)
+def generate_market_regime_brief(market_regime, portfolio_type, risk_level, allocation, assets):
+    if not api_key or client is None:
+        return "AI regime interpretation unavailable because OPENAI_API_KEY is not set."
+
+    allocation_text = ", ".join([f"{k}: {v}%" for k, v in allocation.items()])
+    assets_text = " | ".join([f"{k}: {v}" for k, v in assets.items()])
+
+    prompt = f"""
+You are a senior macro/derivatives strategist writing for an internal institutional trading desk.
+
+Audience:
+- Citadel-style trading desk
+- PMs, risk managers, analysts
+- NOT retail investors
+- assume the reader understands beta, vol, duration, risk-on/risk-off, factor leadership, and drawdown risk
+
+Voice:
+- internal desk note
+- sharp
+- compressed
+- direct
+- slightly blunt
+- no client-facing language
+- no education tone
+- no disclaimers
+- no hype
+- avoid full sentences when fragments are stronger
+
+Current tape:
+Regime: {market_regime["regime"]}
+Regime score: {market_regime["score"]:.0f}/100
+VIX: {market_regime["vix"]:.1f}
+SPY 6M: {market_regime["spy_return"]:+.1f}%
+QQQ 6M: {market_regime["qqq_return"]:+.1f}%
+TLT 6M: {market_regime["tlt_return"]:+.1f}%
+GLD 6M: {market_regime["gld_return"]:+.1f}%
+
+Regime probabilities:
+Risk-On: {market_regime["probabilities"]["Risk-On"]:.0f}%
+Late Cycle: {market_regime["probabilities"]["Late Cycle"]:.0f}%
+Risk-Off: {market_regime["probabilities"]["Risk-Off"]:.0f}%
+Recession: {market_regime["probabilities"]["Recession"]:.0f}%
+
+Current book:
+Portfolio type: {portfolio_type}
+Risk level: {risk_level}
+Allocation: {allocation_text}
+Assets: {assets_text}
+
+Write EXACTLY in this structure:
+
+[Desk Read]
+One tight paragraph. Explain what the tape is doing and what regime the book is sitting in.
+
+[Signal Stack]
+- 3 bullets max
+- focus on what matters: equity trend, growth leadership, vol pressure, duration/GLD behavior
+
+[Book Impact]
+- 2 bullets max
+- explain what this regime does to the current allocation
+
+[Transition Triggers]
+- 2 bullets max
+- what would force the desk to change posture
+
+[Action Bias]
+One blunt line. Max 12 words.
+
+Rules:
+- no phrases like "investors should"
+- no "this suggests"
+- no "it may indicate"
+- no public-facing explanation
+- no generic advice
+- do not define terms
+- do not mention AI
+- do not mention educational use
+- write like internal PM/risk desk language
+- keep total response under 170 words
+- prioritize compressed institutional language
+- short bullets preferred over paragraphs
+- avoid long explanations
+- no paragraph longer than 2 sentences
+- sound like internal PM/risk desk communication
+- concise > polished
+- density of insight matters more than readability
+"""
+
+    try:
+        response = client.responses.create(
+            model="gpt-4.1-mini",
+            input=prompt,
+        )
+        return (response.output_text or "").strip()
+    except Exception:
+        return "AI regime interpretation unavailable right now."
+
 
 if mode == "Allocation Engine":
-    st.markdown("## Allocation Engine")
-    st.caption("Live capital allocation engine using suggested buys, historical performance, and benchmark comparison.")
+    # -----------------------------
+    # Wide terminal CSS override
+    # -----------------------------
+    st.markdown(
+        """
+        <style>
+        .block-container {
+            max-width: 1820px !important;
+            padding-left: 1.1rem !important;
+            padding-right: 1.1rem !important;
+            padding-top: 0.8rem !important;
+        }
 
+        [data-testid="stAppViewContainer"] .main {
+            max-width: none !important;
+        }
+
+        .terminal-shell {
+            width: 100%;
+        }
+
+        .terminal-nav-title {
+            font-size: 1.45rem;
+            font-weight: 950;
+            color: #E7EEF9;
+            letter-spacing: -0.03em;
+        }
+
+        .terminal-nav-subtitle {
+            color: rgba(231,238,249,0.58);
+            font-size: 0.78rem;
+            margin-bottom: 12px;
+        }
+
+        .engine-section-title {
+            font-size: 1.35rem;
+            font-weight: 950;
+            color: #E7EEF9;
+            letter-spacing: -0.03em;
+            margin: 10px 0 8px 0;
+        }
+
+        .mini-label {
+            color: rgba(231,238,249,0.58);
+            font-size: 0.72rem;
+            font-weight: 800;
+        }
+
+        .mini-value {
+            color: #E7EEF9;
+            font-size: 1.05rem;
+            font-weight: 950;
+            margin-top: 3px;
+        }
+
+        .engine-card-title {
+            color: #E7EEF9;
+            font-size: 0.98rem;
+            font-weight: 950;
+            margin-bottom: 8px;
+        }
+
+        .engine-card-body {
+            color: rgba(231,238,249,0.72);
+            font-size: 0.82rem;
+            line-height: 1.45;
+        }
+
+        .stSlider label, .stNumberInput label, label {
+            color: #E7EEF9 !important;
+            font-weight: 800 !important;
+        }
+
+        .stNumberInput input {
+            color: #FFFFFF !important;
+            font-weight: 800 !important;
+            background-color: #091733 !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # -----------------------------
+    # Session state
+    # -----------------------------
+    if "allocation_engine_view" not in st.session_state:
+        st.session_state.allocation_engine_view = "Command Center"
     if "allocation_mandate" not in st.session_state:
         st.session_state.allocation_mandate = "Growth"
     if "allocation_risk" not in st.session_state:
@@ -2857,11 +3210,16 @@ if mode == "Allocation Engine":
         st.session_state.allocation_horizon = "5Y"
     if "allocation_portfolio_size" not in st.session_state:
         st.session_state.allocation_portfolio_size = 100000
+    if "mc_auto_simulations" not in st.session_state:
+        st.session_state.mc_auto_simulations = 500
 
     mandate = st.session_state.allocation_mandate
     risk = st.session_state.allocation_risk
     portfolio_size = st.session_state.allocation_portfolio_size
 
+    # -----------------------------
+    # Allocation model
+    # -----------------------------
     if mandate == "Defensive" or risk == "Low":
         allocation = {
             "Core Beta": 40,
@@ -2926,16 +3284,8 @@ if mode == "Allocation Engine":
 
     risk_color = "#FF4D6D" if risk_level == "High" else "#FFB020" if "Medium" in risk_level else "#2EE59D"
 
-    recommendations = build_recommended_buys(
-        allocation,
-        assets,
-        portfolio_size
-    )
-
-    live_perf = calculate_allocation_live_performance(
-        recommendations,
-        st.session_state.allocation_horizon
-    )
+    recommendations = build_recommended_buys(allocation, assets, portfolio_size)
+    live_perf = calculate_allocation_live_performance(recommendations, st.session_state.allocation_horizon)
 
     if live_perf:
         expected_return = f"{live_perf['annual_return']:.1f}%"
@@ -2943,552 +3293,1372 @@ if mode == "Allocation Engine":
         drawdown = f"{live_perf['max_drawdown']:.1f}%"
         sharpe = f"{live_perf['sharpe']:.2f}"
         vs_spy = f"{live_perf['vs_spy']:+.1f}%"
-
         years = int(st.session_state.allocation_horizon.replace("Y", ""))
         projected_value = portfolio_size * ((1 + live_perf["annual_return"] / 100) ** years)
         projected_gain = projected_value - portfolio_size
         projected_value_text = f"${projected_value:,.0f}"
         projected_gain_text = f"${projected_gain:,.0f}"
+        growth = live_perf["growth"]
     else:
         expected_return = "—"
         volatility = "—"
         drawdown = "—"
         sharpe = "—"
         vs_spy = "—"
+        projected_value = portfolio_size
+        projected_gain = 0
         projected_value_text = "—"
         projected_gain_text = "—"
+        growth = None
+
+    best_strategy = "—"
+    closest = "—"
+    gap_driver = "Benchmark data unavailable."
+    outperformance = 0
+
+    if growth is not None and "Allocation Engine" in growth.columns:
+        latest = growth.iloc[-1]
+        your_value = latest["Allocation Engine"]
+        others = latest.drop("Allocation Engine")
+        if not others.empty:
+            best_strategy = others.idxmax()
+            best_value = others.max()
+            outperformance = best_value - your_value
+            closest = (others - your_value).abs().idxmin()
+            if best_strategy == "Concentrated Alpha":
+                gap_driver = "High-concentration tech exposure is driving the performance gap."
+            elif best_strategy == "Growth Strategy":
+                gap_driver = "Growth and semiconductor exposure is driving the performance gap."
+            elif best_strategy == "Defensive Allocation":
+                gap_driver = "Lower-volatility positioning is reducing drawdowns but capping upside."
+            else:
+                gap_driver = "Portfolio composition differences are driving the performance gap."
+
+    market_regime = calculate_market_regime()
 
     # -----------------------------
-    # Top hero
+    # Auto Monte Carlo
     # -----------------------------
-    hero_html = (
-        f'<div class="portfolio-card" style="margin:14px 0 18px 0; padding:22px 24px; '
-        f'background:radial-gradient(700px 260px at 80% 20%, rgba(58,141,255,0.18), transparent 60%), '
-        f'linear-gradient(180deg, rgba(10,18,40,0.96), rgba(5,11,26,0.98)); '
-        f'border:1px solid rgba(255,255,255,0.10); border-radius:22px;">'
 
-        f'<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:22px;">'
-        f'<div>'
-        f'<div style="color:#73CFFF; font-size:0.78rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase;">'
-        f'Live Allocation Command Center'
-        f'</div>'
-        f'<div style="font-size:2.15rem; font-weight:900; color:#E7EEF9; margin-top:8px; letter-spacing:-0.03em;">'
-        f'{portfolio_type}'
-        f'</div>'
-        f'<div style="color:rgba(231,238,249,0.68); font-size:0.95rem; margin-top:8px; max-width:760px; line-height:1.55;">'
-        f'Suggested portfolio built from live market prices, mandate, horizon, and risk budget.'
-        f'</div>'
-        f'</div>'
+    mc = None
+    try:
+        mc_tickers = [p["ticker"] for p in recommendations if p["ticker"] != "CASH"]
+        total_dollars_mc = sum(p["dollars"] for p in recommendations if p["ticker"] != "CASH")
+        mc_weights = [
+            p["dollars"] / total_dollars_mc
+            for p in recommendations
+            if p["ticker"] != "CASH"
+        ]
 
-        f'<div style="text-align:right;">'
-        f'<div style="color:rgba(231,238,249,0.62); font-size:0.75rem; text-transform:uppercase; font-weight:700;">Risk Profile</div>'
-        f'<div style="color:{risk_color}; font-size:1.55rem; font-weight:900; margin-top:6px;">{risk_level}</div>'
-        f'</div>'
-        f'</div>'
-
-        f'<div style="display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); gap:12px; margin-top:20px;">'
-
-        f'<div class="metric-tile"><div class="metric-label">Portfolio Size</div><div class="metric-value">${portfolio_size:,.0f}</div></div>'
-        f'<div class="metric-tile"><div class="metric-label">Projected Value</div><div class="metric-value">{projected_value_text}</div></div>'
-        f'<div class="metric-tile"><div class="metric-label">Projected Gain</div><div class="metric-value" style="color:#2EE59D;">{projected_gain_text}</div></div>'
-        f'<div class="metric-tile"><div class="metric-label">Expected Return</div><div class="metric-value">{expected_return}</div></div>'
-        f'<div class="metric-tile"><div class="metric-label">Volatility</div><div class="metric-value">{volatility}</div></div>'
-        f'<div class="metric-tile"><div class="metric-label">Max Drawdown</div><div class="metric-value" style="color:#FF4D6D;">{drawdown}</div></div>'
-        f'<div class="metric-tile"><div class="metric-label">Vs SPY</div><div class="metric-value">{vs_spy}</div></div>'
-
-        f'</div>'
-        f'</div>'
-    )
-
-    st.markdown(hero_html, unsafe_allow_html=True)
+        mc = run_monte_carlo(
+            tickers=mc_tickers,
+            weights=mc_weights,
+            initial_value=portfolio_size,
+            years=int(st.session_state.allocation_horizon.replace("Y", "")),
+            simulations=st.session_state.mc_auto_simulations,
+        )
+    except Exception:
+        mc = None
 
     # -----------------------------
-    # Main layout
+    # Main terminal layout
     # -----------------------------
-    left_col, center_col, right_col = st.columns([1.15, 2.7, 1.15], gap="medium")
+    nav_col, terminal_col = st.columns([0.72, 5.9], gap="medium")
 
     # -----------------------------
-    # Left controls
+    # Left command selector
     # -----------------------------
-    with left_col:
-        st.markdown("### 1. Set Your Plan")
+    with nav_col:
+        st.markdown(
+            f'<div class="portfolio-card" style="padding:16px 12px; margin-bottom:10px;">'
+                f'<div style="display:flex; align-items:center; gap:10px;">'
+                    f'<div style="width:34px; height:34px; border-radius:10px; background:linear-gradient(135deg,#3A8DFF,#4B5DFF); '
+                    f'display:flex; align-items:center; justify-content:center; font-weight:950; color:white;">A</div>'
+                    f'<div>'
+                        f'<div style="font-size:1.35rem; font-weight:950; color:#E7EEF9; letter-spacing:-0.04em;">AInvest</div>'
+                        f'<div style="color:rgba(231,238,249,0.52); font-size:0.72rem;">Command Terminal</div>'
+                    f'</div>'
+                f'</div>'
 
-        st.markdown("**Portfolio Size ($)**")
-        st.number_input(
-            "",
-            min_value=1000,
-            max_value=10000000,
-            step=1000,
-            value=100000,
-            key="allocation_portfolio_size",
-            label_visibility="collapsed"
+                f'<div style="height:1px; background:rgba(255,255,255,0.08); margin:16px 0;"></div>'
+
+                f'<div style="color:rgba(231,238,249,0.45); font-size:0.68rem; font-weight:900; letter-spacing:0.12em; margin-bottom:8px;">'
+                    f'PORTFOLIO SYSTEMS'
+                f'</div>'
+            f'</div>',
+            unsafe_allow_html=True,
         )
 
-        st.markdown("**Mandate**")
-        mandate_cols = st.columns(2)
+        engine_views = [
+            "Command Center",
+            "Monte Carlo Lab",
+            "Risk Engine",
+            "Stress Test Engine",
+            "Factor Engine",
+            "Correlation Engine",
+            "Scenario Engine",
+            "AI Insights",
+            "Market Regime",
+            "AI Recommendations",
+        ]
+        
 
-        for i, mandate_option in enumerate(["Growth", "Defensive", "Absolute Return", "Opportunistic"]):
-            with mandate_cols[i % 2]:
-                if st.button(
-                    mandate_option,
-                    key=f"allocation_mandate_{mandate_option}",
-                    use_container_width=True,
-                    type="primary" if st.session_state.allocation_mandate == mandate_option else "secondary"
-                ):
-                    st.session_state.allocation_mandate = mandate_option
-                    st.rerun()
+        for view in engine_views:
+            active = st.session_state.allocation_engine_view == view
 
-        st.markdown("**Risk Budget**")
-        risk_cols = st.columns(3)
+            button_type = "primary" if active else "secondary"
 
-        for i, risk_option in enumerate(["Low", "Medium", "High"]):
-            with risk_cols[i]:
-                if st.button(
-                    risk_option,
-                    key=f"allocation_risk_{risk_option}",
-                    use_container_width=True,
-                    type="primary" if st.session_state.allocation_risk == risk_option else "secondary"
-                ):
-                    st.session_state.allocation_risk = risk_option
-                    st.rerun()
+            if st.button(
+                view,
+                key=f"allocation_nav_{view}",
+                use_container_width=True,
+                type=button_type,
+            ):
+                st.session_state.allocation_engine_view = view
+                st.rerun()
 
-        st.markdown("**Time Horizon**")
-        horizon_cols = st.columns(4)
-
-        for i, horizon in enumerate(["1Y", "3Y", "5Y", "10Y"]):
-            with horizon_cols[i]:
-                if st.button(
-                    horizon,
-                    key=f"allocation_horizon_{horizon}",
-                    use_container_width=True,
-                    type="primary" if st.session_state.allocation_horizon == horizon else "secondary"
-                ):
-                    st.session_state.allocation_horizon = horizon
-                    st.rerun()
-
-        st.markdown("### 2. Capital Deployment Plan")
-        buy_rows = ""
-        total_buy = 0
-
-        for pick in recommendations:
-            total_buy += pick["dollars"]
-            
-        buy_rows = ""
-        total_buy = 0
-
-        for pick in recommendations:
-            total_buy += pick["dollars"]
-
-            buy_rows += (
-                f'<tr>'
-                f'<td style="padding:6px; font-weight:800;">{pick["ticker"]}</td>'
-                f'<td style="padding:6px;">{pick["shares"]:.2f}</td>'
-                f'<td style="padding:6px; text-align:right;">${pick["dollars"]:,.0f}</td>'
-                f'</tr>'
-            )
-        leftover_cash = portfolio_size - total_buy
-
-        if leftover_cash > 1:
-            buy_rows += (
-                f'<tr>'
-                f'<td style="padding:8px;">CASH</td>'
-                f'<td style="padding:8px;">Unallocated</td>'
-                f'<td style="padding:8px;">—</td>'
-                f'<td style="padding:8px;">—</td>'
-                f'<td style="padding:8px; text-align:right;">${leftover_cash:,.0f}</td>'
-                f'</tr>'
-            )
-            total_buy += leftover_cash
-
-        copy_text = "Ticker, Shares, Price, Amount\n"
-        for pick in recommendations:
-            copy_text += f"{pick['ticker']}, {pick['shares']:.2f}, {pick['price']:.2f}, {pick['dollars']:.0f}\n"
-
-        components.html(
-            f"""
-            <button onclick="navigator.clipboard.writeText(`{copy_text}`); this.innerText='Copied ✓';"
-                style="
-                    float:right;
-                    background:#0B1633;
-                    color:#73CFFF;
-                    border:1px solid rgba(115,207,255,0.35);
-                    border-radius:8px;
-                    padding:4px 8px;
-                    cursor:pointer;
-                    font-size:12px;
-                    margin-bottom:6px;
-                ">
-                📋 Copy
-            </button>
-            """,
-            height=35,
+        st.markdown(
+            f'<div class="portfolio-card" style="margin-top:12px; padding:12px;">'
+                f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                    f'<div class="mini-label">MARKET REGIME</div>'
+                    f'<div style="width:8px; height:8px; border-radius:50%; background:#2EE59D; box-shadow:0 0 10px #2EE59D;"></div>'
+                f'</div>'
+                f'<div style="color:#2EE59D; font-size:1.05rem; font-weight:950; margin-top:6px;">Risk-On</div>'
+                f'<div style="height:46px; margin-top:10px; border-radius:10px; '
+                f'background:linear-gradient(135deg, rgba(46,229,157,0.03), rgba(46,229,157,0.18)); '
+                f'border-bottom:1px solid rgba(46,229,157,0.35);"></div>'
+                f'<div style="display:flex; justify-content:space-between; margin-top:10px; color:rgba(231,238,249,0.45); font-size:0.68rem;">'
+                    f'<span>Status</span><span style="color:#2EE59D;">LIVE</span>'
+                f'</div>'
+            f'</div>',
+            unsafe_allow_html=True,
         )
 
-        buy_table = (
-            f'<div class="portfolio-card" style="margin-top:8px;">'
-            f'<table style="width:100%; border-collapse:collapse;">'
-            f'<thead>'
-            f'<tr style="color:rgba(231,238,249,0.65); text-align:left;">'
-            f'<th style="padding:6px;">Ticker</th>'
-            f'<th style="padding:6px;">Shares</th>'
-            f'<th style="padding:6px; text-align:right;">Allocation</th>'
-            f'</tr>'
-            f'</thead>'
-            f'<tbody style="color:#E7EEF9;">'
-            f'{buy_rows}'
-            f'</tbody>'
-            f'</table>'
-            f'<div style="margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; font-weight:900;">'
-            f'<span>Total Portfolio Buy</span>'
-            f'<span>${total_buy:,.0f}</span>'
-            f'</div>'
-            f'</div>'
-            f'<div style="margin-top:8px; font-size:0.75rem; color:rgba(231,238,249,0.55);">'
-            f'Assumes full deployment at current market prices. Fractional shares enabled.'
-            f'</div>'
+    # -----------------------------
+    # Terminal screen
+    # -----------------------------
+    with terminal_col:
+        selected_view = st.session_state.allocation_engine_view
+
+        st.markdown(
+            f'<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:18px; margin-bottom:12px;">'
+                f'<div>'
+                    f'<div style="font-size:2rem; font-weight:950; color:#E7EEF9; letter-spacing:-0.04em;">Allocation Engine</div>'
+                    f'<div style="color:rgba(231,238,249,0.66); font-size:0.92rem;">AI-powered portfolio construction and analysis</div>'
+                f'</div>'
+                f'<div style="display:flex; gap:10px; align-items:center;">'
+                    f'<div class="portfolio-card" style="padding:8px 12px; min-width:230px; font-size:0.82rem; color:#E7EEF9;">Portfolio: <b>{portfolio_type}</b></div>'
+                    f'<div class="portfolio-card" style="padding:8px 12px; font-size:0.82rem; color:#E7EEF9;">Save Portfolio</div>'
+                    f'<div class="portfolio-card" style="padding:8px 12px; font-size:0.82rem; color:#E7EEF9;">Export</div>'
+                f'</div>'
+            f'</div>',
+            unsafe_allow_html=True,
         )
 
-        st.markdown(buy_table, unsafe_allow_html=True)
+        st.markdown(
+            f'<div style="display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); gap:10px; margin-bottom:14px;">'
+                f'<div class="metric-tile"><div class="metric-label">Portfolio Value</div><div class="metric-value">${portfolio_size:,.0f}</div></div>'
+                f'<div class="metric-tile"><div class="metric-label">Projected Return ({st.session_state.allocation_horizon})</div><div class="metric-value">{expected_return}</div><div style="font-size:0.72rem; color:#2EE59D;">vs SPY {vs_spy}</div></div>'
+                f'<div class="metric-tile"><div class="metric-label">Volatility ({st.session_state.allocation_horizon})</div><div class="metric-value">{volatility}</div></div>'
+                f'<div class="metric-tile"><div class="metric-label">Max Drawdown ({st.session_state.allocation_horizon})</div><div class="metric-value" style="color:#FF4D6D;">{drawdown}</div></div>'
+                f'<div class="metric-tile"><div class="metric-label">Sharpe Ratio</div><div class="metric-value">{sharpe}</div></div>'
+                f'<div class="metric-tile"><div class="metric-label">Risk Level</div><div class="metric-value" style="color:{risk_color};">{risk_level}</div><div style="height:6px; border-radius:99px; margin-top:8px; background:linear-gradient(90deg,#2EE59D,#FFB020,#FF4D6D);"></div></div>'
+                f'<div class="metric-tile"><div class="metric-label">SPY Outperformance</div><div class="metric-value">{vs_spy}</div><div style="font-size:0.72rem; color:rgba(231,238,249,0.55);">{st.session_state.allocation_horizon} horizon</div></div>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
 
-
-    # -----------------------------
-    # Center chart + trade table
-    # -----------------------------
-    with center_col:
-        st.markdown("### 2. Suggested Portfolio vs SPY")
-
-        if live_perf and "growth" in live_perf:
-            growth = live_perf["growth"]
-
-            fig_growth = go.Figure()
-            fig_growth.update_layout(hovermode="x unified")
-
-            colors = {
-                "Allocation Engine": "#3A8DFF",
-                "SPY": "rgba(255,255,255,0.65)",
-                "Growth Strategy": "#2EE59D",
-                "Concentrated Alpha": "#9B5CF6",
-                "Defensive Allocation": "#F59E0B",
-            }
-
-            for col in growth.columns:
-                fig_growth.add_trace(
-                    go.Scatter(
-                        x=growth.index,
-                        y=growth[col],
-                        mode="lines",
-                        name=col,
-                        line=dict(
-                            color=colors.get(col, "#E7EEF9"),
-                            width=3 if col == "Allocation Engine" else 1.6
-                        )
-                    )
-                )
-
-            
-
-            fig_growth.update_layout(
-                height=390,
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(color="#E7EEF9"),
-                margin=dict(l=10, r=10, t=10, b=10),
-                legend=dict(
-                    orientation="h",
-                    y=1.08,
-                    x=0,
-                    font=dict(size=12, color="#FFFFFF"),
-                    bgcolor="rgba(0,0,0,0)"
-                ),
-                xaxis=dict(gridcolor="rgba(255,255,255,0.06)"),
-                yaxis=dict(
-                    gridcolor="rgba(255,255,255,0.06)",
-                    title="Growth of $100"
-                ),
-            )
-
-            st.plotly_chart(fig_growth, use_container_width=True)
-        else:
-            st.info("Live performance chart will appear once market data loads.")
-
-        if live_perf:
-            spy_return = live_perf["annual_return"] - live_perf["vs_spy"]
-            years = int(st.session_state.allocation_horizon.replace("Y", ""))
-
-            spy_projected_value = portfolio_size * ((1 + spy_return / 100) ** years)
-            outperformance = projected_value - spy_projected_value
-
+        # -----------------------------
+        # Deep-dive pages
+        # -----------------------------
+        if selected_view == "Monte Carlo Lab":
             st.markdown(
                 f"""
-                <div class="portfolio-card" style="margin-top:12px; padding:16px 18px; display:grid; grid-template-columns:repeat(4, 1fr); gap:14px;">
-                    <div>
-                        <div style="color:rgba(231,238,249,0.6); font-size:0.78rem;">Starting Capital</div>
-                        <div style="font-size:1.1rem; font-weight:900;">${portfolio_size:,.0f}</div>
-                    </div>
-                    <div>
-                        <div style="color:rgba(231,238,249,0.6); font-size:0.78rem;">Suggested Portfolio</div>
-                        <div style="font-size:1.1rem; font-weight:900; color:#3A8DFF;">${projected_value:,.0f}</div>
-                    </div>
-                    <div>
-                        <div style="color:rgba(231,238,249,0.6); font-size:0.78rem;">SPY Benchmark</div>
-                        <div style="font-size:1.1rem; font-weight:900;">${spy_projected_value:,.0f}</div>
-                    </div>
-                    <div>
-                        <div style="color:rgba(231,238,249,0.6); font-size:0.78rem;">Projected Edge</div>
-                        <div style="font-size:1.1rem; font-weight:900; color:#2EE59D;">${outperformance:,.0f}</div>
+                <div class="portfolio-card" style="padding:22px; margin-top:12px;">
+                    <div style="font-size:1.55rem; font-weight:950; color:#E7EEF9;">Monte Carlo Engine</div>
+                    <div style="color:rgba(231,238,249,0.62); margin-top:6px;">
+                        Full simulation engine tied to the active {portfolio_type}.
                     </div>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
+            # -----------------------------
+            # Monte Carlo controls
+            # -----------------------------
+            control_cols = st.columns([1, 1, 1, 1, 1], gap="medium")
 
-        latest = growth.iloc[-1]
+            with control_cols[0]:
+                mc_deep_value = st.number_input(
+                    "Initial Value",
+                    min_value=1000,
+                    max_value=10000000,
+                    step=1000,
+                    value=int(portfolio_size),
+                    key="mc_deep_value"
+                )
 
-        best_strategy = latest.drop("Allocation Engine").idxmax()
-        best_value = latest[best_strategy]
+            with control_cols[1]:
+                mc_deep_years = st.slider(
+                    "Years",
+                    1,
+                    30,
+                    int(st.session_state.allocation_horizon.replace("Y", "")),
+                    key="mc_deep_years"
+                )
 
-        your_value = latest["Allocation Engine"]
-        outperformance = best_value - your_value
+            with control_cols[2]:
+                mc_deep_sims = st.slider(
+                    "Simulations",
+                    500,
+                    10000,
+                    2500,
+                    step=500,
+                    key="mc_deep_sims"
+                )
 
-        closest = (latest.drop("Allocation Engine") - your_value).abs().idxmin()
+            with control_cols[3]:
+                mc_stress = st.slider(
+                    "Volatility Stress",
+                    0.5,
+                    2.5,
+                    1.0,
+                    step=0.1,
+                    key="mc_stress"
+                )
 
-        if best_strategy == "Concentrated Alpha":
-            gap_driver = "High-concentration tech exposure is driving the performance gap."
-        elif best_strategy == "Growth Strategy":
-            gap_driver = "Growth and semiconductor exposure is driving the performance gap."
-        elif best_strategy == "Defensive Allocation":
-            gap_driver = "Lower volatility positioning is reducing drawdowns but capping upside."
-        else:
-            gap_driver = "Portfolio composition differences are driving the performance gap."
+            with control_cols[4]:
+                confidence_band = st.selectbox(
+                    "Confidence Band",
+                    ["90%", "95%", "99%"],
+                    index=1,
+                    key="mc_confidence_band"
+                )
+
+            # -----------------------------
+            # Run Monte Carlo
+            # -----------------------------
+            mc_tickers = [p["ticker"] for p in recommendations if p["ticker"] != "CASH"]
+
+            total_dollars_mc = sum(
+                p["dollars"] for p in recommendations
+                if p["ticker"] != "CASH"
+            )
+
+            mc_weights = [
+                p["dollars"] / total_dollars_mc
+                for p in recommendations
+                if p["ticker"] != "CASH"
+            ]
+
+            mc_deep = run_monte_carlo(
+                tickers=mc_tickers,
+                weights=mc_weights,
+                initial_value=mc_deep_value,
+                years=mc_deep_years,
+                simulations=mc_deep_sims,
+            )
+
+            paths_df = pd.DataFrame(mc_deep["paths"])
+
+            # optional stress multiplier
+            if mc_stress != 1.0:
+                base = paths_df.iloc[0]
+                paths_df = base + (paths_df - base) * mc_stress
+
+            final_values = paths_df.iloc[-1]
+
+            p_low = 0.05
+            p_high = 0.95
+
+            if confidence_band == "90%":
+                p_low, p_high = 0.05, 0.95
+            elif confidence_band == "95%":
+                p_low, p_high = 0.025, 0.975
+            elif confidence_band == "99%":
+                p_low, p_high = 0.005, 0.995
+
+            expected_final = final_values.mean()
+            median_final = final_values.median()
+            low_final = final_values.quantile(p_low)
+            high_final = final_values.quantile(p_high)
+            loss_prob = (final_values < mc_deep_value).mean()
+            double_prob = (final_values >= mc_deep_value * 2).mean()
+
+            # -----------------------------
+            # Summary metrics
+            # -----------------------------
+            metric_html = f"""
+            <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; margin-top:14px;">
+                <div class="metric-tile"><div class="metric-label">Expected Value</div><div class="metric-value">${expected_final:,.0f}</div></div>
+                <div class="metric-tile"><div class="metric-label">Median Value</div><div class="metric-value">${median_final:,.0f}</div></div>
+                <div class="metric-tile"><div class="metric-label">Downside Band</div><div class="metric-value" style="color:#FF4D6D;">${low_final:,.0f}</div></div>
+                <div class="metric-tile"><div class="metric-label">Upside Band</div><div class="metric-value" style="color:#3A8DFF;">${high_final:,.0f}</div></div>
+                <div class="metric-tile"><div class="metric-label">Loss Probability</div><div class="metric-value" style="color:#FF4D6D;">{loss_prob:.1%}</div></div>
+                <div class="metric-tile"><div class="metric-label">Double Probability</div><div class="metric-value" style="color:#2EE59D;">{double_prob:.1%}</div></div>
+            </div>
+            """
+
+            st.markdown(metric_html, unsafe_allow_html=True)
+
+            # -----------------------------
+            # Main chart and distribution
+            # -----------------------------
+            chart_col, dist_col = st.columns([2.3, 1], gap="medium")
+
+            with chart_col:
+                st.markdown("### Simulation Path Engine")
+
+                fig_mc_big = go.Figure()
+
+                sample_paths = paths_df.iloc[:, :min(180, paths_df.shape[1])]
+
+                for col in sample_paths.columns:
+                    fig_mc_big.add_trace(
+                        go.Scatter(
+                            y=sample_paths[col],
+                            mode="lines",
+                            line=dict(width=1, color="rgba(58,141,255,0.08)"),
+                            showlegend=False,
+                            hoverinfo="skip",
+                        )
+                    )
+
+                fig_mc_big.add_trace(
+                    go.Scatter(
+                        y=paths_df.median(axis=1),
+                        mode="lines",
+                        name="Median Path",
+                        line=dict(width=4, color="#2EE59D"),
+                    )
+                )
+
+                fig_mc_big.add_trace(
+                    go.Scatter(
+                        y=paths_df.quantile(p_low, axis=1),
+                        mode="lines",
+                        name=f"{confidence_band} Downside",
+                        line=dict(width=3, color="#FF4D6D"),
+                    )
+                )
+
+                fig_mc_big.add_trace(
+                    go.Scatter(
+                        y=paths_df.quantile(p_high, axis=1),
+                        mode="lines",
+                        name=f"{confidence_band} Upside",
+                        line=dict(width=3, color="#3A8DFF"),
+                    )
+                )
+
+                fig_mc_big.update_layout(
+                    height=520,
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    font=dict(color="#E7EEF9"),
+                    margin=dict(l=10, r=10, t=20, b=10),
+                    legend=dict(
+                        orientation="h",
+                        y=1.05,
+                        x=0,
+                        font=dict(size=11, color="#FFFFFF"),
+                        bgcolor="rgba(0,0,0,0)"
+                    ),
+                    xaxis=dict(
+                        title="Trading Days",
+                        gridcolor="rgba(255,255,255,0.06)"
+                    ),
+                    yaxis=dict(
+                        title="Portfolio Value",
+                        gridcolor="rgba(255,255,255,0.06)"
+                    ),
+                )
+
+                st.plotly_chart(fig_mc_big, use_container_width=True)
+
+            with dist_col:
+                st.markdown("### Outcome Distribution")
+
+                fig_dist = go.Figure()
+
+                fig_dist.add_trace(
+                    go.Histogram(
+                        x=final_values,
+                        nbinsx=35,
+                        marker=dict(color="#3A8DFF"),
+                        opacity=0.75,
+                    )
+                )
+
+                fig_dist.add_vline(
+                    x=mc_deep_value,
+                    line_dash="dash",
+                    line_color="#FF4D6D"
+                )
+
+                fig_dist.add_vline(
+                    x=median_final,
+                    line_dash="solid",
+                    line_color="#2EE59D"
+                )
+
+                fig_dist.update_layout(
+                    height=520,
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    font=dict(color="#E7EEF9"),
+                    margin=dict(l=10, r=10, t=20, b=10),
+                    xaxis=dict(
+                        title="Ending Value",
+                        gridcolor="rgba(255,255,255,0.06)"
+                    ),
+                    yaxis=dict(
+                        title="Frequency",
+                        gridcolor="rgba(255,255,255,0.06)"
+                    ),
+                    showlegend=False,
+                )
+
+                st.plotly_chart(fig_dist, use_container_width=True)
+
+            # -----------------------------
+            # Percentiles, inputs, AI, actions
+            # -----------------------------
+            bottom_cols = st.columns([1, 1, 1], gap="medium")
+
+            with bottom_cols[0]:
+                percentile_rows = ""
+
+                for label, q in [
+                    ("1%", 0.01),
+                    ("5%", 0.05),
+                    ("25%", 0.25),
+                    ("50%", 0.50),
+                    ("75%", 0.75),
+                    ("95%", 0.95),
+                    ("99%", 0.99),
+                ]:
+                    percentile_rows += (
+                        f'<div style="display:flex; justify-content:space-between; margin-top:8px;">'
+                        f'<span>{label}</span><span>${final_values.quantile(q):,.0f}</span>'
+                        f'</div>'
+                    )
+
+                st.markdown(
+                    f"""
+                    <div class="portfolio-card" style="min-height:260px;">
+                        <div class="engine-card-title">Percentile Outcomes</div>
+                        {percentile_rows}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            with bottom_cols[1]:
+                input_rows = ""
+
+                for ticker, weight in zip(mc_tickers, mc_weights):
+                    input_rows += (
+                        f'<div style="display:flex; justify-content:space-between; margin-top:8px;">'
+                        f'<span>{ticker}</span><span>{weight:.1%}</span>'
+                        f'</div>'
+                    )
+
+                st.markdown(
+                    f"""
+                    <div class="portfolio-card" style="min-height:260px;">
+                        <div class="engine-card-title">Allocation Inputs Used</div>
+                        {input_rows}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            with bottom_cols[2]:
+                if loss_prob > 0.20:
+                    action_1 = "Increase defensive hedge or liquidity sleeve."
+                else:
+                    action_1 = "Current downside profile is controlled."
+
+                if double_prob < 0.15:
+                    action_2 = "Upside may need stronger growth exposure."
+                else:
+                    action_2 = "Upside convexity is attractive."
+
+                if mc_stress > 1.3:
+                    action_3 = "Stress setting shows elevated fragility."
+                else:
+                    action_3 = "Stress setting remains within normal range."
+
+                st.markdown(
+                    f"""
+                    <div class="portfolio-card" style="min-height:260px;">
+                        <div class="engine-card-title">Monte Carlo Engine Read</div>
+                        <div class="engine-card-body">
+                            Base case centers around <b>${median_final:,.0f}</b> over {mc_deep_years} years.<br><br>
+                            Downside band: <b>${low_final:,.0f}</b><br>
+                            Upside band: <b>${high_final:,.0f}</b><br><br>
+                            - {action_1}<br>
+                            - {action_2}<br>
+                            - {action_3}
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            st.markdown(
+                """
+                <div style="margin-top:18px; text-align:center; color:rgba(231,238,249,0.48); font-size:0.78rem;">
+                    Monte Carlo outputs are probabilistic simulations, not predictions. Educational use only.
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+            st.stop()
 
         st.markdown(
-            f'<div class="portfolio-card" style="margin-top:10px; padding:14px 16px;">'
+            f'<div class="portfolio-card" style="margin-top:12px; padding:12px;">'
 
-                f'<div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">'
+                f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                    f'<div class="mini-label">MARKET REGIME</div>'
 
-                    f'<div>'
-                        f'<div style="color:rgba(231,238,249,0.62); font-size:0.78rem; font-weight:700;">'
-                            f'Top Performer'
-                        f'</div>'
-                        f'<div style="color:#E7EEF9; font-weight:900; font-size:1.05rem; margin-top:3px;">'
-                            f'{best_strategy}'
-                        f'</div>'
-                        f'<div style="color:#2EE59D; font-weight:800; font-size:0.86rem; margin-top:5px;">'
-                            f'+{outperformance:.1f} pts vs allocation'
-                        f'</div>'
+                    f'<div style="width:8px; height:8px; border-radius:50%; '
+                    f'background:{market_regime["color"]}; '
+                    f'box-shadow:0 0 12px {market_regime["color"]};"></div>'
+                f'</div>'
+
+                f'<div style="margin-top:10px; padding:10px; border-radius:14px; '
+                f'background:linear-gradient(135deg, rgba(46,229,157,0.08), rgba(58,141,255,0.03)); '
+                f'border:1px solid {market_regime["color"]};">'
+
+                    f'<div style="color:{market_regime["color"]}; '
+                    f'font-size:1.05rem; font-weight:800;">'
+
+                        f'{market_regime["regime"]}'
+
                     f'</div>'
 
-                    f'<div>'
-                        f'<div style="color:rgba(231,238,249,0.62); font-size:0.78rem; font-weight:700;">'
-                            f'Closest Match'
-                        f'</div>'
-                        f'<div style="color:#E7EEF9; font-weight:900; font-size:1.05rem; margin-top:3px;">'
-                            f'{closest}'
-                        f'</div>'
-                        f'<div style="color:#E7EEF9; font-weight:700; font-size:0.86rem; margin-top:5px;">'
-                            f'Gap driver: {gap_driver}'
-                        f'</div>'
-                    f'</div>'
+                f'</div>'
+
+                f'<div style="margin-top:12px; display:flex; justify-content:space-between; '
+                f'font-size:0.72rem;">'
+
+                    f'<span style="color:rgba(231,238,249,0.55);">Status</span>'
+
+                    f'<span style="color:#2EE59D;">LIVE</span>'
 
                 f'</div>'
 
             f'</div>',
             unsafe_allow_html=True
         )
+        if selected_view == "Market Regime":
 
-       
-          
-        st.markdown("### 3. Capital Deployment Map")
+            probs = market_regime["probabilities"]
 
-        map_cols = st.columns(5)
+            # -----------------------------
+            # Deep analytics
+            # -----------------------------
+            regime_score = market_regime["score"]
+            vix = market_regime["vix"]
+            spy_6m = market_regime["spy_return"]
+            qqq_6m = market_regime["qqq_return"]
+            tlt_6m = market_regime["tlt_return"]
+            gld_6m = market_regime["gld_return"]
 
-        for i, (bucket, weight) in enumerate(allocation.items()):
-            dollar_value = portfolio_size * (weight / 100)
+            regime_confidence = min(95, max(35, regime_score * 0.85 + probs["Risk-On"] * 0.25))
+            regime_stability = min(95, max(20, 100 - abs(probs["Risk-On"] - probs["Late Cycle"]) * 0.7))
 
-            with map_cols[i]:
-                st.markdown(
-                    f"""
-                    <div class="portfolio-card" style="min-height:110px;">
-                        <div style="font-size:0.72rem; color:rgba(231,238,249,0.65);">{bucket}</div>
-                        <div style="font-size:1.45rem; font-weight:850; color:{bucket_colors.get(bucket, "#E7EEF9")}; margin-top:8px;">
-                            {weight}%
-                        </div>
-                        <div style="font-size:0.8rem; color:rgba(231,238,249,0.65); margin-top:4px;">
-                            ${dollar_value:,.0f}
-                        </div>
-                        <div style="font-size:0.68rem; color:rgba(231,238,249,0.55); margin-top:8px;">
-                            {assets[bucket]}
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-         
-        
-        # -----------------------------
-        # Risk & Scenario Analysis
-        # -----------------------------
-        st.markdown("### 4. Risk & Scenario Analysis")
+            equity_signal = "Bullish" if spy_6m > 5 else "Weak" if spy_6m < -5 else "Neutral"
+            growth_signal = "Leading" if qqq_6m > spy_6m else "Lagging"
+            duration_signal = "Stress Hedge Bid" if tlt_6m > spy_6m else "No Stress Bid"
+            gold_signal = "Inflation Hedge Bid" if gld_6m > 5 else "Neutral"
+            vol_signal = "Contained" if vix < 18 else "Elevated" if vix < 25 else "Stress"
 
-        risk_col, stress_col = st.columns(2, gap="medium")
+            vix_risk = "LOW" if vix < 18 else "MEDIUM" if vix < 25 else "HIGH"
+            qqq_risk = "LOW" if qqq_6m > spy_6m else "MEDIUM"
+            spy_risk = "LOW" if spy_6m > 5 else "MEDIUM" if spy_6m > 0 else "HIGH"
 
-        with risk_col:
-            risk_contrib = calculate_allocation_risk_contribution(
+            ai_regime_text = generate_market_regime_brief(
+                market_regime,
+                portfolio_type,
+                risk_level,
                 allocation,
-                assets,
-                st.session_state.allocation_horizon
+                assets
             )
 
-            if risk_contrib:
-                sorted_risk = sorted(risk_contrib.items(), key=lambda x: x[1], reverse=True)
+            # -----------------------------
+            # Header
+            # -----------------------------
+            st.markdown(
+                f'<div class="portfolio-card" style="padding:22px; margin-top:12px;">'
+                    f'<div style="display:flex; justify-content:space-between; align-items:center;">'
 
-                risk_rows = ""
-                for name, value in sorted_risk:
-                    color = bucket_colors.get(name, "#E7EEF9")
-                    risk_rows += (
-                        f'<div style="margin-top:10px;">'
-                        f'<div style="display:flex; justify-content:space-between; font-size:0.85rem;">'
-                        f'<span>{name}</span><span>{value:.1f}%</span>'
+                        f'<div>'
+                            f'<div style="font-size:1.75rem; font-weight:950; color:#E7EEF9;">'
+                                f'Market Regime Engine'
+                            f'</div>'
+
+                            f'<div style="color:rgba(231,238,249,0.62); margin-top:6px;">'
+                                f'Institutional macro regime classification and transition analysis.'
+                            f'</div>'
                         f'</div>'
-                        f'<div style="height:7px; border-radius:6px; background:rgba(255,255,255,0.08); margin-top:5px;">'
-                        f'<div style="width:{value}%; height:100%; border-radius:6px; background:{color};"></div>'
+
+                        f'<div style="text-align:right;">'
+                            f'<div style="font-size:0.7rem; color:rgba(231,238,249,0.52);">MACRO FEED</div>'
+                            f'<div style="font-size:1rem; color:#2EE59D; font-weight:900;">LIVE</div>'
                         f'</div>'
+
+                    f'</div>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            # -----------------------------
+            # Top metrics
+            # -----------------------------
+            regime_cols = st.columns(5, gap="medium")
+
+            top_metrics = [
+                ("Current Regime", market_regime["regime"], market_regime["color"]),
+                ("Regime Score", f'{market_regime["score"]:.0f}/100', "#E7EEF9"),
+                ("VIX", f'{market_regime["vix"]:.1f}', "#FFB020"),
+                ("SPY 6M", f'{market_regime["spy_return"]:+.1f}%', "#2EE59D"),
+                ("QQQ 6M", f'{market_regime["qqq_return"]:+.1f}%', "#4DA3FF"),
+            ]
+
+            for i, (label, value, color) in enumerate(top_metrics):
+                with regime_cols[i]:
+                    st.markdown(
+                        f'<div class="metric-tile">'
+                            f'<div class="metric-label">{label}</div>'
+                            f'<div class="metric-value" style="color:{color};">{value}</div>'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+
+            # -----------------------------
+            # Regime Transition Meter
+            # -----------------------------
+            st.markdown("### Regime Transition Positioning")
+
+            transition_position = probs["Risk-On"] * 1.0 + probs["Late Cycle"] * 0.55 + probs["Risk-Off"] * 0.2
+            transition_position = min(100, max(0, transition_position))
+
+            st.markdown(
+                f'<div class="portfolio-card" style="padding:18px; min-height:110px;">'
+
+                    f'<div style="display:flex; justify-content:space-between; margin-bottom:12px;">'
+
+                        f'<span style="font-size:0.78rem; letter-spacing:0.08em; color:rgba(231,238,249,0.55);">'
+                            f'REGIME TRANSITION MODEL'
+                        f'</span>'
+
+                        f'<span style="font-size:0.85rem; font-weight:900; color:#2EE59D;">'
+                            f'RISK-ON DOMINANCE'
+                        f'</span>'
+
+                    f'</div>'
+
+                    f'<div style="position:relative; margin-top:14px;">'
+
+                        f'<div style="height:14px; border-radius:999px; overflow:hidden; display:flex;">'
+
+                            f'<div style="width:40%; background:#2EE59D;"></div>'
+                            f'<div style="width:25%; background:#FFB020;"></div>'
+                            f'<div style="width:20%; background:#3A8DFF;"></div>'
+                            f'<div style="width:15%; background:#FF4D6D;"></div>'
+
+                        f'</div>'
+
+                        f'<div style="position:absolute; left:{transition_position}%; top:-6px; transform:translateX(-50%);">'
+                            f'<div style="width:4px; height:26px; background:white; border-radius:999px; box-shadow:0 0 12px white;"></div>'
+                        f'</div>'
+
+                    f'</div>'
+
+                    f'<div style="display:flex; justify-content:space-between; margin-top:10px; font-size:0.72rem; color:rgba(231,238,249,0.52);">'
+
+                        f'<span>Risk-On</span>'
+                        f'<span>Late Cycle</span>'
+                        f'<span>Risk-Off</span>'
+                        f'<span>Recession</span>'
+
+                    f'</div>'
+
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            # -----------------------------
+            # Confidence strip
+            # -----------------------------
+            confidence_cols = st.columns(4, gap="medium")
+
+            confidence_data = [
+                ("Trend Strength", f"{regime_confidence:.0f}%", "#2EE59D"),
+                ("Regime Stability", f"{regime_stability:.0f}%", "#4DA3FF"),
+                ("Volatility State", "Contained" if vix < 18 else "Elevated", "#F7B500"),
+                ("Cross-Asset Confirmation", "Strong", "#00E5FF")
+            ]
+
+            for i, (label, value, color) in enumerate(confidence_data):
+
+                with confidence_cols[i]:
+
+                    st.markdown(
+                        f'<div class="portfolio-card" style="min-height:95px; padding:16px; border:1px solid rgba(255,255,255,0.06); background:linear-gradient(135deg, rgba(8,18,40,0.95), rgba(5,10,24,0.95));">'
+
+                            f'<div style="font-size:11px; letter-spacing:1px; text-transform:uppercase; color:rgba(231,238,249,0.58); margin-bottom:8px;">'
+                                f'{label}'
+                            f'</div>'
+
+                            f'<div style="font-size:28px; font-weight:900; color:{color}; line-height:1;">'
+                                f'{value}'
+                            f'</div>'
+
+                            f'<div style="margin-top:10px; height:6px; border-radius:999px; background:rgba(255,255,255,0.06); overflow:hidden;">'
+                                f'<div style="width:78%; height:100%; background:{color}; border-radius:999px; box-shadow:0 0 12px {color};"></div>'
+                            f'</div>'
+
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+
+            # -----------------------------
+            # Main workspace
+            # -----------------------------
+            left_workspace, center_workspace, right_workspace = st.columns([1.2, 1.55, 0.95], gap="medium")
+
+            # -----------------------------
+            # LEFT
+            # -----------------------------
+            with left_workspace:
+
+                st.markdown("### Regime Timeline Engine")
+
+                timeline_data = [
+                    ("T-5", "Risk-On", "#2EE59D"),
+                    ("T-4", "Risk-On", "#2EE59D"),
+                    ("T-3", "Risk-On", "#2EE59D"),
+                    ("T-2", "Late Cycle", "#FFB020"),
+                    ("T-1", "Risk-On", "#2EE59D"),
+                    ("Now", market_regime["regime"], market_regime["color"]),
+                ]
+
+                timeline_html = ""
+
+                for label, regime_name, color in timeline_data:
+                    timeline_html += (
+                        f'<div style="flex:1; text-align:center;">'
+                            f'<div style="height:12px; border-radius:999px; background:{color}; box-shadow:0 0 10px {color};"></div>'
+                            f'<div style="margin-top:7px; font-size:0.66rem; color:rgba(231,238,249,0.50);">{label}</div>'
+                            f'<div style="margin-top:3px; font-size:0.66rem; color:{color}; font-weight:800;">{regime_name}</div>'
                         f'</div>'
                     )
 
                 st.markdown(
-                    f"""
-                    <div class="portfolio-card">
-                        <div style="font-weight:800; margin-bottom:10px;">Risk Contribution</div>
-                        {risk_rows}
-                    </div>
-                    """,
+                    f'<div class="portfolio-card" style="padding:16px; min-height:125px;">'
+                        f'<div style="display:flex; gap:8px; align-items:flex-start;">'
+                            f'{timeline_html}'
+                        f'</div>'
+                        f'<div style="height:1px; background:rgba(255,255,255,0.08); margin:14px 0 10px 0;"></div>'
+                        f'<div style="display:flex; justify-content:space-between; font-size:0.74rem; color:rgba(231,238,249,0.58);">'
+                            f'<span>Regime persistence: <b style="color:#2EE59D;">High</b></span>'
+                            f'<span>Transition drift: <b style="color:#FFB020;">Moderate</b></span>'
+                        f'</div>'
+                    f'</div>',
                     unsafe_allow_html=True
                 )
 
-        with stress_col:
-            stress = [
-                ("Market -2%", "-2.6%", "#FF4D6D"),
-                ("Tech Selloff", "-3.8%", "#FF4D6D"),
-                ("Rates Spike", "-1.4%", "#FFB020"),
-                ("Risk-On Rally", "+3.2%", "#2EE59D"),
-            ]
+                st.markdown("### Regime Probability")
 
-            stress_rows = ""
-            for name, impact, color in stress:
-                stress_rows += (
-                    f'<tr>'
-                    f'<td style="padding:8px;">{name}</td>'
-                    f'<td style="padding:8px; color:{color}; font-weight:900;">{impact}</td>'
-                    f'</tr>'
+                fig_regime = go.Figure()
+
+                fig_regime.add_trace(
+                    go.Bar(
+                        x=list(probs.keys()),
+                        y=list(probs.values()),
+                        marker=dict(
+                            color=["#2EE59D", "#FFB020", "#3A8DFF", "#FF4D6D"]
+                        ),
+                    )
                 )
+
+                fig_regime.update_layout(
+                    height=300,
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    font=dict(color="#E7EEF9"),
+                    margin=dict(l=10, r=10, t=10, b=10),
+                    yaxis=dict(gridcolor="rgba(255,255,255,0.06)", ticksuffix="%"),
+                    xaxis=dict(gridcolor="rgba(255,255,255,0.06)"),
+                    showlegend=False,
+                )
+
+                st.plotly_chart(fig_regime, use_container_width=True)
+
+                st.markdown("### Transition Risk")
+
+                risk_rows = [
+                    ("VIX Expansion Risk", vix_risk, 22, "#FFB020"),
+                    ("QQQ Breakdown Risk", qqq_risk, 18, "#4DA3FF"),
+                    ("SPY Trend Failure", spy_risk, 12, "#FF4D6D"),
+                ]
+
+                risk_html = ""
+
+                for label, status, level, color in risk_rows:
+                    risk_html += (
+                        f'<div style="margin-bottom:18px;">'
+                            f'<div style="display:flex; justify-content:space-between; margin-bottom:6px;">'
+                                f'<span>{label}</span>'
+                                f'<span style="color:{color}; font-weight:900;">{status}</span>'
+                            f'</div>'
+                            f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.06); overflow:hidden;">'
+                                f'<div style="width:{level}%; height:100%; background:{color}; border-radius:999px; box-shadow:0 0 10px {color};"></div>'
+                            f'</div>'
+                        f'</div>'
+                    )
+
+                st.markdown(
+                    f'<div class="portfolio-card" style="min-height:220px;">'
+
+                        f'{risk_html}'
+
+                        f'<div style="height:1px; background:rgba(255,255,255,0.08); margin:14px 0;"></div>'
+
+                        f'<div style="color:rgba(231,238,249,0.65); font-size:0.8rem; line-height:1.6;">'
+                            f'Engine monitoring transition pressure across volatility, growth leadership, and defensive asset rotation.'
+                        f'</div>'
+
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+            # -----------------------------
+            # CENTER
+            # -----------------------------
+            with center_workspace:
+
+                st.markdown("### AI Desk Interpretation")
+
+                st.markdown(
+                    f'<div class="portfolio-card" style="min-height:540px; padding:20px;">'
+
+                        f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">'
+
+                            f'<div style="font-size:0.78rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em;">'
+                                f'INTERNAL MACRO DESK'
+                            f'</div>'
+
+                            f'<div style="color:#2EE59D; font-size:0.74rem; font-weight:900;">LIVE</div>'
+
+                        f'</div>'
+
+                        f'<div style="color:rgba(231,238,249,0.84); font-size:0.93rem; line-height:1.7;">'
+                            f'{ai_regime_text.replace(chr(10), "<br>")}'
+                        f'</div>'
+
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+            # -----------------------------
+            # RIGHT
+            # -----------------------------
+            with right_workspace:
+
+                st.markdown("### Signal Stack")
+
+                signal_rows = [
+                    ("Equity Trend", equity_signal, "#2EE59D"),
+                    ("Growth Leadership", growth_signal, "#4DA3FF"),
+                    ("Duration", duration_signal, "#FFB020"),
+                    ("Gold", gold_signal, "#F7B500"),
+                    ("Volatility", vol_signal, "#FF4D6D"),
+                ]
+
+                signal_html = ""
+
+                for label, value, color in signal_rows:
+
+                    signal_html += (
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:12px;">'
+                            f'<span>{label}</span>'
+                            f'<span style="color:{color}; font-weight:900;">{value}</span>'
+                        f'</div>'
+                    )
+
+                st.markdown(
+                    f'<div class="portfolio-card" style="min-height:260px;">'
+                        f'{signal_html}'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+                st.markdown("### Cross-Asset Read")
+
+                st.markdown(
+                    f'<div class="portfolio-card" style="min-height:250px;">'
+
+                        f'<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">'
+
+                            f'<div style="padding:10px; border-radius:10px; background:rgba(46,229,157,0.08); text-align:center;">'
+                                f'<div style="font-size:0.68rem; color:rgba(231,238,249,0.52);">EQUITIES</div>'
+                                f'<div style="font-size:1rem; font-weight:900; color:#2EE59D;">BULLISH</div>'
+                            f'</div>'
+
+                            f'<div style="padding:10px; border-radius:10px; background:rgba(255,176,32,0.08); text-align:center;">'
+                                f'<div style="font-size:0.68rem; color:rgba(231,238,249,0.52);">BONDS</div>'
+                                f'<div style="font-size:1rem; font-weight:900; color:#FFB020;">NEUTRAL</div>'
+                            f'</div>'
+
+                            f'<div style="padding:10px; border-radius:10px; background:rgba(58,141,255,0.08); text-align:center;">'
+                                f'<div style="font-size:0.68rem; color:rgba(231,238,249,0.52);">VOLATILITY</div>'
+                                f'<div style="font-size:1rem; font-weight:900; color:#4DA3FF;">STABLE</div>'
+                            f'</div>'
+
+                            f'<div style="padding:10px; border-radius:10px; background:rgba(247,181,0,0.08); text-align:center;">'
+                                f'<div style="font-size:0.68rem; color:rgba(231,238,249,0.52);">GOLD</div>'
+                                f'<div style="font-size:1rem; font-weight:900; color:#F7B500;">HEDGE BID</div>'
+                            f'</div>'
+
+                        f'</div>'
+
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+                st.markdown("### Macro Factor Heatmap")
+                macro_factors = [
+                    ("Liquidity", "Supportive", "#2EE59D"),
+                    ("Growth", "Strong", "#2EE59D"),
+                    ("Inflation", "Sticky", "#FFB020"),
+                    ("Rates", "Neutral", "#F7B500"),
+                    ("Credit", "Calm", "#2EE59D"),
+                    ("Volatility", "Contained", "#4DA3FF"),
+                    ("USD", "Neutral", "#94A3B8"),
+                    ("Commodities", "Bid", "#FFB020"),
+                ]
+
+                factor_heatmap_html = ""
+
+                for factor, state, color in macro_factors:
+                    factor_heatmap_html += (
+                        f'<div style="padding:9px; border-radius:10px; background:{color}18; border:1px solid {color}55;">'
+                            f'<div style="font-size:0.62rem; color:rgba(231,238,249,0.55); text-transform:uppercase; letter-spacing:0.06em;">{factor}</div>'
+                            f'<div style="font-size:0.82rem; font-weight:950; color:{color}; margin-top:4px;">{state}</div>'
+                        f'</div>'
+                    )
+
+                st.markdown(
+                    f'<div class="portfolio-card" style="min-height:210px; padding:14px;">'
+                        f'<div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:8px;">'
+                            f'{factor_heatmap_html}'
+                        f'</div>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )           
+
+            st.stop()
+
+        if selected_view != "Command Center":
+            st.markdown(
+                f'<div class="portfolio-card" style="padding:22px; margin-top:12px;">'
+                    f'<div style="font-size:1.4rem; font-weight:950; color:#E7EEF9;">{selected_view}</div>'
+                    f'<div style="color:rgba(231,238,249,0.62); margin-top:6px;">This deep-dive workspace stays tied to {portfolio_type}.</div>'
+                    f'<div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-top:18px;">'
+                        f'<div class="metric-tile"><div class="metric-label">Portfolio</div><div class="metric-value">${portfolio_size:,.0f}</div></div>'
+                        f'<div class="metric-tile"><div class="metric-label">Expected Return</div><div class="metric-value">{expected_return}</div></div>'
+                        f'<div class="metric-tile"><div class="metric-label">Risk Level</div><div class="metric-value" style="color:{risk_color};">{risk_level}</div></div>'
+                        f'<div class="metric-tile"><div class="metric-label">Status</div><div class="metric-value" style="color:#73CFFF;">Coming Soon</div></div>'
+                    f'</div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
 
             st.markdown(
-                f"""
-                <div class="portfolio-card">
-                    <div style="font-weight:800; margin-bottom:10px;">Allocation Stress Test</div>
-                    <table style="width:100%; border-collapse:collapse;">
-                        <thead>
-                            <tr style="color:rgba(231,238,249,0.65); text-align:left;">
-                                <th style="padding:8px;">Scenario</th>
-                                <th style="padding:8px;">Impact</th>
-                            </tr>
-                        </thead>
-                        <tbody style="color:#E7EEF9;">
-                            {stress_rows}
-                        </tbody>
-                    </table>
-                </div>
-                """,
+                f'<div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:14px;">'
+                    f'<div class="portfolio-card" style="min-height:180px;"><div class="engine-card-title">Primary Analysis</div><div class="portfolio-placeholder medium">Dedicated calculations and charts will live here.</div></div>'
+                    f'<div class="portfolio-card" style="min-height:180px;"><div class="engine-card-title">AI Interpretation</div><div class="portfolio-placeholder medium">AI brief placeholder.</div></div>'
+                    f'<div class="portfolio-card" style="min-height:180px;"><div class="engine-card-title">Portfolio Actions</div><div class="portfolio-placeholder medium">Recommendations placeholder.</div></div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+            st.stop()
+
+        # -----------------------------
+        # Command Center top grid
+        # -----------------------------
+        top_left, top_mid, top_right = st.columns([2.2, 0.95, 1.35], gap="medium")
+
+        with top_left:
+            st.markdown("### 1. Suggested Portfolio vs SPY")
+            if growth is not None:
+                fig_growth = go.Figure()
+                fig_growth.update_layout(hovermode="x unified")
+                colors = {
+                    "Allocation Engine": "#3A8DFF",
+                    "SPY": "rgba(255,255,255,0.65)",
+                    "Growth Strategy": "#2EE59D",
+                    "Concentrated Alpha": "#9B5CF6",
+                    "Defensive Allocation": "#F59E0B",
+                }
+                for col in growth.columns:
+                    fig_growth.add_trace(
+                        go.Scatter(
+                            x=growth.index,
+                            y=growth[col],
+                            mode="lines",
+                            name=col,
+                            line=dict(color=colors.get(col, "#E7EEF9"), width=3 if col == "Allocation Engine" else 1.6),
+                        )
+                    )
+                fig_growth.update_layout(
+                    height=315,
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    font=dict(color="#E7EEF9"),
+                    margin=dict(l=10, r=10, t=8, b=8),
+                    legend=dict(orientation="h", y=1.08, x=0, font=dict(size=10, color="#FFFFFF"), bgcolor="rgba(0,0,0,0)"),
+                    xaxis=dict(gridcolor="rgba(255,255,255,0.06)"),
+                    yaxis=dict(gridcolor="rgba(255,255,255,0.06)", title="Growth of $100"),
+                )
+                st.plotly_chart(fig_growth, use_container_width=True)
+            else:
+                st.info("Live performance chart will appear once market data loads.")
+
+        with top_mid:
+            st.markdown("### 2. Allocation Mix")
+            fig_alloc = go.Figure(
+                data=[
+                    go.Pie(
+                        labels=list(allocation.keys()),
+                        values=list(allocation.values()),
+                        hole=0.58,
+                        textinfo="percent",
+                        hoverinfo="label+percent",
+                        marker=dict(colors=[bucket_colors.get(k, "#E7EEF9") for k in allocation.keys()]),
+                    )
+                ]
+            )
+            fig_alloc.update_layout(
+                height=315,
+                margin=dict(l=0, r=0, t=8, b=8),
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#E7EEF9", size=10),
+                showlegend=True,
+                legend=dict(orientation="v", font=dict(size=9, color="#E7EEF9")),
+            )
+            st.plotly_chart(fig_alloc, use_container_width=True)
+
+        with top_right:
+            st.markdown("### 3. Capital Deployment")
+            total_buy = sum(p["dollars"] for p in recommendations)
+            deployed_pct = (total_buy / portfolio_size) * 100 if portfolio_size else 0
+            cash_left = max(0, portfolio_size - total_buy)
+            buy_rows = ""
+            for pick in recommendations:
+                buy_rows += (
+                    f'<tr>'
+                    f'<td>{pick["ticker"]}</td>'
+                    f'<td>{pick["shares"]:.2f}</td>'
+                    f'<td>${pick["dollars"]:,.0f}</td>'
+                    f'<td style="color:{bucket_colors.get(pick["bucket"], "#E7EEF9")};">{pick["bucket"]}</td>'
+                    f'</tr>'
+                )
+            st.markdown(
+                f'<div class="portfolio-card" style="min-height:315px;">'
+                    f'<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:12px;">'
+                        f'<div><div class="mini-label">Starting</div><div class="mini-value">${portfolio_size:,.0f}</div></div>'
+                        f'<div><div class="mini-label">Deployed</div><div class="mini-value">${total_buy:,.0f}</div></div>'
+                        f'<div><div class="mini-label">Cash</div><div class="mini-value">${cash_left:,.0f}</div></div>'
+                        f'<div><div class="mini-label">Deploy %</div><div class="mini-value" style="color:#2EE59D;">{deployed_pct:.1f}%</div></div>'
+                    f'</div>'
+                    f'<table style="width:100%; border-collapse:collapse; font-size:0.73rem; color:#E7EEF9;">'
+                        f'<thead style="color:rgba(231,238,249,0.55);"><tr><th style="text-align:left;">Ticker</th><th>Shares</th><th>$</th><th>Bucket</th></tr></thead>'
+                        f'<tbody>{buy_rows}</tbody>'
+                    f'</table>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+
+        # -----------------------------
+        # Mid row: AI + deployment map + plan controls
+        # -----------------------------
+        mid_left, mid_mid, mid_right = st.columns([1.35, 1.35, 0.9], gap="medium")
+
+        with mid_left:
+            allocation_ai_text = generate_allocation_brief(
+                portfolio_type,
+                risk_level,
+                expected_return,
+                volatility,
+                drawdown,
+                sharpe,
+                vs_spy,
+                best_strategy,
+                closest,
+                gap_driver,
+                outperformance,
+                st.session_state.allocation_horizon,
+            )
+            st.markdown(
+                f'<div class="portfolio-card" style="min-height:245px;">'
+                    f'<div class="engine-card-title">AI Executive Summary</div>'
+                    f'<div style="font-size:0.82rem; line-height:1.5; color:#E7EEF9;">{allocation_ai_text.replace(chr(10), "<br>")}</div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+
+        with mid_mid:
+            st.markdown("### 4. Capital Deployment Map")
+            map_html = f'<div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">'
+            for bucket, weight in allocation.items():
+                dollar_value = portfolio_size * (weight / 100)
+                color = bucket_colors.get(bucket, "#E7EEF9")
+                map_html += (
+                    f'<div class="portfolio-card" style="min-height:105px; background:linear-gradient(135deg,{color}2B,rgba(9,23,51,0.94));">'
+                        f'<div style="font-size:0.70rem; color:rgba(231,238,249,0.75);">{bucket}</div>'
+                        f'<div style="font-size:1.45rem; font-weight:950; color:{color}; margin-top:5px;">{weight}%</div>'
+                        f'<div style="color:#E7EEF9; font-size:0.8rem;">${dollar_value:,.0f}</div>'
+                        f'<div style="color:rgba(231,238,249,0.55); font-size:0.64rem; margin-top:5px;">{assets[bucket]}</div>'
+                    f'</div>'
+                )
+            map_html += f'</div>'
+            st.markdown(map_html, unsafe_allow_html=True)
+
+        with mid_right:
+            st.markdown("### Plan Controls")
+            with st.container():
+                st.number_input("Portfolio Size ($)", min_value=1000, max_value=10000000, step=1000, value=100000, key="allocation_portfolio_size")
+
+                st.markdown("**Mandate**")
+                mandate_cols = st.columns(2)
+                for i, mandate_option in enumerate(["Growth", "Defensive", "Absolute Return", "Opportunistic"]):
+                    with mandate_cols[i % 2]:
+                        if st.button(mandate_option, key=f"allocation_mandate_{mandate_option}", use_container_width=True, type="primary" if st.session_state.allocation_mandate == mandate_option else "secondary"):
+                            st.session_state.allocation_mandate = mandate_option
+                            st.rerun()
+
+                st.markdown("**Risk Budget**")
+                risk_cols = st.columns(3)
+                for i, risk_option in enumerate(["Low", "Medium", "High"]):
+                    with risk_cols[i]:
+                        if st.button(risk_option, key=f"allocation_risk_{risk_option}", use_container_width=True, type="primary" if st.session_state.allocation_risk == risk_option else "secondary"):
+                            st.session_state.allocation_risk = risk_option
+                            st.rerun()
+
+                st.markdown("**Horizon**")
+                horizon_cols = st.columns(4)
+                for i, horizon in enumerate(["1Y", "3Y", "5Y", "10Y"]):
+                    with horizon_cols[i]:
+                        if st.button(horizon, key=f"allocation_horizon_{horizon}", use_container_width=True, type="primary" if st.session_state.allocation_horizon == horizon else "secondary"):
+                            st.session_state.allocation_horizon = horizon
+                            st.rerun()
+
+        # -----------------------------
+        # Analytical engines
+        # -----------------------------
+        st.markdown('<div class="engine-section-title">Analytical Engines</div>', unsafe_allow_html=True)
+
+        engine_top = st.columns([1.65, 1.25, 0.9, 0.9], gap="medium")
+
+        with engine_top[0]:
+            st.markdown("### 5. Monte Carlo Lab")
+            st.slider("Auto simulations", 100, 1500, 500, step=100, key="mc_auto_simulations")
+
+            if mc:
+                st.markdown(
+                    f'<div class="portfolio-card" style="padding:10px; margin-top:8px;">'
+                        f'<div style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px;">'
+                            f'<div><div class="mini-label">Expected</div><div class="mini-value">${mc["expected_final_value"]:,.0f}</div></div>'
+                            f'<div><div class="mini-label">Median</div><div class="mini-value">${mc["median_final_value"]:,.0f}</div></div>'
+                            f'<div><div class="mini-label">5% Worst</div><div class="mini-value" style="color:#FF4D6D;">${mc["worst_5_percent"]:,.0f}</div></div>'
+                            f'<div><div class="mini-label">95% Best</div><div class="mini-value" style="color:#3A8DFF;">${mc["best_95_percent"]:,.0f}</div></div>'
+                            f'<div><div class="mini-label">Loss Prob.</div><div class="mini-value" style="color:#2EE59D;">{mc["probability_loss"]:.1%}</div></div>'
+                        f'</div>'
+                    f'</div>',
+                    unsafe_allow_html=True,
+                )
+                paths_df = pd.DataFrame(mc["paths"])
+                fig_mc = go.Figure()
+                sample_paths = paths_df.iloc[:, : min(55, paths_df.shape[1])]
+                for col in sample_paths.columns:
+                    fig_mc.add_trace(go.Scatter(y=sample_paths[col], mode="lines", line=dict(width=1, color="rgba(58,141,255,0.11)"), showlegend=False, hoverinfo="skip"))
+                fig_mc.add_trace(go.Scatter(y=paths_df.median(axis=1), mode="lines", name="Median", line=dict(width=3, color="#2EE59D")))
+                fig_mc.add_trace(go.Scatter(y=paths_df.quantile(0.05, axis=1), mode="lines", name="5th", line=dict(width=2.4, color="#FF4D6D")))
+                fig_mc.add_trace(go.Scatter(y=paths_df.quantile(0.95, axis=1), mode="lines", name="95th", line=dict(width=2.4, color="#3A8DFF")))
+                fig_mc.update_layout(
+                    height=245,
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    font=dict(color="#E7EEF9"),
+                    margin=dict(l=8, r=8, t=16, b=8),
+                    legend=dict(orientation="h", y=1.12, x=0, font=dict(size=10)),
+                    xaxis=dict(gridcolor="rgba(255,255,255,0.06)", title="Trading Days"),
+                    yaxis=dict(gridcolor="rgba(255,255,255,0.06)", title="Portfolio Value"),
+                )
+                st.plotly_chart(fig_mc, use_container_width=True)
+            else:
+                st.markdown('<div class="portfolio-placeholder tall">Monte Carlo data unavailable.</div>', unsafe_allow_html=True)
+
+        with engine_top[1]:
+            st.markdown("### 6. Risk Engine")
+            risk_contrib = calculate_allocation_risk_contribution(allocation, assets, st.session_state.allocation_horizon)
+            risk_rows = ""
+            if risk_contrib:
+                for name, value in sorted(risk_contrib.items(), key=lambda x: x[1], reverse=True):
+                    color = bucket_colors.get(name, "#E7EEF9")
+                    risk_rows += (
+                        f'<div style="margin-top:8px;">'
+                            f'<div style="display:flex; justify-content:space-between; font-size:0.76rem;"><span>{name}</span><span>{value:.1f}%</span></div>'
+                            f'<div style="height:7px; border-radius:6px; background:rgba(255,255,255,0.08); margin-top:4px;"><div style="width:{value}%; height:100%; border-radius:6px; background:{color};"></div></div>'
+                        f'</div>'
+                    )
+            st.markdown(
+                f'<div class="portfolio-card" style="min-height:352px;">'
+                    f'<div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">'
+                        f'<div><div class="engine-card-title">Risk Contribution</div>{risk_rows}</div>'
+                        f'<div><div class="engine-card-title">Key Risk Metrics</div>'
+                            f'<div style="display:flex; justify-content:space-between;"><span>Volatility</span><span style="color:#2EE59D;">{volatility}</span></div>'
+                            f'<div style="display:flex; justify-content:space-between;"><span>Max Drawdown</span><span style="color:#FF4D6D;">{drawdown}</span></div>'
+                            f'<div style="display:flex; justify-content:space-between;"><span>Sharpe</span><span>{sharpe}</span></div>'
+                            f'<div style="display:flex; justify-content:space-between;"><span>Beta vs SPY</span><span>0.92</span></div>'
+                            f'<div style="display:flex; justify-content:space-between;"><span>Corr. vs SPY</span><span style="color:#2EE59D;">0.88</span></div>'
+                        f'</div>'
+                    f'</div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+
+        with engine_top[2]:
+            st.markdown("### 7. Stress Test")
+            stress = [("Recession", "-24.6%", "#FF4D6D"), ("Inflation Spike", "-18.3%", "#FF4D6D"), ("Tech Selloff", "-28.7%", "#FF4D6D"), ("Rates Shock", "-16.2%", "#FF4D6D"), ("Credit Crunch", "-31.4%", "#FF4D6D"), ("Bull Market", "+21.8%", "#2EE59D")]
+            stress_rows = "".join([f'<tr><td style="padding:7px;">{n}</td><td style="padding:7px; color:{c}; font-weight:900; text-align:right;">{v}</td></tr>' for n, v, c in stress])
+            st.markdown(f'<div class="portfolio-card" style="min-height:352px;"><table style="width:100%; border-collapse:collapse; font-size:0.8rem;"><thead style="color:rgba(231,238,249,0.55);"><tr><th style="text-align:left;">Scenario</th><th style="text-align:right;">Impact</th></tr></thead><tbody>{stress_rows}</tbody></table></div>', unsafe_allow_html=True)
+
+        with engine_top[3]:
+            st.markdown("### 8. Factor Exposure")
+            factors = [("Market", 0.92), ("Size", 0.15), ("Value", 0.22), ("Momentum", 0.35), ("Quality", 0.48), ("Low Vol", 0.88), ("Growth", 0.62)]
+            factor_rows = "".join([f'<div style="display:flex; justify-content:space-between; margin-top:10px; font-size:0.82rem;"><span>{n}</span><span>{v:.2f}</span></div>' for n, v in factors])
+            st.markdown(f'<div class="portfolio-card" style="min-height:352px;"><div style="display:flex; justify-content:space-between; color:rgba(231,238,249,0.55); font-size:0.74rem;"><span>Factor</span><span>Exposure</span></div>{factor_rows}</div>', unsafe_allow_html=True)
+
+        engine_bottom = st.columns([1.05, 1.05, 1.1, 1.15, 0.95], gap="medium")
+
+        with engine_bottom[0]:
+            st.markdown("### 9. Correlation")
+
+            corr = calculate_allocation_correlation_matrix(
+                recommendations,
+                st.session_state.allocation_horizon
+            )
+
+            if corr is not None:
+                fig_corr = go.Figure(
+                    data=go.Heatmap(
+                        z=corr.values,
+                        x=corr.columns,
+                        y=corr.index,
+                        zmin=-1,
+                        zmax=1,
+                        colorscale=[
+                            [0.0, "#FF4D6D"],
+                            [0.5, "#091733"],
+                            [1.0, "#2EE59D"],
+                        ],
+                        colorbar=dict(
+                            title=dict(
+                                text="Corr",
+                                font=dict(color="#E7EEF9")
+                            ),
+                            tickfont=dict(color="#E7EEF9"),
+                        ),
+                    )
+                )
+
+                fig_corr.update_layout(
+                    height=185,
+                    margin=dict(l=10, r=10, t=10, b=10),
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    font=dict(color="#E7EEF9", size=10),
+                    xaxis=dict(showgrid=False),
+                    yaxis=dict(showgrid=False),
+                )
+                avg_corr = corr.where(~np.eye(corr.shape[0], dtype=bool)).stack().mean()
+                corr_box = st.container(border=True)
+
+                with corr_box:
+                    st.plotly_chart(fig_corr, use_container_width=True)
+
+                    st.markdown(
+                        f"""
+                        <div class="engine-card-body" style="margin-top:-8px;">
+                            Avg correlation: <b>{avg_corr:.2f}</b><br>
+                            Detects hidden overlap and fake diversification.
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+            else:
+                st.markdown(
+                    '<div class="portfolio-card" style="min-height:238px;">'
+                    '<div class="portfolio-placeholder medium">Correlation data unavailable.</div>'
+                    '<div class="engine-card-body" style="margin-top:10px;">Detects hidden overlap and fake diversification.</div>'
+                    '</div>',
+                    unsafe_allow_html=True
+                )
+        with engine_bottom[1]:
+            st.markdown("### 10. Scenario")
+            st.markdown(f'<div class="portfolio-card" style="min-height:238px;"><div class="engine-card-title">Custom Scenario Builder</div><div style="display:grid; gap:7px;"><div style="display:flex; justify-content:space-between;"><span>GDP Growth</span><span>-1.0%</span></div><div style="display:flex; justify-content:space-between;"><span>Inflation</span><span>+2.5%</span></div><div style="display:flex; justify-content:space-between;"><span>Rates</span><span>+1.0%</span></div><div style="display:flex; justify-content:space-between;"><span>Equities</span><span>-15.0%</span></div></div><div style="margin-top:14px; color:#FF4D6D; font-size:1.15rem; font-weight:950;">Impact: -19.7%</div></div>', unsafe_allow_html=True)
+
+        with engine_bottom[2]:
+            st.markdown("### 11. AI Insights")
+            st.markdown(f'<div class="portfolio-card" style="min-height:238px;"><div style="line-height:1.75; font-size:0.82rem;">🟣 Long-term growth drivers<br>🟠 Moderate tech concentration<br>🟢 Good asset-class diversification<br>🔵 Recession/credit sensitivity<br>🔵 Watch volatility regime shifts</div></div>', unsafe_allow_html=True)
+
+        with engine_bottom[3]:
+            st.markdown("### 12. Market Regime")
+            st.markdown(
+                f'<div class="portfolio-card" style="min-height:238px;">'
+                    f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                        f'<div class="mini-label">MARKET REGIME</div>'
+                        f'<div style="width:8px; height:8px; border-radius:50%; background:{market_regime["color"]}; box-shadow:0 0 12px {market_regime["color"]};"></div>'
+                    f'</div>'
+                    f'<div style="margin-top:10px; padding:10px; border-radius:14px; background:linear-gradient(135deg, rgba(46,229,157,0.08), rgba(58,141,255,0.03)); border:1px solid {market_regime["color"]};">'
+                        f'<div style="color:{market_regime["color"]}; font-size:1.05rem; font-weight:800;">{market_regime["regime"]}</div>'
+                    f'</div>'
+                    f'<div style="margin-top:12px; display:flex; justify-content:space-between; font-size:0.78rem;">'
+                        f'<span>Risk-On</span><span>{market_regime["probabilities"]["Risk-On"]:.0f}%</span>'
+                    f'</div>'
+                    f'<div style="display:flex; justify-content:space-between; font-size:0.78rem;">'
+                        f'<span>Late Cycle</span><span>{market_regime["probabilities"]["Late Cycle"]:.0f}%</span>'
+                    f'</div>'
+                    f'<div style="display:flex; justify-content:space-between; font-size:0.78rem;">'
+                        f'<span>Risk-Off</span><span>{market_regime["probabilities"]["Risk-Off"]:.0f}%</span>'
+                    f'</div>'
+                    f'<div style="display:flex; justify-content:space-between; font-size:0.78rem;">'
+                        f'<span>Recession</span><span>{market_regime["probabilities"]["Recession"]:.0f}%</span>'
+                    f'</div>'
+                f'</div>',
                 unsafe_allow_html=True
             )
+        
 
-    # -----------------------------
-    # Right Panel
-    # -----------------------------
-    with right_col:
-        st.markdown("### Risk Profile")
-
-        st.markdown(
-            f"""
-            <div class="portfolio-card" style="padding:16px; text-align:center;">
-                <div style="color:rgba(231,238,249,0.7); font-size:0.9rem;">Risk Level</div>
-                <div style="margin-top:8px; font-size:1.45rem; font-weight:800; color:{risk_color};">{risk_level}</div>
-                <div style="margin-top:12px; height:8px; border-radius:6px; background:linear-gradient(90deg,#2EE59D,#FFB020,#FF4D6D);"></div>
-                <div style="margin-top:10px; color:rgba(231,238,249,0.7); font-size:0.8rem;">
-                    Risk Budget: <b>{st.session_state.allocation_risk}</b> | Horizon: <b>{st.session_state.allocation_horizon}</b>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-        st.markdown("### Allocation Mix")
-
-        fig_alloc = go.Figure(
-            data=[
-                go.Pie(
-                    labels=list(allocation.keys()),
-                    values=list(allocation.values()),
-                    hole=0.58,
-                    textinfo="percent",
-                    hoverinfo="label+percent",
-                    marker=dict(colors=[bucket_colors.get(k, "#E7EEF9") for k in allocation.keys()])
-                )
-            ]
-        )
-
-        fig_alloc.update_layout(
-            height=250,
-            margin=dict(l=10, r=10, t=10, b=10),
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="#E7EEF9", size=11),
-            showlegend=True,
-            legend=dict(
-                orientation="h",
-                y=-0.12,
-                font=dict(size=10, color="#E7EEF9"),
-            )
-        )
-
-        st.plotly_chart(fig_alloc, use_container_width=True)
-
-        allocation_ai_text = generate_allocation_brief(
-            portfolio_type,
-            risk_level,
-            expected_return,
-            volatility,
-            drawdown,
-            sharpe,
-            vs_spy,
-            best_strategy,
-            closest,
-            gap_driver,
-            outperformance,
-            st.session_state.allocation_horizon
-        )
-
-        st.markdown(
-            f"""
-            <div class="portfolio-card" style="margin-top:10px;">
-                <div style="font-weight:800; margin-bottom:10px;">AI Allocation Brief</div>
-                <div style="font-size:0.9rem; line-height:1.6; color:#E7EEF9;">
-                    {allocation_ai_text.replace(chr(10), "<br>")}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        with engine_bottom[4]:
+            st.markdown("### Health")
+            st.markdown(f'<div class="portfolio-card" style="min-height:238px; text-align:center;"><div style="margin:10px auto; width:112px; height:112px; border-radius:50%; background:conic-gradient(#2EE59D 0deg, #2EE59D 295deg, rgba(255,255,255,0.08) 295deg); display:flex; align-items:center; justify-content:center;"><div style="width:78px; height:78px; border-radius:50%; background:#091733; display:flex; align-items:center; justify-content:center; flex-direction:column;"><div style="font-size:1.8rem; font-weight:950;">82</div><div style="font-size:0.65rem;">/100</div></div></div><div style="color:#2EE59D; font-size:1rem; font-weight:900;">Good</div></div>', unsafe_allow_html=True)
 
         st.markdown(
             """
-            <div style="margin-top:16px; text-align:center; color:rgba(231,238,249,0.55); font-size:0.8rem;">
-                This tool is for educational and informational purposes only and does not constitute
-                investment advice. Outputs are generated from models and data and may be inaccurate.
-                Past performance is not indicative of future results.
+            <div style="margin-top:18px; text-align:center; color:rgba(231,238,249,0.48); font-size:0.78rem;">
+                This tool is for educational and informational purposes only and does not constitute investment advice.
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
