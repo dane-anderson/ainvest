@@ -1,9 +1,9 @@
 
 # 🚀 AInvest
 
-AI-powered investment intelligence platform that transforms raw financial data into structured signals, portfolio strategy, and capital allocation insight.
+Institutional-style financial intelligence and portfolio decision platform built to simulate how modern quantitative firms structure market signals, macro regimes, portfolio construction, and probabilistic risk analysis into a unified investment workflow.
 
-Built to simulate how modern institutional fintech systems combine quantitative models, portfolio analytics, and AI reasoning into a unified decision layer.
+AInvest combines quantitative analytics, simulation systems, AI reasoning, and real-time market data into an integrated decision engine.
 
 ---
 
@@ -33,18 +33,30 @@ Built to simulate how modern institutional fintech systems combine quantitative 
 
 ## ⚡ What This Is
 
-Most retail tools show charts.
+Most retail platforms show charts.
 
-AInvest explains decisions.
+AInvest builds decision systems.
 
 It sits between:
 
-- raw market data  
+- real-time market data  
 - quantitative signals  
+- macro regime analysis  
+- portfolio construction  
+- probabilistic simulation  
 - AI interpretation  
 
-and outputs a clear, decision-ready view of the market.
+and transforms them into a unified, institutional-style investment intelligence workflow.
 
+The platform is designed to simulate how modern quantitative firms structure:
+
+- market regime positioning  
+- portfolio allocation  
+- risk management  
+- scenario analysis  
+- capital deployment decisions  
+
+into clear, decision-ready output.
 ---
 
 ## 🧩 Core Features
@@ -60,34 +72,119 @@ Single-ticker analysis engine:
 
 ---
 
-## ⚙️ Allocation Engine (NEW)
-Institutional-style capital allocation system:
+## ⚙️ Allocation Engine
+
+Institutional-style capital allocation command center:
 
 Dynamic portfolio construction based on:
-- mandate (growth, defensive, opportunistic)
+- mandate: growth, defensive, absolute return, opportunistic
 - risk budget
 - time horizon
+- portfolio size
 
 Automatically builds:
-- capital deployment plan (what to buy, how much)
-- allocation map across strategy buckets
-- projected performance vs SPY
+- capital deployment plan: ticker, shares, dollars, bucket
+- allocation map across strategy sleeves
+- projected return, volatility, drawdown, Sharpe, and SPY outperformance
 - benchmark comparison vs:
+  - SPY
   - Growth Strategy
   - Concentrated Alpha
   - Defensive Allocation
 
+Integrated analytical engines:
+- Monte Carlo Lab
+- Risk Engine
+- Stress Test Engine
+- Factor Exposure Engine
+- Correlation Engine
+- Scenario Engine
+- AI Insights
+- Market Regime Engine
+- AI Recommendations layer
+
 Advanced analytics:
-- risk contribution breakdown by bucket
-- stress testing across macro scenarios
-- projected capital growth + edge vs market
-
-Includes:
-- AI allocation brief (PM-style decision note)
 - live price-based position sizing
-- portfolio-level performance simulation
+- risk contribution breakdown by bucket
+- stress testing across recession, inflation, tech selloff, rates shock, credit crunch, and bull market scenarios
+- factor exposure analysis across market, size, value, momentum, quality, low volatility, and growth
+- correlation heatmap to detect hidden overlap and fake diversification
+- custom scenario builder for GDP, inflation, rates, and equity shocks
+- portfolio health scoring
+- capital deployment map by strategic sleeve
 
-👉 This transforms AInvest from analysis → full portfolio construction engine.
+AI layer:
+- AI executive summary
+- PM-style allocation brief
+- internal desk-style interpretation
+- positioning, exposure, risk, adjustment, and takeaway sections
+
+👉 This transforms AInvest from a stock/portfolio dashboard into a multi-engine institutional allocation workspace.
+
+## 🧭 Market Regime Engine (NEW)
+
+Institutional-style macro regime workspace:
+
+- Live market regime classification:
+  - Risk-On Expansion
+  - Late Cycle
+  - Risk-Off
+  - Recession
+- Regime transition positioning model
+- Regime timeline engine showing recent macro state progression
+- Confidence strip for:
+  - trend strength
+  - regime stability
+  - volatility state
+  - cross-asset confirmation
+- AI macro desk interpretation written like an internal trading desk note
+- Signal stack across:
+  - equity trend
+  - growth leadership
+  - duration
+  - gold
+  - volatility
+- Transition risk monitor with severity bars
+- Cross-asset read panel
+- Macro factor heatmap covering:
+  - liquidity
+  - growth
+  - inflation
+  - rates
+  - credit
+  - volatility
+  - USD
+  - commodities
+
+👉 This transforms AInvest into a broader market-regime intelligence system, not just a portfolio or stock analysis tool.
+
+
+## 🎲 Monte Carlo Engine (NEW)
+
+Institutional-style portfolio simulation engine:
+
+- Forward-looking portfolio path simulation
+- Adjustable:
+  - investment horizon
+  - simulation count
+  - volatility stress
+  - confidence interval
+- Probability distribution modeling
+- Drawdown visualization
+- Expected range forecasting
+- Confidence band analysis
+- AI-assisted interpretation of simulation outcomes
+- Portfolio stress behavior under varying volatility regimes
+
+Advanced capabilities:
+
+- Scenario-aware portfolio projection
+- Tail-risk exploration
+- Portfolio survivability testing
+- Risk-adjusted growth analysis
+- Future capital path visualization
+
+👉 This introduces probabilistic forecasting and institutional-style simulation analysis into AInvest.
 
 ---
 
@@ -108,41 +205,97 @@ Multi-asset portfolio analysis system:
 👉 This is the foundation for portfolio intelligence tooling, not just stock analysis.
 
 ---
-
 ## 🧠 System Architecture
 
-AInvest runs as a layered decision pipeline:
+AInvest operates as a layered financial intelligence pipeline designed to simulate institutional-style investment workflows.
 
-### 1. Signal Layer
-- Generates directional bias (buy / hold / sell style)
-- Outputs conviction score
-- Mimics lightweight quant signals
+### 1. Market Data Layer
+Handles live financial data ingestion and preprocessing.
 
-### 2. Data Layer
-- Real-time market data (yfinance)
-- Fallback handling for reliability
-- Prevents UI/data failures
+Responsibilities:
+- Real-time market data retrieval
+- Portfolio benchmark construction
+- Historical return normalization
+- Data cleaning + fallback handling
+- Defensive runtime safeguards
 
-### 3. Reasoning Layer (AI)
-LLM interprets:
-- signals  
-- price action  
-- context  
-
-Outputs:
-- bias  
-- conviction  
-- structural narrative  
-
-→ Converts raw data into human-readable intelligence
-
-### 4. Presentation Layer
-- Streamlit UI
-- Decision-first layout
-- Clean, institutional-style interface
+Sources:
+- yfinance
+- PostgreSQL ranked datasets
+- Precomputed cloud allocation pipelines
 
 ---
 
+### 2. Quantitative Signal Layer
+Transforms raw market data into structured portfolio and market signals.
+
+Capabilities:
+- Directional bias generation
+- Conviction scoring
+- Risk classification
+- Relative strength analysis
+- Allocation ranking models
+- Cross-asset signal evaluation
+- Regime transition analysis
+
+Outputs:
+- bullish / neutral / bearish bias
+- portfolio bucket weights
+- macro regime classification
+- stress indicators
+- factor exposure metrics
+
+---
+
+### 3. Portfolio Intelligence Layer
+Performs portfolio construction and institutional-style analytics.
+
+Systems include:
+- Allocation Engine
+- Portfolio Lab
+- Risk Engine
+- Stress Test Engine
+- Correlation Engine
+- Factor Exposure Engine
+- Monte Carlo simulation framework
+
+Capabilities:
+- capital deployment modeling
+- benchmark comparison
+- volatility analysis
+- drawdown forecasting
+- probabilistic scenario simulation
+- tail-risk evaluation
+- survivability testing
+
+---
+
+### 4. AI Reasoning Layer
+LLMs interpret quantitative outputs into structured investment narratives.
+
+AI-generated outputs include:
+- trader-style signal interpretation
+- PM-style portfolio briefs
+- macro desk commentary
+- scenario interpretation
+- allocation rationale
+- risk observations
+
+→ Converts quantitative outputs into human-readable financial intelligence.
+
+---
+
+### 5. Presentation Layer
+Institutional-style decision interface built in Streamlit.
+
+Design principles:
+- decision-first workflows
+- modular analytical engines
+- macro terminal aesthetic
+- high-density information layout
+- portfolio manager style presentation
+
+The interface is designed to resemble modern internal investment research and portfolio systems rather than traditional retail dashboards.
 ## ☁️ Cloud Infrastructure & Data Pipeline (NEW)
 
 AInvest now operates on a cloud-backed architecture designed for scalable financial computation workflows.
@@ -242,25 +395,57 @@ Deployed on Render:
 - Streamlit app entry: app.py
 
 ---
-
 ## ⚠️ Design Philosophy
 
-AInvest is not built to predict markets.
+AInvest is not built to predict markets with certainty.
 
 It is built to:
 
-> structure uncertainty into interpretable signals.
+> structure uncertainty into interpretable, probabilistic decision frameworks.
+
+The platform focuses on:
+- signal interpretation over prediction
+- risk-aware portfolio construction
+- macro regime identification
+- probabilistic simulation
+- scenario-driven analysis
+- institutional-style decision support
+
+Rather than generating isolated indicators, AInvest attempts to combine:
+
+- quantitative analytics
+- portfolio intelligence
+- macro positioning
+- simulation systems
+- AI reasoning
+
+into a unified investment workflow designed to resemble modern institutional research and portfolio systems.
 
 ---
 
 ## 🔮 Future Expansion
 
-- Portfolio optimization engine (Allocation Engine)
-- Multi-timeframe signal aggregation
-- Risk modeling (beta, factor exposure)
-- AI agents for automated analysis
+Planned expansion areas include:
 
----
+- Advanced portfolio optimization systems
+- Multi-timeframe signal aggregation
+- Dynamic factor rotation models
+- Beta / factor exposure decomposition
+- Cross-asset macro correlation engines
+- AI-assisted portfolio rebalancing
+- Adaptive regime transition forecasting
+- Probabilistic risk scoring systems
+- Multi-provider market data routing
+- Cloud-based precomputed ranking infrastructure
+- Autonomous AI research agents
+- Institutional watchlists + alert systems
+- Scenario tree simulation frameworks
+- Expanded Monte Carlo stress architectures
+- Custom portfolio mandate creation
+- AI-generated investment memos and research reports
+
+Long-term vision:
+- evolve AInvest from a financial dashboard into a full investment intelligence operating system.
 
 ## 💡 Vision
 
