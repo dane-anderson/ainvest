@@ -15,6 +15,7 @@ import base64
 if "last_call" not in st.session_state:
     st.session_state.last_call = 0
 
+
 # -----------------------------
 # Page config
 # -----------------------------
@@ -3365,116 +3366,116 @@ if mode == "Allocation Engine":
     # -----------------------------
     nav_col, terminal_col = st.columns([0.72, 5.9], gap="medium")
 
-  # -----------------------------
-# Left command selector
-# -----------------------------
-with nav_col:
-    st.markdown(
-        f'<div class="portfolio-card" style="padding:16px 12px; margin-bottom:10px;">'
-            f'<div style="display:flex; align-items:center; gap:10px;">'
-                f'<div style="width:34px; height:34px; border-radius:10px; background:linear-gradient(135deg,#3A8DFF,#4B5DFF); '
-                f'display:flex; align-items:center; justify-content:center; font-weight:950; color:white;">A</div>'
-                f'<div>'
-                    f'<div style="font-size:1.35rem; font-weight:950; color:#E7EEF9; letter-spacing:-0.04em;">AInvest</div>'
-                    f'<div style="color:rgba(231,238,249,0.52); font-size:0.72rem;">Command Terminal</div>'
+    # -----------------------------
+    # Left command selector
+    # -----------------------------
+    with nav_col:
+        st.markdown(
+            f'<div class="portfolio-card" style="padding:16px 12px; margin-bottom:10px;">'
+                f'<div style="display:flex; align-items:center; gap:10px;">'
+                    f'<div style="width:34px; height:34px; border-radius:10px; background:linear-gradient(135deg,#3A8DFF,#4B5DFF); '
+                    f'display:flex; align-items:center; justify-content:center; font-weight:950; color:white;">A</div>'
+                    f'<div>'
+                        f'<div style="font-size:1.35rem; font-weight:950; color:#E7EEF9; letter-spacing:-0.04em;">AInvest</div>'
+                        f'<div style="color:rgba(231,238,249,0.52); font-size:0.72rem;">Command Terminal</div>'
+                    f'</div>'
                 f'</div>'
-            f'</div>'
-            f'<div style="height:1px; background:rgba(255,255,255,0.08); margin:16px 0;"></div>'
-            f'<div style="color:rgba(231,238,249,0.45); font-size:0.68rem; font-weight:900; letter-spacing:0.12em; margin-bottom:8px;">'
-                f'PORTFOLIO SYSTEMS'
-            f'</div>'
-        f'</div>',
-        unsafe_allow_html=True,
-    )
+                f'<div style="height:1px; background:rgba(255,255,255,0.08); margin:16px 0;"></div>'
+                f'<div style="color:rgba(231,238,249,0.45); font-size:0.68rem; font-weight:900; letter-spacing:0.12em; margin-bottom:8px;">'
+                    f'PORTFOLIO SYSTEMS'
+                f'</div>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
 
-    st.markdown(
-        """
-        <div style="
-            color:rgba(231,238,249,0.45);
-            font-size:0.58rem;
-            font-weight:900;
-            letter-spacing:0.12em;
-            margin-top:10px;
-            margin-bottom:8px;
-        ">
-            ANALYTICAL ENGINES
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+        st.markdown(
+            """
+            <div style="
+                color:rgba(231,238,249,0.45);
+                font-size:0.58rem;
+                font-weight:900;
+                letter-spacing:0.12em;
+                margin-top:10px;
+                margin-bottom:8px;
+            ">
+                ANALYTICAL ENGINES
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-    engine_views = [
-        "Command Center",
-        "Monte Carlo Engine",
-        "Risk Engine",
-        "Stress Test Engine",
-        "Factor Engine",
-        "Correlation Engine",
-        "Scenario Engine",
-        "Market Regime Engine",
-    ]
+        engine_views = [
+            "Command Center",
+            "Monte Carlo Engine",
+            "Risk Engine",
+            "Stress Test Engine",
+            "Factor Engine",
+            "Correlation Engine",
+            "Scenario Engine",
+            "Market Regime Engine",
+        ]
 
-    for view in engine_views:
-        active = st.session_state.allocation_engine_view == view
+        for view in engine_views:
+            active = st.session_state.allocation_engine_view == view
 
-        if st.button(
-            view,
-            key=f"allocation_engine_{view}",
-            use_container_width=True,
-            type="primary" if active else "secondary",
-        ):
-            st.session_state.allocation_engine_view = view
-            st.rerun()
+            if st.button(
+                view,
+                key=f"allocation_engine_{view}",
+                use_container_width=True,
+                type="primary" if active else "secondary",
+            ):
+                st.session_state.allocation_engine_view = view
+                st.rerun()
 
-    st.markdown(
-        """
-        <div style="
-            color:rgba(231,238,249,0.45);
-            font-size:0.58rem;
-            font-weight:900;
-            letter-spacing:0.12em;
-            margin-top:14px;
-            margin-bottom:8px;
-        ">
-            AI LAYER
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+        st.markdown(
+            """
+            <div style="
+                color:rgba(231,238,249,0.45);
+                font-size:0.58rem;
+                font-weight:900;
+                letter-spacing:0.12em;
+                margin-top:14px;
+                margin-bottom:8px;
+            ">
+                AI LAYER
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-    ai_views = [
-        "AI Insights",
-        "AI Recommendations",
-    ]
+        ai_views = [
+            "AI Insights",
+            "AI Recommendations",
+        ]
 
-    for view in ai_views:
-        active = st.session_state.allocation_engine_view == view
+        for view in ai_views:
+            active = st.session_state.allocation_engine_view == view
 
-        if st.button(
-            view,
-            key=f"allocation_engine_{view}",
-            use_container_width=True,
-            type="primary" if active else "secondary",
-        ):
-            st.session_state.allocation_engine_view = view
-            st.rerun()
+            if st.button(
+                view,
+                key=f"allocation_engine_{view}",
+                use_container_width=True,
+                type="primary" if active else "secondary",
+            ):
+                st.session_state.allocation_engine_view = view
+                st.rerun()
 
-    st.markdown(
-        f'<div class="portfolio-card" style="margin-top:12px; padding:12px;">'
-            f'<div style="display:flex; justify-content:space-between; align-items:center;">'
-                f'<div class="mini-label">MARKET REGIME</div>'
-                f'<div style="width:8px; height:8px; border-radius:50%; background:#2EE59D; box-shadow:0 0 10px #2EE59D;"></div>'
-            f'</div>'
-            f'<div style="color:#2EE59D; font-size:1.05rem; font-weight:950; margin-top:6px;">Risk-On</div>'
-            f'<div style="height:46px; margin-top:10px; border-radius:10px; '
-            f'background:linear-gradient(135deg, rgba(46,229,157,0.03), rgba(46,229,157,0.18)); '
-            f'border-bottom:1px solid rgba(46,229,157,0.35);"></div>'
-            f'<div style="display:flex; justify-content:space-between; margin-top:10px; color:rgba(231,238,249,0.45); font-size:0.68rem;">'
-                f'<span>Status</span><span style="color:#2EE59D;">LIVE</span>'
-            f'</div>'
-        f'</div>',
-        unsafe_allow_html=True,
-    )
+        st.markdown(
+            f'<div class="portfolio-card" style="margin-top:12px; padding:12px;">'
+                f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                    f'<div class="mini-label">MARKET REGIME</div>'
+                    f'<div style="width:8px; height:8px; border-radius:50%; background:#2EE59D; box-shadow:0 0 10px #2EE59D;"></div>'
+                f'</div>'
+                f'<div style="color:#2EE59D; font-size:1.05rem; font-weight:950; margin-top:6px;">Risk-On</div>'
+                f'<div style="height:46px; margin-top:10px; border-radius:10px; '
+                f'background:linear-gradient(135deg, rgba(46,229,157,0.03), rgba(46,229,157,0.18)); '
+                f'border-bottom:1px solid rgba(46,229,157,0.35);"></div>'
+                f'<div style="display:flex; justify-content:space-between; margin-top:10px; color:rgba(231,238,249,0.45); font-size:0.68rem;">'
+                    f'<span>Status</span><span style="color:#2EE59D;">LIVE</span>'
+                f'</div>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
 
     # -----------------------------
     # Terminal screen
@@ -3510,26 +3511,53 @@ with nav_col:
             unsafe_allow_html=True,
         )
 
-        # -----------------------------
+         # -----------------------------
         # Deep-dive pages
         # -----------------------------
-        if selected_view == "Monte Carlo Lab":
+        if selected_view == "Monte Carlo Engine":
             st.markdown(
-                f"""
-                <div class="portfolio-card" style="padding:22px; margin-top:12px;">
-                    <div style="font-size:1.55rem; font-weight:950; color:#E7EEF9;">Monte Carlo Engine</div>
-                    <div style="color:rgba(231,238,249,0.62); margin-top:6px;">
-                        Full simulation engine tied to the active {portfolio_type}.
-                    </div>
-                </div>
+                """
+                <style>
+                @keyframes mcPulse {
+                    0% { opacity:0.72; filter:brightness(0.95); }
+                    50% { opacity:1; filter:brightness(1.18); }
+                    100% { opacity:0.72; filter:brightness(0.95); }
+                }
+                .mc-live-bar {
+                    animation: mcPulse 2.4s ease-in-out infinite;
+                }
+                </style>
                 """,
                 unsafe_allow_html=True
             )
 
             # -----------------------------
-            # Monte Carlo controls
+            # Header
             # -----------------------------
-            control_cols = st.columns([1, 1, 1, 1, 1], gap="medium")
+            st.markdown(
+                f'<div class="portfolio-card" style="padding:22px; margin-top:12px;">'
+                    f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                        f'<div>'
+                            f'<div style="font-size:1.9rem; font-weight:950; color:#E7EEF9;">'
+                                f'Probabilistic Capital Outcomes Engine'
+                            f'</div>'
+                            f'<div style="color:rgba(231,238,249,0.62); margin-top:6px;">'
+                                f'Monte Carlo deep dive for {portfolio_type}.'
+                            f'</div>'
+                        f'</div>'
+                        f'<div style="text-align:right;">'
+                            f'<div style="font-size:0.7rem; color:rgba(231,238,249,0.52);">SIMULATION MODEL</div>'
+                            f'<div style="font-size:1rem; color:#2EE59D; font-weight:900;">LIVE</div>'
+                        f'</div>'
+                    f'</div>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            # -----------------------------
+            # Controls
+            # -----------------------------
+            control_cols = st.columns([1, 1, 1, 1, 1, 1], gap="medium")
 
             with control_cols[0]:
                 mc_deep_value = st.number_input(
@@ -3554,8 +3582,8 @@ with nav_col:
                 mc_deep_sims = st.slider(
                     "Simulations",
                     500,
+                    25000,
                     10000,
-                    2500,
                     step=500,
                     key="mc_deep_sims"
                 )
@@ -3564,7 +3592,7 @@ with nav_col:
                 mc_stress = st.slider(
                     "Volatility Stress",
                     0.5,
-                    2.5,
+                    3.0,
                     1.0,
                     step=0.1,
                     key="mc_stress"
@@ -3576,6 +3604,14 @@ with nav_col:
                     ["90%", "95%", "99%"],
                     index=1,
                     key="mc_confidence_band"
+                )
+
+            with control_cols[5]:
+                rebalance_mode = st.selectbox(
+                    "Rebalancing",
+                    ["Quarterly", "Monthly", "No Rebalance", "Vol Target"],
+                    index=0,
+                    key="mc_rebalance_mode"
                 )
 
             # -----------------------------
@@ -3604,64 +3640,158 @@ with nav_col:
 
             paths_df = pd.DataFrame(mc_deep["paths"])
 
-            # optional stress multiplier
             if mc_stress != 1.0:
                 base = paths_df.iloc[0]
                 paths_df = base + (paths_df - base) * mc_stress
 
             final_values = paths_df.iloc[-1]
 
-            p_low = 0.05
-            p_high = 0.95
-
             if confidence_band == "90%":
                 p_low, p_high = 0.05, 0.95
             elif confidence_band == "95%":
                 p_low, p_high = 0.025, 0.975
-            elif confidence_band == "99%":
+            else:
                 p_low, p_high = 0.005, 0.995
 
             expected_final = final_values.mean()
             median_final = final_values.median()
+            p5_final = final_values.quantile(0.05)
+            p95_final = final_values.quantile(0.95)
             low_final = final_values.quantile(p_low)
             high_final = final_values.quantile(p_high)
+
             loss_prob = (final_values < mc_deep_value).mean()
             double_prob = (final_values >= mc_deep_value * 2).mean()
+            capital_at_risk = max(0, mc_deep_value - p5_final)
+
+            expected_cagr = ((median_final / mc_deep_value) ** (1 / mc_deep_years) - 1) * 100
+            expected_outcome_cagr = ((expected_final / mc_deep_value) ** (1 / mc_deep_years) - 1) * 100
+            p5_cagr = ((p5_final / mc_deep_value) ** (1 / mc_deep_years) - 1) * 100
+            p95_cagr = ((p95_final / mc_deep_value) ** (1 / mc_deep_years) - 1) * 100
+
+            survival_score = 100
+            survival_score -= loss_prob * 45
+            survival_score -= min(30, (capital_at_risk / mc_deep_value) * 50)
+            survival_score += min(15, double_prob * 20)
+            survival_score = max(0, min(100, survival_score))
+
+            survival_label = "Strong" if survival_score >= 75 else "Workable" if survival_score >= 55 else "Fragile"
+            survival_color = "#2EE59D" if survival_score >= 75 else "#FFB020" if survival_score >= 55 else "#FF4D6D"
+
+            dispersion_score = min(100, ((high_final - low_final) / mc_deep_value) * 45)
+            dispersion_label = "Wide" if dispersion_score >= 70 else "Moderate" if dispersion_score >= 40 else "Tight"
+            dispersion_color = "#FF4D6D" if dispersion_score >= 70 else "#FFB020" if dispersion_score >= 40 else "#2EE59D"
+
+            skew_score = ((p95_final - median_final) / median_final)
+            kurtosis_proxy = ((p95_final - p5_final) / median_final)
+
+            asymmetry_label = "Favorable" if skew_score > 0.8 else "Balanced" if skew_score > 0.35 else "Negative"
+            asymmetry_color = "#2EE59D" if skew_score > 0.8 else "#FFB020" if skew_score > 0.35 else "#FF4D6D"
+
+            simulated_sharpe = expected_cagr / max(1, dispersion_score / 4)
 
             # -----------------------------
-            # Summary metrics
+            # Regime / stress logic
             # -----------------------------
-            metric_html = f"""
-            <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; margin-top:14px;">
-                <div class="metric-tile"><div class="metric-label">Expected Value</div><div class="metric-value">${expected_final:,.0f}</div></div>
-                <div class="metric-tile"><div class="metric-label">Median Value</div><div class="metric-value">${median_final:,.0f}</div></div>
-                <div class="metric-tile"><div class="metric-label">Downside Band</div><div class="metric-value" style="color:#FF4D6D;">${low_final:,.0f}</div></div>
-                <div class="metric-tile"><div class="metric-label">Upside Band</div><div class="metric-value" style="color:#3A8DFF;">${high_final:,.0f}</div></div>
-                <div class="metric-tile"><div class="metric-label">Loss Probability</div><div class="metric-value" style="color:#FF4D6D;">{loss_prob:.1%}</div></div>
-                <div class="metric-tile"><div class="metric-label">Double Probability</div><div class="metric-value" style="color:#2EE59D;">{double_prob:.1%}</div></div>
-            </div>
-            """
+            regime_rows = [
+                ("Risk-On", 60, expected_cagr, "#2EE59D"),
+                ("Recession", 15, expected_cagr - 36.8, "#FF4D6D"),
+                ("Inflationary", 10, expected_cagr - 28.4, "#FFB020"),
+                ("Crisis", 10, expected_cagr - 43.4, "#FF4D6D"),
+                ("Melt-Up", 5, expected_cagr + 17.7, "#3A8DFF"),
+            ]
+
+            jump_shock = -20
+            vol_spike = mc_stress * 2.5
+            correlation_breakdown = "0.85 → 1.00"
+            liquidity_shock = -15
+
+            tail_risk_state = "LOW" if loss_prob < 0.05 else "MODERATE" if loss_prob < 0.20 else "HIGH"
+            tail_risk_color = "#2EE59D" if loss_prob < 0.05 else "#FFB020" if loss_prob < 0.20 else "#FF4D6D"
+
+            # -----------------------------
+            # Top metric strip
+            # -----------------------------
+            metric_cards = [
+                ("Median Outcome", f"${median_final:,.0f}", "#2EE59D"),
+                ("Expected Outcome", f"${expected_final:,.0f}", "#E7EEF9"),
+                ("5th Percentile", f"${p5_final:,.0f}", "#FF4D6D"),
+                ("95th Percentile", f"${p95_final:,.0f}", "#3A8DFF"),
+                ("Loss Probability", f"{loss_prob:.1%}", "#2EE59D" if loss_prob < 0.15 else "#FF4D6D"),
+                ("Double Probability", f"{double_prob:.1%}", "#2EE59D"),
+                ("Capital at Risk", f"${capital_at_risk:,.0f}", "#FF4D6D"),
+                ("Sharpe Sim.", f"{simulated_sharpe:.2f}", "#E7EEF9"),
+                ("Survival Score", f"{survival_score:.0f}/100", survival_color),
+            ]
+
+            metric_html = (
+                f'<div style="display:grid; grid-template-columns:repeat(9, minmax(0, 1fr)); '
+                f'gap:10px; margin-top:14px;">'
+            )
+
+            for label, value, color in metric_cards:
+                metric_html += (
+                    f'<div class="metric-tile">'
+                        f'<div class="metric-label">{label}</div>'
+                        f'<div class="metric-value" style="color:{color};">{value}</div>'
+                        f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:10px; overflow:hidden;">'
+                            f'<div class="mc-live-bar" style="width:78%; height:100%; background:{color}; border-radius:999px; opacity:0.72;"></div>'
+                        f'</div>'
+                    f'</div>'
+                )
+
+            metric_html += f'</div>'
 
             st.markdown(metric_html, unsafe_allow_html=True)
 
             # -----------------------------
-            # Main chart and distribution
+            # Main chart row
             # -----------------------------
-            chart_col, dist_col = st.columns([2.3, 1], gap="medium")
+            chart_col, dist_col, right_col = st.columns([2.1, 1.15, 0.95], gap="medium")
 
             with chart_col:
-                st.markdown("### Simulation Path Engine")
+                st.markdown("### Capital Pathing")
+
+                median_path = paths_df.median(axis=1)
+                low_path = paths_df.quantile(p_low, axis=1)
+                high_path = paths_df.quantile(p_high, axis=1)
+                p5_path = paths_df.quantile(0.05, axis=1)
+                p95_path = paths_df.quantile(0.95, axis=1)
 
                 fig_mc_big = go.Figure()
 
-                sample_paths = paths_df.iloc[:, :min(180, paths_df.shape[1])]
+                fig_mc_big.add_trace(
+                    go.Scatter(
+                        x=list(range(len(high_path))),
+                        y=high_path,
+                        mode="lines",
+                        line=dict(width=0),
+                        showlegend=False,
+                        hoverinfo="skip",
+                    )
+                )
+
+                fig_mc_big.add_trace(
+                    go.Scatter(
+                        x=list(range(len(low_path))),
+                        y=low_path,
+                        mode="lines",
+                        fill="tonexty",
+                        fillcolor="rgba(58,141,255,0.11)",
+                        line=dict(width=0),
+                        name=f"{confidence_band} Probability Cone",
+                        hoverinfo="skip",
+                    )
+                )
+
+                sample_paths = paths_df.iloc[:, :min(260, paths_df.shape[1])]
 
                 for col in sample_paths.columns:
                     fig_mc_big.add_trace(
                         go.Scatter(
                             y=sample_paths[col],
                             mode="lines",
-                            line=dict(width=1, color="rgba(58,141,255,0.08)"),
+                            line=dict(width=1, color="rgba(58,141,255,0.045)"),
                             showlegend=False,
                             hoverinfo="skip",
                         )
@@ -3669,7 +3799,16 @@ with nav_col:
 
                 fig_mc_big.add_trace(
                     go.Scatter(
-                        y=paths_df.median(axis=1),
+                        y=p95_path,
+                        mode="lines",
+                        name="95th Path",
+                        line=dict(width=3, color="#3A8DFF"),
+                    )
+                )
+
+                fig_mc_big.add_trace(
+                    go.Scatter(
+                        y=median_path,
                         mode="lines",
                         name="Median Path",
                         line=dict(width=4, color="#2EE59D"),
@@ -3678,184 +3817,383 @@ with nav_col:
 
                 fig_mc_big.add_trace(
                     go.Scatter(
-                        y=paths_df.quantile(p_low, axis=1),
+                        y=p5_path,
                         mode="lines",
-                        name=f"{confidence_band} Downside",
+                        name="5th Path",
                         line=dict(width=3, color="#FF4D6D"),
                     )
                 )
 
+                fig_mc_big.add_hline(
+                    y=mc_deep_value,
+                    line_dash="dash",
+                    line_color="rgba(231,238,249,0.45)",
+                    annotation_text="Initial Capital",
+                    annotation_position="right",
+                    annotation_font=dict(color="rgba(231,238,249,0.72)", size=10),
+                )
+
                 fig_mc_big.add_trace(
                     go.Scatter(
-                        y=paths_df.quantile(p_high, axis=1),
-                        mode="lines",
-                        name=f"{confidence_band} Upside",
-                        line=dict(width=3, color="#3A8DFF"),
+                        x=[len(median_path) - 1],
+                        y=[median_path.iloc[-1]],
+                        mode="markers+text",
+                        marker=dict(size=10, color="#2EE59D"),
+                        text=[f"${median_final:,.0f}"],
+                        textposition="middle right",
+                        textfont=dict(color="#2EE59D", size=12),
+                        showlegend=False,
                     )
                 )
 
                 fig_mc_big.update_layout(
-                    height=520,
+                    height=690,
                     paper_bgcolor="rgba(0,0,0,0)",
-                    plot_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(3,8,20,0.58)",
                     font=dict(color="#E7EEF9"),
-                    margin=dict(l=10, r=10, t=20, b=10),
+                    margin=dict(l=10, r=10, t=8, b=8),
                     legend=dict(
                         orientation="h",
-                        y=1.05,
+                        y=1.06,
                         x=0,
                         font=dict(size=11, color="#FFFFFF"),
-                        bgcolor="rgba(0,0,0,0)"
+                        bgcolor="rgba(0,0,0,0)",
                     ),
+                    hovermode="x unified",
                     xaxis=dict(
                         title="Trading Days",
-                        gridcolor="rgba(255,255,255,0.06)"
+                        gridcolor="rgba(255,255,255,0.055)",
+                        zeroline=False,
                     ),
                     yaxis=dict(
                         title="Portfolio Value",
-                        gridcolor="rgba(255,255,255,0.06)"
+                        gridcolor="rgba(255,255,255,0.06)",
+                        zeroline=False,
                     ),
                 )
 
                 st.plotly_chart(fig_mc_big, use_container_width=True)
 
             with dist_col:
-                st.markdown("### Outcome Distribution")
+                st.markdown("### Terminal Outcome Distribution")
 
                 fig_dist = go.Figure()
 
                 fig_dist.add_trace(
                     go.Histogram(
                         x=final_values,
-                        nbinsx=35,
-                        marker=dict(color="#3A8DFF"),
-                        opacity=0.75,
+                        nbinsx=42,
+                        marker=dict(
+                            color="#3A8DFF",
+                            line=dict(color="rgba(255,255,255,0.08)", width=1),
+                        ),
+                        opacity=0.78,
+                        name="Terminal Outcomes",
                     )
                 )
 
-                fig_dist.add_vline(
-                    x=mc_deep_value,
-                    line_dash="dash",
-                    line_color="#FF4D6D"
-                )
-
-                fig_dist.add_vline(
-                    x=median_final,
-                    line_dash="solid",
-                    line_color="#2EE59D"
-                )
+                fig_dist.add_vline(x=mc_deep_value, line_dash="dash", line_color="#E7EEF9", annotation_text="Initial")
+                fig_dist.add_vline(x=median_final, line_dash="solid", line_color="#2EE59D", annotation_text="Median")
+                fig_dist.add_vline(x=p5_final, line_dash="dot", line_color="#FF4D6D", annotation_text="5th")
+                fig_dist.add_vline(x=p95_final, line_dash="dot", line_color="#3A8DFF", annotation_text="95th")
 
                 fig_dist.update_layout(
-                    height=520,
+                    height=690,
                     paper_bgcolor="rgba(0,0,0,0)",
-                    plot_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(3,8,20,0.58)",
                     font=dict(color="#E7EEF9"),
-                    margin=dict(l=10, r=10, t=20, b=10),
-                    xaxis=dict(
-                        title="Ending Value",
-                        gridcolor="rgba(255,255,255,0.06)"
-                    ),
-                    yaxis=dict(
-                        title="Frequency",
-                        gridcolor="rgba(255,255,255,0.06)"
-                    ),
+                    margin=dict(l=10, r=10, t=8, b=8),
+                    xaxis=dict(title="Ending Value", gridcolor="rgba(255,255,255,0.055)", zeroline=False),
+                    yaxis=dict(title="Frequency", gridcolor="rgba(255,255,255,0.06)", zeroline=False),
                     showlegend=False,
                 )
 
                 st.plotly_chart(fig_dist, use_container_width=True)
 
-            # -----------------------------
-            # Percentiles, inputs, AI, actions
-            # -----------------------------
-            bottom_cols = st.columns([1, 1, 1], gap="medium")
+            with right_col:
+                st.markdown("### Regime Outcome Matrix")
 
-            with bottom_cols[0]:
-                percentile_rows = ""
+                regime_html = (
+                    f'<div class="portfolio-card" style="min-height:260px; padding:14px;">'
+                        f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">'
+                            f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900;">REGIME MIX</div>'
+                            f'<div style="font-size:0.72rem; color:#73CFFF; font-weight:900;">BLEND</div>'
+                        f'</div>'
+                )
 
-                for label, q in [
-                    ("1%", 0.01),
-                    ("5%", 0.05),
-                    ("25%", 0.25),
-                    ("50%", 0.50),
-                    ("75%", 0.75),
-                    ("95%", 0.95),
-                    ("99%", 0.99),
-                ]:
-                    percentile_rows += (
-                        f'<div style="display:flex; justify-content:space-between; margin-top:8px;">'
-                        f'<span>{label}</span><span>${final_values.quantile(q):,.0f}</span>'
+                for name, weight, cagr, color in regime_rows:
+                    regime_html += (
+                        f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">'
+                            f'<div style="display:flex; align-items:center; gap:8px;">'
+                                f'<div style="width:9px; height:9px; border-radius:50%; background:{color}; box-shadow:0 0 8px {color};"></div>'
+                                f'<span style="color:#E7EEF9; font-size:0.78rem;">{name}</span>'
+                            f'</div>'
+                            f'<div style="text-align:right;">'
+                                f'<div style="color:rgba(231,238,249,0.58); font-size:0.68rem;">{weight}%</div>'
+                                f'<div style="color:{color}; font-weight:950; font-size:0.78rem;">CAGR {cagr:.1f}%</div>'
+                            f'</div>'
                         f'</div>'
                     )
 
-                st.markdown(
-                    f"""
-                    <div class="portfolio-card" style="min-height:260px;">
-                        <div class="engine-card-title">Percentile Outcomes</div>
-                        {percentile_rows}
-                    </div>
-                    """,
-                    unsafe_allow_html=True
+                regime_html += (
+                    f'<div style="height:1px; background:rgba(255,255,255,0.08); margin:12px 0;"></div>'
+                    f'<div style="padding:9px; border-radius:10px; background:rgba(58,141,255,0.08); border:1px solid rgba(58,141,255,0.22); text-align:center;">'
+                        f'<div style="font-size:0.68rem; color:rgba(231,238,249,0.52);">ACTIVE REGIME INPUT</div>'
+                        f'<div style="font-size:0.9rem; font-weight:950; color:#2EE59D; margin-top:4px;">Current Regime Blend</div>'
+                    f'</div>'
+                    f'</div>'
                 )
 
-            with bottom_cols[1]:
-                input_rows = ""
+                st.markdown(regime_html, unsafe_allow_html=True)
 
-                for ticker, weight in zip(mc_tickers, mc_weights):
-                    input_rows += (
-                        f'<div style="display:flex; justify-content:space-between; margin-top:8px;">'
-                        f'<span>{ticker}</span><span>{weight:.1%}</span>'
+                st.markdown("### Tail Shock Analysis")
+
+                tail_html = (
+                    f'<div class="portfolio-card" style="min-height:260px; padding:14px;">'
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">'
+                            f'TAIL / JUMP MODEL'
+                        f'</div>'
+
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:11px;">'
+                            f'<span>Jump Shock (1 Day)</span>'
+                            f'<span style="color:#FF4D6D; font-weight:950;">{jump_shock}%</span>'
+                        f'</div>'
+
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:11px;">'
+                            f'<span>Volatility Spike</span>'
+                            f'<span style="color:#FFB020; font-weight:950;">{vol_spike:.1f}x</span>'
+                        f'</div>'
+
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:11px;">'
+                            f'<span>Correlation Breakdown</span>'
+                            f'<span style="color:#73CFFF; font-weight:950;">{correlation_breakdown}</span>'
+                        f'</div>'
+
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:11px;">'
+                            f'<span>Liquidity Shock</span>'
+                            f'<span style="color:#FF4D6D; font-weight:950;">{liquidity_shock}%</span>'
+                        f'</div>'
+
+                        f'<div style="height:1px; background:rgba(255,255,255,0.08); margin:14px 0;"></div>'
+
+                        f'<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">'
+                            f'<div style="padding:10px; border-radius:12px; background:{tail_risk_color}18; border:1px solid {tail_risk_color}44;">'
+                                f'<div style="font-size:0.62rem; color:rgba(231,238,249,0.52);">LEFT TAIL RISK</div>'
+                                f'<div style="font-size:0.9rem; color:{tail_risk_color}; font-weight:950; margin-top:5px;">{tail_risk_state}</div>'
+                            f'</div>'
+                            f'<div style="padding:10px; border-radius:12px; background:{asymmetry_color}18; border:1px solid {asymmetry_color}44;">'
+                                f'<div style="font-size:0.62rem; color:rgba(231,238,249,0.52);">ASYMMETRY</div>'
+                                f'<div style="font-size:0.9rem; color:{asymmetry_color}; font-weight:950; margin-top:5px;">{asymmetry_label}</div>'
+                            f'</div>'
+                        f'</div>'
+                    f'</div>'
+                )
+
+                st.markdown(tail_html, unsafe_allow_html=True)
+
+            # -----------------------------
+            # Bottom institutional row
+            # -----------------------------
+            lower_left, lower_mid, lower_drivers, lower_rebalance, lower_ai = st.columns(
+                [1.05, 1.25, 1.05, 0.95, 1.45],
+                gap="medium"
+            )
+
+            with lower_left:
+                st.markdown("### Regime Impact Summary")
+
+                regime_impact_html = (
+                    f'<div class="portfolio-card" style="min-height:320px; padding:14px;">'
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">'
+                            f'5Y CAGR BY REGIME'
+                        f'</div>'
+                )
+
+                for name, weight, cagr, color in regime_rows:
+                    width = min(100, max(5, abs(cagr) * 2))
+
+                    regime_impact_html += (
+                        f'<div style="margin-bottom:15px;">'
+                            f'<div style="display:flex; justify-content:space-between; font-size:0.78rem;">'
+                                f'<span>{name}</span>'
+                                f'<span style="color:{color}; font-weight:950;">{cagr:.1f}%</span>'
+                            f'</div>'
+                            f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:6px; overflow:hidden;">'
+                                f'<div style="width:{width:.1f}%; height:100%; background:{color}; border-radius:999px;"></div>'
+                            f'</div>'
                         f'</div>'
                     )
 
+                regime_impact_html += f'</div>'
+
+                st.markdown(regime_impact_html, unsafe_allow_html=True)
+
+            with lower_mid:
+                st.markdown("### Stress Test Matrix")
+
+                stress_rows = [
+                    ("Base Case", 0.0, 0.0, 0.0),
+                    ("Vol Stress 1.5x", -11.8, -18.9, -6.3),
+                    ("Vol Stress 2.0x", -21.7, -32.1, -12.4),
+                    ("Crash -20%", -24.2, -38.7, -14.6),
+                    ("Corr → 1.0", -16.3, -28.4, -9.2),
+                    ("Rates +200bp", -6.9, -12.3, -3.1),
+                ]
+
+                stress_html = (
+                    f'<div class="portfolio-card" style="min-height:320px; padding:14px;">'
+                        f'<div style="display:grid; grid-template-columns:1.35fr 0.8fr 0.8fr 0.8fr; gap:8px; '
+                        f'color:rgba(231,238,249,0.52); font-size:0.68rem; margin-bottom:10px;">'
+                            f'<div>SCENARIO</div>'
+                            f'<div>MEDIAN</div>'
+                            f'<div>5TH</div>'
+                            f'<div>95TH</div>'
+                        f'</div>'
+                )
+
+                for name, med, fifth, ninety in stress_rows:
+                    med_color = "#2EE59D" if med >= 0 else "#FF4D6D"
+                    fifth_color = "#2EE59D" if fifth >= 0 else "#FF4D6D"
+                    ninety_color = "#2EE59D" if ninety >= 0 else "#FF4D6D"
+
+                    stress_html += (
+                        f'<div style="display:grid; grid-template-columns:1.35fr 0.8fr 0.8fr 0.8fr; gap:8px; '
+                        f'padding:8px 0; border-top:1px solid rgba(255,255,255,0.06); font-size:0.74rem;">'
+                            f'<div style="color:#E7EEF9;">{name}</div>'
+                            f'<div style="color:{med_color}; font-weight:900;">{med:+.1f}%</div>'
+                            f'<div style="color:{fifth_color}; font-weight:900;">{fifth:+.1f}%</div>'
+                            f'<div style="color:{ninety_color}; font-weight:900;">{ninety:+.1f}%</div>'
+                        f'</div>'
+                    )
+
+                stress_html += f'</div>'
+
+                st.markdown(stress_html, unsafe_allow_html=True)
+
+            with lower_drivers:
+                st.markdown("### Outcome Contribution Stack")
+
+                driver_html = (
+                    f'<div class="portfolio-card" style="min-height:320px; padding:14px;">'
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">'
+                            f'CONTRIBUTION PROXY'
+                        f'</div>'
+                )
+
+                driver_pairs = sorted(
+                    zip(mc_tickers, mc_weights),
+                    key=lambda x: x[1],
+                    reverse=True
+                )[:8]
+
+                driver_colors = ["#2EE59D", "#3A8DFF", "#B067FF", "#00D2A8", "#FFB020", "#FF6B6B"]
+
+                for idx, (ticker, weight) in enumerate(driver_pairs):
+                    color = driver_colors[idx % len(driver_colors)]
+                    width = min(100, max(4, weight * 140))
+
+                    driver_html += (
+                        f'<div style="margin-bottom:12px;">'
+                            f'<div style="display:flex; justify-content:space-between; font-size:0.76rem;">'
+                                f'<span>{ticker}</span>'
+                                f'<span style="color:{color}; font-weight:950;">{weight:.1%}</span>'
+                            f'</div>'
+                            f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:5px; overflow:hidden;">'
+                                f'<div style="width:{width:.1f}%; height:100%; background:{color}; border-radius:999px;"></div>'
+                            f'</div>'
+                        f'</div>'
+                    )
+
+                driver_html += f'</div>'
+
+                st.markdown(driver_html, unsafe_allow_html=True)
+
+            with lower_rebalance:
+                st.markdown("### Rebalancing Sensitivity")
+
+                rebalance_rows = [
+                    ("Quarterly", expected_cagr, "#2EE59D" if rebalance_mode == "Quarterly" else "#E7EEF9"),
+                    ("Monthly", expected_cagr + 0.6, "#3A8DFF" if rebalance_mode == "Monthly" else "#E7EEF9"),
+                    ("No Rebalance", expected_cagr - 3.6, "#FFB020" if rebalance_mode == "No Rebalance" else "#E7EEF9"),
+                    ("Vol Target", expected_cagr + 2.1, "#73CFFF" if rebalance_mode == "Vol Target" else "#E7EEF9"),
+                    ("Risk Parity", expected_cagr - 1.4, "#E7EEF9"),
+                ]
+
+                rebalance_html = (
+                    f'<div class="portfolio-card" style="min-height:320px; padding:14px;">'
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">'
+                            f'MEDIAN CAGR'
+                        f'</div>'
+                )
+
+                for name, cagr, color in rebalance_rows:
+                    active_bg = "rgba(46,229,157,0.10)" if name == rebalance_mode else "rgba(255,255,255,0.025)"
+                    active_border = "rgba(46,229,157,0.32)" if name == rebalance_mode else "rgba(255,255,255,0.06)"
+
+                    rebalance_html += (
+                        f'<div style="display:flex; justify-content:space-between; padding:9px; margin-bottom:8px; '
+                        f'border-radius:10px; background:{active_bg}; border:1px solid {active_border}; font-size:0.76rem;">'
+                            f'<span>{name}</span>'
+                            f'<b style="color:{color};">{cagr:.1f}%</b>'
+                        f'</div>'
+                    )
+
+                rebalance_html += f'</div>'
+
+                st.markdown(rebalance_html, unsafe_allow_html=True)
+
+            with lower_ai:
+                st.markdown("### AI Simulation Desk")
+
+                mc_read = generate_monte_carlo_desk_brief(
+                    median_final,
+                    p5_final,
+                    p95_final,
+                    loss_prob,
+                    double_prob,
+                    capital_at_risk,
+                    expected_cagr,
+                    survival_score,
+                    dispersion_label,
+                    mc_deep_years,
+                )
+
+                enhanced_mc_context = (
+                    f"{mc_read}\n\n"
+                    f"[Regime Overlay]\n"
+                    f"Risk-On blend carries the strongest simulated CAGR at {regime_rows[0][2]:.1f}%, "
+                    f"while crisis and recession states compress the distribution through drawdown and volatility expansion.\n\n"
+                    f"[Stress Matrix Read]\n"
+                    f"Crash, volatility stress, and correlation breakdown scenarios define the key failure path. "
+                    f"The book remains strongest when rebalanced under {rebalance_mode.lower()} discipline."
+                )
+
                 st.markdown(
-                    f"""
-                    <div class="portfolio-card" style="min-height:260px;">
-                        <div class="engine-card-title">Allocation Inputs Used</div>
-                        {input_rows}
-                    </div>
-                    """,
+                    f'<div class="portfolio-card" style="min-height:320px; padding:16px;">'
+                        f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">'
+                            f'<div style="font-size:0.78rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em;">AI SIMULATION DESK</div>'
+                            f'<div style="font-size:0.72rem; color:#2EE59D; font-weight:900;">AI LIVE READ</div>'
+                        f'</div>'
+                        f'<div style="color:#E7EEF9; font-size:0.84rem; line-height:1.58;">'
+                            f'{enhanced_mc_context.replace(chr(10), "<br>")}'
+                        f'</div>'
+                    f'</div>',
                     unsafe_allow_html=True
                 )
 
-            with bottom_cols[2]:
-                if loss_prob > 0.20:
-                    action_1 = "Increase defensive hedge or liquidity sleeve."
-                else:
-                    action_1 = "Current downside profile is controlled."
-
-                if double_prob < 0.15:
-                    action_2 = "Upside may need stronger growth exposure."
-                else:
-                    action_2 = "Upside convexity is attractive."
-
-                if mc_stress > 1.3:
-                    action_3 = "Stress setting shows elevated fragility."
-                else:
-                    action_3 = "Stress setting remains within normal range."
-
-                st.markdown(
-                    f"""
-                    <div class="portfolio-card" style="min-height:260px;">
-                        <div class="engine-card-title">Monte Carlo Engine Read</div>
-                        <div class="engine-card-body">
-                            Base case centers around <b>${median_final:,.0f}</b> over {mc_deep_years} years.<br><br>
-                            Downside band: <b>${low_final:,.0f}</b><br>
-                            Upside band: <b>${high_final:,.0f}</b><br><br>
-                            - {action_1}<br>
-                            - {action_2}<br>
-                            - {action_3}
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-
+            # -----------------------------
+            # Footer
+            # -----------------------------
             st.markdown(
-                """
-                <div style="margin-top:18px; text-align:center; color:rgba(231,238,249,0.48); font-size:0.78rem;">
-                    Monte Carlo outputs are probabilistic simulations, not predictions. Educational use only.
-                </div>
-                """,
+                f'<div style="margin-top:14px; padding:10px 14px; border-radius:14px; '
+                f'background:rgba(9,23,51,0.72); border:1px solid rgba(255,255,255,0.08); '
+                f'display:flex; justify-content:space-between; color:rgba(231,238,249,0.58); font-size:0.76rem;">'
+                    f'<span>Model: Hybrid Stochastic · Distribution: Fat-Tail Proxy</span>'
+                    f'<span>Simulations: {mc_deep_sims:,}</span>'
+                    f'<span>Horizon: {mc_deep_years}Y</span>'
+                    f'<span>Rebalancing: {rebalance_mode}</span>'
+                    f'<span>Confidence: {confidence_band}</span>'
+                f'</div>',
                 unsafe_allow_html=True
             )
 
@@ -3897,7 +4235,7 @@ with nav_col:
             f'</div>',
             unsafe_allow_html=True
         )
-        if selected_view == "Market Regime":
+        if selected_view == "Market Regime Engine":
 
             probs = market_regime["probabilities"]
 
@@ -4115,7 +4453,7 @@ with nav_col:
                     f'</div>',
                     unsafe_allow_html=True
                 )
-
+                st.success("Checkpoint 1")
                 st.markdown("### Regime Probability")
 
                 fig_regime = go.Figure()
@@ -4308,6 +4646,2876 @@ with nav_col:
 
             st.stop()
 
+
+        if selected_view == "Risk Engine":
+            risk_engine = calculate_allocation_risk_engine(
+                recommendations,
+                st.session_state.allocation_horizon
+            )
+
+            st.markdown(
+                """
+                <style>
+                @keyframes shockPulse {
+                    0% { opacity: 0.72; filter: brightness(0.95); }
+                    50% { opacity: 1; filter: brightness(1.25); }
+                    100% { opacity: 0.72; filter: brightness(0.95); }
+                }
+                .shock-bar {
+                    animation: shockPulse 2.2s ease-in-out infinite;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+
+            header_html = (
+                f'<div class="portfolio-card" style="padding:22px; margin-top:12px;">'
+                    f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                        f'<div>'
+                            f'<div style="font-size:1.75rem; font-weight:950; color:#E7EEF9;">Risk Engine</div>'
+                            f'<div style="color:rgba(231,238,249,0.62); margin-top:6px;">'
+                                f'Institutional portfolio risk analysis tied to the active allocation.'
+                            f'</div>'
+                        f'</div>'
+                        f'<div style="text-align:right;">'
+                            f'<div style="font-size:0.7rem; color:rgba(231,238,249,0.52);">RISK MODEL</div>'
+                            f'<div style="font-size:1rem; color:#2EE59D; font-weight:900;">LIVE</div>'
+                        f'</div>'
+                    f'</div>'
+                f'</div>'
+            )
+
+            st.markdown(header_html, unsafe_allow_html=True)
+
+            if risk_engine is None:
+                st.warning("Risk Engine data unavailable. Try again once market data loads.")
+                st.stop()
+
+            exposure_df = risk_engine["exposure_df"].copy()
+
+            # -----------------------------
+            # Extra institutional risk signals
+            # -----------------------------
+            tail_fragility_index = 0
+            tail_fragility_index += min(30, abs(risk_engine["cvar_95"]) * 4)
+            tail_fragility_index += min(25, abs(risk_engine["max_drawdown"]) * 0.6)
+            tail_fragility_index += min(20, max(0, risk_engine["downside_capture"] - 1) * 35)
+            tail_fragility_index += min(15, max(0, risk_engine["beta"] - 1) * 25)
+            tail_fragility_index += min(10, max(0, risk_engine["top_3_weight"] - 50) * 0.35)
+            tail_fragility_index = max(0, min(100, tail_fragility_index))
+
+            tail_label = "High" if tail_fragility_index >= 70 else "Elevated" if tail_fragility_index >= 45 else "Controlled"
+            tail_color = "#FF4D6D" if tail_fragility_index >= 70 else "#FFB020" if tail_fragility_index >= 45 else "#2EE59D"
+
+            liquidity_stress_score = 0
+            liquidity_stress_score += min(35, risk_engine["annual_vol"] * 0.9)
+            liquidity_stress_score += min(25, risk_engine["top_weight"] * 0.6)
+            liquidity_stress_score += min(20, abs(risk_engine["cvar_95"]) * 3)
+            liquidity_stress_score += min(20, tail_fragility_index * 0.2)
+            liquidity_stress_score = max(0, min(100, liquidity_stress_score))
+
+            liquidity_label = "Thin" if liquidity_stress_score >= 70 else "Watch" if liquidity_stress_score >= 45 else "Stable"
+            liquidity_color = "#FF4D6D" if liquidity_stress_score >= 70 else "#FFB020" if liquidity_stress_score >= 45 else "#2EE59D"
+
+            convexity_score = 0
+            convexity_score += min(35, risk_engine["annual_vol"] * 0.8)
+            convexity_score += min(25, max(0, risk_engine["beta"] - 1) * 30)
+            convexity_score += min(25, abs(risk_engine["cvar_95"]) * 3.5)
+            convexity_score += min(15, max(0, risk_engine["downside_capture"] - 1) * 25)
+            convexity_score = max(0, min(100, convexity_score))
+
+            convexity_label = "Negative Convexity" if convexity_score >= 70 else "Convexity Watch" if convexity_score >= 45 else "Contained"
+            convexity_color = "#FF4D6D" if convexity_score >= 70 else "#FFB020" if convexity_score >= 45 else "#2EE59D"
+
+            regime_name = market_regime.get("regime", "Mixed / Transition") if isinstance(market_regime, dict) else "Mixed / Transition"
+
+            if "Risk-Off" in regime_name or "Recession" in regime_name:
+                regime_multiplier = 1.45
+                regime_tag = "Risk-Off Shock"
+            elif "Late" in regime_name or "Transition" in regime_name:
+                regime_multiplier = 1.20
+                regime_tag = "Transition Shock"
+            else:
+                regime_multiplier = 1.00
+                regime_tag = "Normal Shock"
+
+            regime_spy_down_5 = risk_engine["stress_market_down_5"] * regime_multiplier
+            liquidity_drag = -1 * (liquidity_stress_score / 100) * 4
+            convexity_drag = -1 * (convexity_score / 100) * 5
+
+            # Hidden correlation clusters
+            cluster_rows_html = ""
+            try:
+                corr = calculate_allocation_correlation_matrix(
+                    recommendations,
+                    st.session_state.allocation_horizon
+                )
+
+                hidden_clusters = []
+
+                if corr is not None:
+                    for i, t1 in enumerate(corr.columns):
+                        for t2 in corr.columns[i + 1:]:
+                            pair_corr = float(corr.loc[t1, t2])
+                            if pair_corr >= 0.75:
+                                hidden_clusters.append((t1, t2, pair_corr))
+
+                hidden_clusters = sorted(hidden_clusters, key=lambda x: x[2], reverse=True)[:4]
+
+                if hidden_clusters:
+                    for t1, t2, pair_corr in hidden_clusters:
+                        c_color = "#FF4D6D" if pair_corr >= 0.90 else "#FFB020"
+
+                        cluster_rows_html += (
+                            f'<div style="padding:9px 10px; margin-bottom:8px; border-radius:12px; '
+                            f'background:linear-gradient(90deg, {c_color}22, rgba(9,23,51,0.76)); border:1px solid {c_color}44;">'
+                                f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                                    f'<div style="font-size:0.78rem; font-weight:950; color:#E7EEF9;">{t1} / {t2}</div>'
+                                    f'<div style="font-size:0.9rem; font-weight:950; color:{c_color};">{pair_corr:.2f}</div>'
+                                f'</div>'
+                                f'<div style="height:5px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:7px; overflow:hidden;">'
+                                    f'<div style="width:{pair_corr * 100:.1f}%; height:100%; background:{c_color}; border-radius:999px;"></div>'
+                                f'</div>'
+                            f'</div>'
+                        )
+                else:
+                    cluster_rows_html = (
+                        f'<div style="color:rgba(231,238,249,0.62); font-size:0.82rem; line-height:1.6;">'
+                        f'No major hidden correlation clusters detected above 0.75.'
+                        f'</div>'
+                    )
+            except Exception:
+                cluster_rows_html = (
+                    f'<div style="color:rgba(231,238,249,0.62); font-size:0.82rem; line-height:1.6;">'
+                    f'Correlation cluster scan unavailable.'
+                    f'</div>'
+                )
+
+            # Factor decomposition proxy
+            tickers_for_factor = exposure_df["Ticker"].tolist() if not exposure_df.empty else []
+
+            factor_scores = {
+                "Market Beta": min(100, max(0, risk_engine["beta"] * 75)),
+                "Growth / Tech": 0,
+                "Duration Hedge": 0,
+                "Crypto / High Beta": 0,
+                "Defensive Hedge": 0,
+            }
+
+            for _, row in exposure_df.iterrows():
+                ticker = str(row["Ticker"])
+                weight = float(row["Weight"])
+
+                if ticker in ["QQQ", "SMH", "NVDA", "MSFT", "AAPL", "AMZN", "GOOGL", "TSLA"]:
+                    factor_scores["Growth / Tech"] += weight
+
+                if ticker in ["TLT", "IEF", "SHY"]:
+                    factor_scores["Duration Hedge"] += weight
+
+                if ticker in ["MSTR", "BTC-USD", "ETH-USD", "COIN"]:
+                    factor_scores["Crypto / High Beta"] += weight
+
+                if ticker in ["GLD", "IAU", "SHY", "TLT"]:
+                    factor_scores["Defensive Hedge"] += weight
+
+            factor_rows_html = ""
+
+            for factor, score in factor_scores.items():
+                score = min(100, score)
+                f_color = "#FF4D6D" if score >= 65 else "#FFB020" if score >= 35 else "#2EE59D"
+
+                factor_rows_html += (
+                    f'<div style="margin-bottom:9px;">'
+                        f'<div style="display:flex; justify-content:space-between; font-size:0.74rem;">'
+                            f'<span style="color:#E7EEF9;">{factor}</span>'
+                            f'<span style="color:{f_color}; font-weight:950;">{score:.0f}</span>'
+                        f'</div>'
+                        f'<div style="height:5px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:5px; overflow:hidden;">'
+                            f'<div style="width:{score:.1f}%; height:100%; background:{f_color}; border-radius:999px;"></div>'
+                        f'</div>'
+                    f'</div>'
+                )
+
+                     # -----------------------------
+            # Top risk metric strip — wide terminal layout
+            # -----------------------------
+            metric_cards = [
+                ("Volatility", f'{risk_engine["annual_vol"]:.1f}%', "#E7EEF9"),
+                ("Max Drawdown", f'{risk_engine["max_drawdown"]:.1f}%', "#FF4D6D"),
+                ("VaR 95%", f'{risk_engine["var_95"]:.2f}%', "#FFB020"),
+                ("CVaR 95%", f'{risk_engine["cvar_95"]:.2f}%', "#FF4D6D"),
+                ("Beta vs SPY", f'{risk_engine["beta"]:.2f}', "#73CFFF"),
+                ("Survivability", f'{risk_engine["survivability_score"]:.0f}/100', "#2EE59D"),
+                ("Tail Fragility", f'{tail_fragility_index:.0f}/100', tail_color),
+                ("Liquidity Stress", f'{liquidity_stress_score:.0f}/100', liquidity_color),
+                ("Convexity", f'{convexity_score:.0f}/100', convexity_color),
+            ]
+
+            metric_html = '<div style="display:grid; grid-template-columns:repeat(9, minmax(0, 1fr)); gap:10px; margin-top:12px; margin-bottom:14px;">'
+
+            for label, value, color in metric_cards:
+                metric_html += (
+                    f'<div class="metric-tile" style="min-height:105px; padding:14px;">'
+                        f'<div class="metric-label">{label}</div>'
+                        f'<div class="metric-value" style="color:{color}; font-size:1.35rem;">{value}</div>'
+                        f'<div style="height:24px; margin-top:12px; border-radius:8px; '
+                        f'background:linear-gradient(90deg, {color}55, rgba(255,255,255,0.04)); '
+                        f'border-bottom:1px solid {color}66;"></div>'
+                    f'</div>'
+                )
+
+            metric_html += '</div>'
+            st.markdown(metric_html, unsafe_allow_html=True)
+
+            # -----------------------------
+            # Row 1: chart + risk stack
+            # -----------------------------
+            chart_col, stack_col = st.columns([1.55, 1.4], gap="medium")
+
+            with chart_col:
+                if "risk_monitor_timeframe" not in st.session_state:
+                    st.session_state.risk_monitor_timeframe = "MAX"
+
+                title_col, tf_col = st.columns([3, 1.25], gap="small")
+
+                with title_col:
+                    st.markdown(
+                        '<div style="font-size:1.05rem; font-weight:950; color:#E7EEF9; margin-top:6px;">Rolling Risk Monitor</div>',
+                        unsafe_allow_html=True
+                    )
+
+                with tf_col:
+                    tf_buttons = st.columns(4)
+
+                    for i, tf in enumerate(["1Y", "2Y", "3Y", "MAX"]):
+                        with tf_buttons[i]:
+                            if st.button(
+                                tf,
+                                key=f"risk_monitor_tf_{tf}",
+                                use_container_width=True,
+                                type="primary" if st.session_state.risk_monitor_timeframe == tf else "secondary",
+                            ):
+                                st.session_state.risk_monitor_timeframe = tf
+                                st.rerun()
+
+                rolling_vol_series = risk_engine["rolling_vol"].dropna()
+                rolling_dd_series = risk_engine["rolling_drawdown"].dropna()
+
+                selected_tf = st.session_state.risk_monitor_timeframe
+
+                if selected_tf != "MAX":
+                    years_back = int(selected_tf.replace("Y", ""))
+                    cutoff_date = rolling_vol_series.index.max() - pd.DateOffset(years=years_back)
+
+                    rolling_vol_series = rolling_vol_series[
+                        rolling_vol_series.index >= cutoff_date
+                    ]
+
+                    rolling_dd_series = rolling_dd_series[
+                        rolling_dd_series.index >= cutoff_date
+                    ]
+
+                selected_tf = st.session_state.risk_monitor_timeframe
+
+                if selected_tf != "MAX":
+                    years_back = int(selected_tf.replace("Y", ""))
+                    cutoff_date = rolling_vol_series.index.max() - pd.DateOffset(years=years_back)
+
+                    rolling_vol_series = rolling_vol_series[
+                        rolling_vol_series.index >= cutoff_date
+                    ]
+
+                    rolling_dd_series = rolling_dd_series[
+                        rolling_dd_series.index >= cutoff_date
+                    ]
+
+                current_vol = float(rolling_vol_series.iloc[-1])
+                current_dd = float(rolling_dd_series.iloc[-1])
+
+                vol_regime = "Elevated" if current_vol >= 25 else "Watch" if current_vol >= 18 else "Controlled"
+                vol_regime_color = "#FF4D6D" if current_vol >= 25 else "#FFB020" if current_vol >= 18 else "#2EE59D"
+
+                dd_state = "Stress" if current_dd <= -20 else "Warning" if current_dd <= -10 else "Contained"
+                dd_state_color = "#FF4D6D" if current_dd <= -20 else "#FFB020" if current_dd <= -10 else "#2EE59D"
+                monitor_cards = (
+                    f'<div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:12px;">'
+                        f'<div class="portfolio-card" style="padding:12px; min-height:88px;">'
+                            f'<div style="font-size:0.70rem; color:rgba(231,238,249,0.55); letter-spacing:0.08em; font-weight:900;">21D VOLATILITY</div>'
+                            f'<div style="font-size:1.45rem; font-weight:950; color:#3A8DFF; margin-top:7px;">{current_vol:.1f}%</div>'
+                            f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.55);">Annualized</div>'
+                        f'</div>'
+                        f'<div class="portfolio-card" style="padding:12px; min-height:88px;">'
+                            f'<div style="font-size:0.70rem; color:rgba(231,238,249,0.55); letter-spacing:0.08em; font-weight:900;">CURRENT DRAWDOWN</div>'
+                            f'<div style="font-size:1.45rem; font-weight:950; color:#FF4D6D; margin-top:7px;">{current_dd:.1f}%</div>'
+                            f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.55);">From peak</div>'
+                        f'</div>'
+                        f'<div class="portfolio-card" style="padding:12px; min-height:88px;">'
+                            f'<div style="font-size:0.70rem; color:rgba(231,238,249,0.55); letter-spacing:0.08em; font-weight:900;">VOL REGIME</div>'
+                            f'<div style="font-size:1.35rem; font-weight:950; color:{vol_regime_color}; margin-top:8px;">{vol_regime}</div>'
+                            f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.55);">Realized risk state</div>'
+                        f'</div>'
+                        f'<div class="portfolio-card" style="padding:12px; min-height:88px;">'
+                            f'<div style="font-size:0.70rem; color:rgba(231,238,249,0.55); letter-spacing:0.08em; font-weight:900;">DRAWDOWN STATE</div>'
+                            f'<div style="font-size:1.35rem; font-weight:950; color:{dd_state_color}; margin-top:8px;">{dd_state}</div>'
+                            f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.55);">Live risk posture</div>'
+                        f'</div>'
+                    f'</div>'
+                )
+
+                st.markdown(monitor_cards, unsafe_allow_html=True)
+
+                fig_risk = go.Figure()
+
+                fig_risk.add_hrect(y0=-10, y1=0, yref="y2", fillcolor="rgba(255,176,32,0.07)", line_width=0)
+                fig_risk.add_hrect(y0=-20, y1=-10, yref="y2", fillcolor="rgba(255,77,109,0.08)", line_width=0)
+                fig_risk.add_hrect(y0=-40, y1=-20, yref="y2", fillcolor="rgba(255,77,109,0.14)", line_width=0)
+
+                for level, label, color in [
+                    (-10, "WARNING", "#FFB020"),
+                    (-20, "HIGH RISK", "#FF4D6D"),
+                    (-30, "EXTREME", "#FF4D6D"),
+                ]:
+                     fig_risk.add_hline(
+
+                        y=level,
+
+                        yref="y2",
+
+                        line_dash="dash",
+
+                        line_color=color,
+
+                        opacity=0.65,
+
+                        annotation_text=label,
+
+                        annotation_position="right",
+
+                        annotation_font=dict(color=color, size=10),
+
+                    )
+
+                fig_risk.add_trace(
+
+                    go.Scatter(
+
+                        x=rolling_vol_series.index,
+
+                        y=rolling_vol_series,
+
+                        mode="lines",
+
+                        name="Rolling Volatility",
+
+                        line=dict(color="#3A8DFF", width=4),
+
+                    )
+
+                )
+
+                fig_risk.add_trace(
+
+                    go.Scatter(
+
+                        x=rolling_vol_series.index,
+
+                        y=rolling_vol_series,
+
+                        mode="lines",
+
+                        name="Vol Glow",
+
+                        line=dict(color="rgba(58,141,255,0.22)", width=10),
+
+                        hoverinfo="skip",
+
+                        showlegend=False,
+
+                    )
+
+                )
+
+                fig_risk.add_trace(
+
+                    go.Scatter(
+
+                        x=rolling_dd_series.index,
+
+                        y=rolling_dd_series,
+
+                        mode="lines",
+
+                        name="Rolling Drawdown",
+
+                        line=dict(color="#FF4D6D", width=3),
+
+                        yaxis="y2",
+
+                    )
+
+                )
+
+                fig_risk.add_trace(
+
+                    go.Scatter(
+
+                        x=[rolling_vol_series.index[-1]],
+
+                        y=[current_vol],
+
+                        mode="markers+text",
+
+                        name="Latest Vol",
+
+                        marker=dict(size=10, color="#3A8DFF"),
+
+                        text=[f"{current_vol:.1f}%"],
+
+                        textposition="middle right",
+
+                        textfont=dict(color="#3A8DFF", size=12),
+
+                        showlegend=False,
+
+                    )
+
+                )
+
+                fig_risk.add_trace(
+
+                    go.Scatter(
+
+                        x=[rolling_dd_series.index[-1]],
+
+                        y=[current_dd],
+
+                        mode="markers+text",
+
+                        name="Latest DD",
+
+                        marker=dict(size=10, color="#FF4D6D"),
+
+                        text=[f"{current_dd:.1f}%"],
+
+                        textposition="middle right",
+
+                        textfont=dict(color="#FF4D6D", size=12),
+
+                        yaxis="y2",
+
+                        showlegend=False,
+
+                    )
+
+                )
+
+                fig_risk.update_layout(
+
+                    height=430,
+
+                    paper_bgcolor="rgba(0,0,0,0)",
+
+                    plot_bgcolor="rgba(3,8,20,0.62)",
+
+                    font=dict(color="#E7EEF9"),
+
+                    margin=dict(l=12, r=20, t=18, b=10),
+
+                    legend=dict(
+
+                        orientation="h",
+
+                        y=1.08,
+
+                        x=0,
+
+                        font=dict(size=11, color="#FFFFFF"),
+
+                        bgcolor="rgba(0,0,0,0)",
+
+                    ),
+
+                    hovermode="x unified",
+
+                    xaxis=dict(
+
+                        gridcolor="rgba(255,255,255,0.055)",
+
+                        zeroline=False,
+
+                    ),
+
+                    yaxis=dict(
+
+                        title="Volatility % Ann.",
+
+                        gridcolor="rgba(255,255,255,0.06)",
+
+                        ticksuffix="%",
+
+                        color="#3A8DFF",
+
+                        zeroline=False,
+
+                    ),
+
+                    yaxis2=dict(
+
+                        title="Drawdown %",
+
+                        overlaying="y",
+
+                        side="right",
+
+                        gridcolor="rgba(255,255,255,0)",
+
+                        ticksuffix="%",
+
+                        color="#FF4D6D",
+
+                        range=[-40, 0],
+
+                        zeroline=False,
+                    ),
+                )
+
+                st.plotly_chart(fig_risk, use_container_width=True)
+
+                st.markdown(
+                    f'<div class="portfolio-card" style="padding:9px 12px; margin-top:8px; display:flex; justify-content:space-between; '
+                    f'color:rgba(231,238,249,0.58); font-size:0.72rem;">'
+                        f'<span>Latest Update: live on refresh</span>'
+                        f'<span>Volatility = 21D annualized std dev</span>'
+                        f'<span>Drawdown = peak-to-trough loss</span>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+            with stack_col:
+                st.markdown("### Risk Stack")
+
+                gauge_degrees = risk_engine["survivability_score"] * 3.6
+                overall_stress_impact = (
+                    risk_engine["stress_market_down_5"]
+                    + regime_spy_down_5
+                    + liquidity_drag
+                    + convexity_drag
+                )
+
+                risk_stack_html = (
+                    f'<div class="portfolio-card" style="min-height:430px; padding:18px;">'
+
+                        f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">'
+                            f'<div style="font-size:0.78rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900;">RISK STACK</div>'
+                            f'<div style="font-size:0.72rem; color:#2EE59D; font-weight:900;">RISK MODEL&nbsp;&nbsp;LIVE</div>'
+                        f'</div>'
+
+                        f'<div style="display:grid; grid-template-columns:0.78fr 1.12fr 0.9fr; gap:14px; align-items:center;">'
+
+                            f'<div style="text-align:center;">'
+                                f'<div style="margin:0 auto; width:138px; height:138px; border-radius:50%; '
+                                f'background:conic-gradient(#2EE59D 0deg, #2EE59D {gauge_degrees:.0f}deg, rgba(255,255,255,0.08) {gauge_degrees:.0f}deg); '
+                                f'display:flex; align-items:center; justify-content:center;">'
+                                    f'<div style="width:96px; height:96px; border-radius:50%; background:#091733; '
+                                    f'display:flex; align-items:center; justify-content:center; flex-direction:column;">'
+                                        f'<div style="font-size:1.85rem; font-weight:950; color:#E7EEF9;">{risk_engine["survivability_score"]:.0f}</div>'
+                                        f'<div style="font-size:0.62rem; color:rgba(231,238,249,0.55);">/100</div>'
+                                    f'</div>'
+                                f'</div>'
+                                f'<div style="margin-top:10px; font-size:0.85rem; font-weight:950; color:#2EE59D;">'
+                                    f'{risk_engine["survivability_label"]} SURVIVABILITY'
+                                f'</div>'
+                            f'</div>'
+
+                            f'<div style="background:rgba(255,255,255,0.035); border-radius:14px; padding:12px;">'
+                                f'<div style="display:flex; justify-content:space-between; margin-bottom:7px;"><span>Downside Capture</span><b>{risk_engine["downside_capture"]:.2f}x</b></div>'
+                                f'<div style="display:flex; justify-content:space-between; margin-bottom:7px;"><span>SPY Correlation</span><b>{risk_engine["corr_spy"]:.2f}</b></div>'
+                                f'<div style="display:flex; justify-content:space-between; margin-bottom:7px;"><span>Top Holding</span><b>{risk_engine["top_weight"]:.1f}%</b></div>'
+                                f'<div style="display:flex; justify-content:space-between; margin-bottom:7px;"><span>Top 3 Holdings</span><b>{risk_engine["top_3_weight"]:.1f}%</b></div>'
+                                f'<div style="display:flex; justify-content:space-between; margin-bottom:7px;"><span>Effective Positions</span><b>{risk_engine["effective_positions"]:.1f}</b></div>'
+                                f'<div style="display:flex; justify-content:space-between;"><span>Regime</span><b style="color:#2EE59D;">{regime_tag}</b></div>'
+                            f'</div>'
+
+                            f'<div style="display:grid; gap:8px;">'
+                                f'<div style="padding:10px; border-radius:12px; background:{tail_color}18; border:1px solid {tail_color}44;">'
+                                    f'<div style="font-size:0.68rem; color:rgba(231,238,249,0.55);">Tail Fragility</div>'
+                                    f'<div style="display:flex; justify-content:space-between; align-items:end; margin-top:4px;">'
+                                        f'<span style="color:{tail_color}; font-weight:950;">{tail_label}</span>'
+                                        f'<span style="color:{tail_color}; font-weight:950;">{tail_fragility_index:.0f}</span>'
+                                    f'</div>'
+                                f'</div>'
+                                f'<div style="padding:10px; border-radius:12px; background:{liquidity_color}18; border:1px solid {liquidity_color}44;">'
+                                    f'<div style="font-size:0.68rem; color:rgba(231,238,249,0.55);">Liquidity Stress</div>'
+                                    f'<div style="display:flex; justify-content:space-between; align-items:end; margin-top:4px;">'
+                                        f'<span style="color:{liquidity_color}; font-weight:950;">{liquidity_label}</span>'
+                                        f'<span style="color:{liquidity_color}; font-weight:950;">{liquidity_stress_score:.0f}</span>'
+                                    f'</div>'
+                                f'</div>'
+                                f'<div style="padding:10px; border-radius:12px; background:{convexity_color}18; border:1px solid {convexity_color}44;">'
+                                    f'<div style="font-size:0.68rem; color:rgba(231,238,249,0.55);">Convexity</div>'
+                                    f'<div style="display:flex; justify-content:space-between; align-items:end; margin-top:4px;">'
+                                        f'<span style="color:{convexity_color}; font-weight:950;">{convexity_label}</span>'
+                                        f'<span style="color:{convexity_color}; font-weight:950;">{convexity_score:.0f}</span>'
+                                    f'</div>'
+                                f'</div>'
+                            f'</div>'
+
+                        f'</div>'
+
+                        f'<div style="height:1px; background:rgba(255,255,255,0.08); margin:14px 0 12px 0;"></div>'
+
+                        f'<div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">'
+                            f'<div style="padding:10px; border-radius:12px; background:{tail_color}14; border:1px solid {tail_color}44;">'
+                                f'<div style="font-size:0.58rem; color:rgba(231,238,249,0.50); letter-spacing:0.07em;">TAIL PATH</div>'
+                                f'<div style="font-size:0.9rem; font-weight:950; color:{tail_color}; margin-top:4px;">{tail_label}</div>'
+                            f'</div>'
+                            f'<div style="padding:10px; border-radius:12px; background:{liquidity_color}14; border:1px solid {liquidity_color}44;">'
+                                f'<div style="font-size:0.58rem; color:rgba(231,238,249,0.50); letter-spacing:0.07em;">LIQUIDITY</div>'
+                                f'<div style="font-size:0.9rem; font-weight:950; color:{liquidity_color}; margin-top:4px;">{liquidity_label}</div>'
+                            f'</div>'
+                            f'<div style="padding:10px; border-radius:12px; background:{convexity_color}14; border:1px solid {convexity_color}44;">'
+                                f'<div style="font-size:0.58rem; color:rgba(231,238,249,0.50); letter-spacing:0.07em;">CONVEXITY</div>'
+                                f'<div style="font-size:0.9rem; font-weight:950; color:{convexity_color}; margin-top:4px;">{convexity_label}</div>'
+                            f'</div>'
+                            f'<div style="padding:10px; border-radius:12px; background:rgba(58,141,255,0.10); border:1px solid rgba(58,141,255,0.35);">'
+                                f'<div style="font-size:0.58rem; color:rgba(231,238,249,0.50); letter-spacing:0.07em;">REGIME PATH</div>'
+                                f'<div style="font-size:0.9rem; font-weight:950; color:#73CFFF; margin-top:4px;">{regime_tag}</div>'
+                            f'</div>'
+                        f'</div>'
+
+                        f'<div style="margin-top:11px; padding:10px; border-radius:12px; background:rgba(255,77,109,0.07); border:1px solid rgba(255,77,109,0.18);">'
+                            f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                                f'<div style="font-size:0.7rem; color:rgba(231,238,249,0.55); letter-spacing:0.07em;">LIVE STRESS CONDITIONS</div>'
+                                f'<div style="font-size:1.05rem; font-weight:950; color:#FF4D6D;">{overall_stress_impact:.1f}%</div>'
+                            f'</div>'
+                            f'<div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-top:8px; font-size:0.72rem;">'
+                                f'<div><span style="color:rgba(231,238,249,0.55);">SPY -5%</span><br><b style="color:#FF4D6D;">{risk_engine["stress_market_down_5"]:.1f}%</b></div>'
+                                f'<div><span style="color:rgba(231,238,249,0.55);">Regime</span><br><b style="color:#FF4D6D;">{regime_spy_down_5:.1f}%</b></div>'
+                                f'<div><span style="color:rgba(231,238,249,0.55);">Liquidity</span><br><b style="color:{liquidity_color};">{liquidity_drag:.1f}%</b></div>'
+                                f'<div><span style="color:rgba(231,238,249,0.55);">Convexity</span><br><b style="color:{convexity_color};">{convexity_drag:.1f}%</b></div>'
+                            f'</div>'
+                        f'</div>'
+
+                    f'</div>'
+                )
+                st.markdown(risk_stack_html, unsafe_allow_html=True)
+            # -----------------------------
+            # Row 2: main operating panels
+            # -----------------------------
+            main_left, main_mid, main_right = st.columns([1.05, 0.95, 1.05], gap="medium")
+
+            with main_left:
+                st.markdown("### Exposure Concentration")
+
+                exposure_rows_html = ""
+
+                if not exposure_df.empty:
+                    for _, row in exposure_df.iterrows():
+                        ticker = row["Ticker"]
+                        weight = row["Weight"]
+                        vol = row["Volatility"]
+                        corr_value = row["Correlation"]
+                        risk_contrib = row["Risk Contribution %"]
+
+                        risk_color = "#FF4D6D" if risk_contrib >= 12 else "#FFB020" if risk_contrib >= 6 else "#2EE59D"
+
+                        exposure_rows_html += (
+                            f'<div style="display:grid; grid-template-columns:0.7fr 0.7fr 0.8fr 0.8fr 1.1fr; gap:8px; '
+                            f'align-items:center; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.055);">'
+                                f'<div style="padding:3px 7px; border-radius:999px; background:{risk_color}20; '
+                                f'border:1px solid {risk_color}55; color:{risk_color}; font-weight:950; font-size:0.72rem;">{ticker}</div>'
+                                f'<div style="font-size:0.75rem;">{weight:.1f}%</div>'
+                                f'<div style="font-size:0.75rem;">{vol:.1f}%</div>'
+                                f'<div style="font-size:0.75rem; color:#73CFFF;">{corr_value:.2f}</div>'
+                                f'<div>'
+                                    f'<div style="display:flex; justify-content:space-between; font-size:0.75rem;">'
+                                        f'<span style="color:{risk_color}; font-weight:950;">{risk_contrib:.1f}%</span>'
+                                    f'</div>'
+                                    f'<div style="height:5px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:3px; overflow:hidden;">'
+                                        f'<div style="width:{min(risk_contrib,100):.1f}%; height:100%; background:{risk_color}; border-radius:999px;"></div>'
+                                    f'</div>'
+                                f'</div>'
+                            f'</div>'
+                        )
+
+                exposure_html = (
+                    f'<div class="portfolio-card" style="min-height:385px; padding:14px;">'
+                        f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">'
+                            f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900;">POSITION RISK STACK</div>'
+                            f'<div style="font-size:0.72rem; color:#73CFFF; font-weight:900;">LIVE</div>'
+                        f'</div>'
+                        f'<div style="display:grid; grid-template-columns:0.7fr 0.7fr 0.8fr 0.8fr 1.1fr; gap:8px; '
+                        f'font-size:0.62rem; color:rgba(231,238,249,0.45); font-weight:900; margin-bottom:5px;">'
+                            f'<div>TICKER</div><div>WEIGHT</div><div>VOL</div><div>CORR</div><div>RISK CONTRIB.</div>'
+                        f'</div>'
+                        f'{exposure_rows_html}'
+                        f'<div style="display:flex; gap:16px; margin-top:14px; font-size:0.72rem; color:rgba(231,238,249,0.65);">'
+                            f'<span style="color:#FF4D6D;">● High &gt;12%</span>'
+                            f'<span style="color:#FFB020;">● Elevated 6–12%</span>'
+                            f'<span style="color:#2EE59D;">● Low &lt;6%</span>'
+                        f'</div>'
+                    f'</div>'
+                )
+
+                st.markdown(exposure_html, unsafe_allow_html=True)
+
+            with main_mid:
+                st.markdown("### Stress Sensitivity")
+
+                stress_items = [
+                    ("SPY -2% Shock", risk_engine["stress_market_down_2"], "Beta shock", "#FFB020"),
+                    ("SPY -5% Shock", risk_engine["stress_market_down_5"], "Market de-risk", "#FF4D6D"),
+                    (regime_tag, regime_spy_down_5, "Regime-conditioned", "#FF4D6D"),
+                    ("Liquidity Stress", liquidity_drag, "Exit-pressure proxy", liquidity_color),
+                    ("Volatility Shock", -1 * (risk_engine["annual_vol"] / 100) * 30, "Vol expansion", "#FF4D6D"),
+                    ("Convexity Drag", convexity_drag, "Nonlinear loss path", convexity_color),
+                ]
+
+                stress_rows_html = ""
+
+                for label, value, tag, color in stress_items:
+                    width = min(100, abs(value) * 8)
+
+                    stress_rows_html += (
+                        f'<div style="padding:9px 10px; margin-bottom:7px; border-radius:12px; '
+                        f'background:linear-gradient(90deg, {color}2E, rgba(9,23,51,0.78)); '
+                        f'border:1px solid {color}55;">'
+                            f'<div style="display:flex; justify-content:space-between; align-items:flex-start;">'
+                                f'<div>'
+                                    f'<div style="font-size:0.78rem; font-weight:950; color:#E7EEF9;">{label}</div>'
+                                    f'<div style="font-size:0.6rem; color:rgba(231,238,249,0.52); margin-top:1px;">{tag}</div>'
+                                f'</div>'
+                                f'<div style="font-size:0.98rem; font-weight:950; color:{color};">{value:.1f}%</div>'
+                            f'</div>'
+                            f'<div style="height:6px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:7px; overflow:hidden;">'
+                                f'<div class="shock-bar" style="width:{width:.1f}%; height:100%; background:{color}; border-radius:999px; box-shadow:0 0 12px {color};"></div>'
+                            f'</div>'
+                        f'</div>'
+                    )
+
+                stress_html = (
+                    f'<div class="portfolio-card" style="min-height:385px; padding:14px;">'
+                        f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:11px;">'
+                            f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900;">STRESS LADDER</div>'
+                            f'<div style="font-size:0.72rem; color:#FFB020; font-weight:900;">LIVE SHOCK MODEL</div>'
+                        f'</div>'
+                        f'{stress_rows_html}'
+                        f'<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px;">'
+                            f'<div style="padding:9px; border-radius:12px; background:{tail_color}18; border:1px solid {tail_color}44;">'
+                                f'<div style="font-size:0.6rem; color:rgba(231,238,249,0.50); letter-spacing:0.07em;">TAIL PATH</div>'
+                                f'<div style="font-size:0.8rem; font-weight:950; color:{tail_color}; margin-top:4px;">{tail_label}</div>'
+                            f'</div>'
+                            f'<div style="padding:9px; border-radius:12px; background:rgba(255,176,32,0.08); border:1px solid rgba(255,176,32,0.22);">'
+                                f'<div style="font-size:0.6rem; color:rgba(231,238,249,0.50); letter-spacing:0.07em;">REGIME PATH</div>'
+                                f'<div style="font-size:0.8rem; font-weight:950; color:#FFB020; margin-top:4px;">{regime_tag}</div>'
+                            f'</div>'
+                        f'</div>'
+                    f'</div>'
+                )
+
+                st.markdown(stress_html, unsafe_allow_html=True)
+
+            with main_right:
+                st.markdown("### AI Risk Commentary")
+
+                risk_read = generate_risk_desk_brief(
+                    risk_engine,
+                    portfolio_type,
+                    risk_level,
+                    st.session_state.allocation_horizon
+                )
+
+                ai_risk_html = (
+                    f'<div class="portfolio-card" style="min-height:385px; padding:18px;">'
+                        f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">'
+                            f'<div style="font-size:0.78rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em;">INTERNAL RISK DESK</div>'
+                            f'<div style="font-size:0.72rem; color:#73CFFF; font-weight:900;">LIVE</div>'
+                        f'</div>'
+                        f'<div style="color:#E7EEF9; font-size:0.88rem; line-height:1.62;">'
+                            f'{risk_read.replace(chr(10), "<br>")}'
+                        f'</div>'
+                    f'</div>'
+                )
+
+                st.markdown(ai_risk_html, unsafe_allow_html=True)
+
+            # -----------------------------
+            # Row 3: bottom integrated diagnostics
+            # -----------------------------
+            add_left, add_mid, add_right = st.columns([1.05, 0.95, 1.05], gap="medium")
+
+            with add_left:
+                st.markdown("### Hidden Correlation Clusters")
+
+                cluster_html = (
+                    f'<div class="portfolio-card" style="min-height:225px; padding:14px;">'
+                        f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">'
+                            f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900;">CORRELATION STACK</div>'
+                            f'<div style="font-size:0.72rem; color:#FFB020; font-weight:900;">CLUSTER SCAN</div>'
+                        f'</div>'
+                        f'{cluster_rows_html}'
+                    f'</div>'
+                )
+
+                st.markdown(cluster_html, unsafe_allow_html=True)
+
+            with add_mid:
+                st.markdown("### Factor Decomposition")
+
+                factor_html = (
+                    f'<div class="portfolio-card" style="min-height:225px; padding:14px;">'
+                        f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">'
+                            f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900;">RISK FACTOR PROXY</div>'
+                            f'<div style="font-size:0.72rem; color:#73CFFF; font-weight:900;">MODEL</div>'
+                        f'</div>'
+                        f'{factor_rows_html}'
+                    f'</div>'
+                )
+
+                st.markdown(factor_html, unsafe_allow_html=True)
+
+            with add_right:
+                st.markdown("### Tail / Liquidity / Convexity")
+
+                tlc_html = (
+                    f'<div class="portfolio-card" style="min-height:225px; padding:14px;">'
+                        f'<div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">'
+                            f'<div style="padding:12px; border-radius:14px; background:{tail_color}18; border:1px solid {tail_color}55; box-shadow:0 0 18px {tail_color}15;">'
+                                f'<div style="font-size:0.62rem; color:rgba(231,238,249,0.52);">TAIL FRAGILITY</div>'
+                                f'<div style="font-size:1.45rem; font-weight:950; color:{tail_color}; margin-top:5px;">{tail_fragility_index:.0f}</div>'
+                                f'<div style="font-size:0.72rem; color:{tail_color};">{tail_label}</div>'
+                            f'</div>'
+                            f'<div style="padding:12px; border-radius:14px; background:{liquidity_color}18; border:1px solid {liquidity_color}55; box-shadow:0 0 18px {liquidity_color}15;">'
+                                f'<div style="font-size:0.62rem; color:rgba(231,238,249,0.52);">LIQUIDITY</div>'
+                                f'<div style="font-size:1.45rem; font-weight:950; color:{liquidity_color}; margin-top:5px;">{liquidity_stress_score:.0f}</div>'
+                                f'<div style="font-size:0.72rem; color:{liquidity_color};">{liquidity_label}</div>'
+                            f'</div>'
+                            f'<div style="padding:12px; border-radius:14px; background:{convexity_color}18; border:1px solid {convexity_color}55; box-shadow:0 0 18px {convexity_color}15;">'
+                                f'<div style="font-size:0.62rem; color:rgba(231,238,249,0.52);">CONVEXITY</div>'
+                                f'<div style="font-size:1.45rem; font-weight:950; color:{convexity_color}; margin-top:5px;">{convexity_score:.0f}</div>'
+                                f'<div style="font-size:0.72rem; color:{convexity_color};">{convexity_label}</div>'
+                            f'</div>'
+                        f'</div>'
+                        f'<div style="height:1px; background:rgba(255,255,255,0.08); margin:14px 0;"></div>'
+                        f'<div style="color:rgba(231,238,249,0.68); font-size:0.78rem; line-height:1.5;">'
+                            f'Composite institutional risk stack: tail loss pressure, exit-friction proxy, and nonlinear stress sensitivity.'
+                        f'</div>'
+                    f'</div>'
+                )
+
+                st.markdown(tlc_html, unsafe_allow_html=True)
+
+            st.markdown(
+                f'<div class="portfolio-card" style="margin-top:10px; padding:10px 14px; display:flex; justify-content:center; gap:28px; '
+                f'color:rgba(231,238,249,0.68); font-size:0.78rem;">'
+                    f'<span style="color:#2EE59D; font-weight:950;">⚡ LIVE STRESS UPDATES</span>'
+                    f'<span>Model refresh: Every 60s</span>'
+                    f'<span>Regime: {regime_name}</span>'
+                    f'<span>Shock mode: {regime_tag}</span>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            st.stop()   
+
+        if selected_view == "Stress Test Engine":
+            st.markdown(
+                """
+                <style>
+                @keyframes stressPulse {
+                    0% { opacity:0.70; filter:brightness(0.95); }
+                    50% { opacity:1; filter:brightness(1.20); }
+                    100% { opacity:0.70; filter:brightness(0.95); }
+                }
+                .stress-live-bar {
+                    animation: stressPulse 2.2s ease-in-out infinite;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+
+            # -----------------------------
+            # Scenario presets
+            # -----------------------------
+            scenario_presets = {
+                "2008 Crisis": {
+                    "portfolio_shock": -32,
+                    "spy_shock": -38,
+                    "recovery_months": 24,
+                    "failure": "equity beta + correlation compression",
+                    "liquidity": "Severe",
+                },
+                "COVID Crash": {
+                    "portfolio_shock": -24,
+                    "spy_shock": -34,
+                    "recovery_months": 9,
+                    "failure": "volatility spike + liquidity gap",
+                    "liquidity": "High",
+                },
+                "Inflation Shock": {
+                    "portfolio_shock": -17,
+                    "spy_shock": -20,
+                    "recovery_months": 14,
+                    "failure": "rates pressure + duration stress",
+                    "liquidity": "Medium",
+                },
+                "Rate Shock": {
+                    "portfolio_shock": -14,
+                    "spy_shock": -12,
+                    "recovery_months": 10,
+                    "failure": "duration repricing",
+                    "liquidity": "Medium",
+                },
+                "AI Bubble Unwind": {
+                    "portfolio_shock": -28,
+                    "spy_shock": -18,
+                    "recovery_months": 18,
+                    "failure": "growth crowding + high beta unwind",
+                    "liquidity": "High",
+                },
+                "Liquidity Freeze": {
+                    "portfolio_shock": -22,
+                    "spy_shock": -16,
+                    "recovery_months": 20,
+                    "failure": "exit pressure + bid/ask widening",
+                    "liquidity": "Severe",
+                },
+                "Custom Shock": {
+                    "portfolio_shock": -20,
+                    "spy_shock": -20,
+                    "recovery_months": 12,
+                    "failure": "custom stress path",
+                    "liquidity": "Medium",
+                },
+            }
+
+            st.markdown(
+                f'<div class="portfolio-card" style="padding:22px; margin-top:12px;">'
+                    f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                        f'<div>'
+                            f'<div style="font-size:1.9rem; font-weight:950; color:#E7EEF9;">Stress Test Engine</div>'
+                            f'<div style="color:rgba(231,238,249,0.62); margin-top:6px;">'
+                                f'Crisis scenario analysis tied to the active {portfolio_type}.'
+                            f'</div>'
+                        f'</div>'
+                        f'<div style="text-align:right;">'
+                            f'<div style="font-size:0.7rem; color:rgba(231,238,249,0.52);">CRISIS MODEL</div>'
+                            f'<div style="font-size:1rem; color:#2EE59D; font-weight:900;">LIVE</div>'
+                        f'</div>'
+                    f'</div>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            control_cols = st.columns([1.4, 1, 1, 1, 1], gap="medium")
+
+            with control_cols[0]:
+                selected_shock = st.selectbox(
+                    "Shock Scenario",
+                    list(scenario_presets.keys()),
+                    index=0,
+                    key="stress_selected_shock"
+                )
+
+            with control_cols[1]:
+                custom_portfolio_shock = st.slider(
+                    "Custom Portfolio Shock",
+                    -60,
+                    0,
+                    scenario_presets[selected_shock]["portfolio_shock"],
+                    key="stress_custom_portfolio_shock"
+                )
+
+            with control_cols[2]:
+                custom_spy_shock = st.slider(
+                    "Custom SPY Shock",
+                    -60,
+                    0,
+                    scenario_presets[selected_shock]["spy_shock"],
+                    key="stress_custom_spy_shock"
+                )
+
+            with control_cols[3]:
+                recovery_months = st.slider(
+                    "Recovery Months",
+                    3,
+                    36,
+                    scenario_presets[selected_shock]["recovery_months"],
+                    key="stress_recovery_months"
+                )
+
+            with control_cols[4]:
+                liquidity_mode = st.selectbox(
+                    "Liquidity Mode",
+                    ["Normal", "Medium", "High", "Severe"],
+                    index=["Normal", "Medium", "High", "Severe"].index(scenario_presets[selected_shock]["liquidity"]),
+                    key="stress_liquidity_mode"
+                )
+
+            portfolio_shock = custom_portfolio_shock
+            spy_shock = custom_spy_shock
+            drawdown_gap = portfolio_shock - spy_shock
+            stressed_value = portfolio_size * (1 + portfolio_shock / 100)
+            dollar_loss = portfolio_size - stressed_value
+            capital_at_risk = max(0, dollar_loss)
+
+            recovery_estimate = f"{recovery_months} mo"
+            failure_path = scenario_presets[selected_shock]["failure"]
+
+            severity_label = "Critical" if portfolio_shock <= -30 else "High" if portfolio_shock <= -20 else "Moderate"
+            severity_color = "#FF4D6D" if portfolio_shock <= -30 else "#FFB020" if portfolio_shock <= -20 else "#2EE59D"
+
+            hedge_effectiveness = "Strong" if selected_shock in ["Inflation Shock", "Rate Shock"] else "Partial" if selected_shock in ["2008 Crisis", "COVID Crash"] else "Weak"
+            hedge_color = "#2EE59D" if hedge_effectiveness == "Strong" else "#FFB020" if hedge_effectiveness == "Partial" else "#FF4D6D"
+
+            liquidity_color = "#FF4D6D" if liquidity_mode == "Severe" else "#FFB020" if liquidity_mode in ["High", "Medium"] else "#2EE59D"
+
+            metric_cards = [
+                ("Portfolio Impact", f"{portfolio_shock:.1f}%", severity_color),
+                ("Dollar Loss", f"${dollar_loss:,.0f}", "#FF4D6D"),
+                ("Stressed Value", f"${stressed_value:,.0f}", "#E7EEF9"),
+                ("SPY Impact", f"{spy_shock:.1f}%", "#FF4D6D"),
+                ("Drawdown Gap", f"{drawdown_gap:+.1f}%", "#FFB020"),
+                ("Recovery Estimate", recovery_estimate, "#73CFFF"),
+                ("Liquidity Stress", liquidity_mode, liquidity_color),
+                ("Hedge Effectiveness", hedge_effectiveness, hedge_color),
+            ]
+
+            metric_html = (
+                f'<div style="display:grid; grid-template-columns:repeat(8, minmax(0, 1fr)); gap:10px; margin-top:14px;">'
+            )
+
+            for label, value, color in metric_cards:
+                metric_html += (
+                    f'<div class="metric-tile">'
+                        f'<div class="metric-label">{label}</div>'
+                        f'<div class="metric-value" style="color:{color};">{value}</div>'
+                        f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:10px; overflow:hidden;">'
+                            f'<div class="stress-live-bar" style="width:78%; height:100%; background:{color}; border-radius:999px; opacity:0.72;"></div>'
+                        f'</div>'
+                    f'</div>'
+                )
+
+            metric_html += f'</div>'
+            st.markdown(metric_html, unsafe_allow_html=True)
+
+            # -----------------------------
+            # Holding damage logic
+            # -----------------------------
+            stress_tickers = [p["ticker"] for p in recommendations if p["ticker"] != "CASH"]
+            stress_weights = [
+                p["dollars"] / sum(x["dollars"] for x in recommendations if x["ticker"] != "CASH")
+                for p in recommendations
+                if p["ticker"] != "CASH"
+            ]
+
+            damage_rows = []
+
+            for ticker, weight in zip(stress_tickers, stress_weights):
+                if ticker in ["TLT", "SHY", "IEF"]:
+                    shock_mult = 0.25 if selected_shock in ["2008 Crisis", "COVID Crash"] else 0.75
+                    reason = "duration hedge / rates sensitivity"
+                elif ticker in ["GLD", "IAU"]:
+                    shock_mult = 0.15
+                    reason = "defensive hedge sleeve"
+                elif ticker in ["NVDA", "TSLA", "MSTR", "SMH", "QQQ"]:
+                    shock_mult = 1.35
+                    reason = "growth beta / convexity pressure"
+                elif ticker in ["SPY", "VTI"]:
+                    shock_mult = 1.00
+                    reason = "broad market beta"
+                else:
+                    shock_mult = 0.95
+                    reason = "equity beta exposure"
+
+                ticker_shock = portfolio_shock * shock_mult
+                ticker_dollar_loss = portfolio_size * weight * abs(ticker_shock / 100)
+                contribution = ticker_dollar_loss / max(1, dollar_loss) * 100
+
+                row_color = "#FF4D6D" if ticker_shock <= -30 else "#FFB020" if ticker_shock <= -15 else "#2EE59D"
+
+                damage_rows.append(
+                    {
+                        "ticker": ticker,
+                        "weight": weight,
+                        "shock": ticker_shock,
+                        "dollar_loss": ticker_dollar_loss,
+                        "contribution": contribution,
+                        "reason": reason,
+                        "color": row_color,
+                    }
+                )
+
+            damage_rows = sorted(damage_rows, key=lambda x: x["dollar_loss"], reverse=True)
+
+            largest_loss_driver = damage_rows[0]["ticker"] if damage_rows else "N/A"
+            first_failure_point = failure_path
+            correlation_failure = "Likely" if selected_shock in ["2008 Crisis", "COVID Crash", "AI Bubble Unwind", "Liquidity Freeze"] else "Moderate"
+
+            # -----------------------------
+            # Shock path chart
+            # -----------------------------
+            path_days = list(range(0, 253))
+            shock_day = 30
+            plateau_end = 75
+
+            shock_values = []
+
+            for day in path_days:
+                if day <= shock_day:
+                    value = portfolio_size + (stressed_value - portfolio_size) * (day / shock_day)
+                elif day <= plateau_end:
+                    value = stressed_value * (1 + 0.015 * ((day - shock_day) / (plateau_end - shock_day)))
+                else:
+                    recovery_progress = (day - plateau_end) / (252 - plateau_end)
+                    recovered_value = stressed_value + (portfolio_size - stressed_value) * min(1, recovery_progress * (12 / max(3, recovery_months)))
+                    value = recovered_value
+
+                shock_values.append(value)
+
+            main_left, main_right = st.columns([2.1, 1], gap="medium")
+
+            with main_left:
+                st.markdown("### Shock Path")
+
+                fig_shock = go.Figure()
+
+                fig_shock.add_trace(
+                    go.Scatter(
+                        x=path_days,
+                        y=shock_values,
+                        mode="lines",
+                        name="Stress Path",
+                        line=dict(color="#FF4D6D", width=4),
+                        fill="tozeroy",
+                        fillcolor="rgba(255,77,109,0.08)",
+                    )
+                )
+
+                fig_shock.add_hline(
+                    y=portfolio_size,
+                    line_dash="dash",
+                    line_color="rgba(231,238,249,0.45)",
+                    annotation_text="Base Value",
+                    annotation_position="right",
+                )
+
+                fig_shock.add_hline(
+                    y=stressed_value,
+                    line_dash="dot",
+                    line_color="#FF4D6D",
+                    annotation_text="Shock Low",
+                    annotation_position="right",
+                )
+
+                fig_shock.add_trace(
+                    go.Scatter(
+                        x=[shock_day],
+                        y=[stressed_value],
+                        mode="markers+text",
+                        marker=dict(size=11, color="#FF4D6D"),
+                        text=[f"${stressed_value:,.0f}"],
+                        textposition="bottom right",
+                        textfont=dict(color="#FF4D6D", size=12),
+                        showlegend=False,
+                    )
+                )
+
+                fig_shock.update_layout(
+                    height=520,
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(3,8,20,0.58)",
+                    font=dict(color="#E7EEF9"),
+                    margin=dict(l=10, r=20, t=10, b=10),
+                    hovermode="x unified",
+                    legend=dict(
+                        orientation="h",
+                        y=1.05,
+                        x=0,
+                        bgcolor="rgba(0,0,0,0)",
+                    ),
+                    xaxis=dict(
+                        title="Stress Days",
+                        gridcolor="rgba(255,255,255,0.055)",
+                        zeroline=False,
+                    ),
+                    yaxis=dict(
+                        title="Portfolio Value",
+                        gridcolor="rgba(255,255,255,0.06)",
+                        zeroline=False,
+                    ),
+                )
+
+                st.plotly_chart(fig_shock, use_container_width=True)
+
+            with main_right:
+                st.markdown("### Portfolio Breakpoint")
+
+                breakpoint_html = (
+                    f'<div class="portfolio-card" style="min-height:520px; padding:16px;">'
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">'
+                            f'BREAKPOINT MAP'
+                        f'</div>'
+
+                        f'<div style="padding:12px; border-radius:14px; background:rgba(255,77,109,0.10); border:1px solid rgba(255,77,109,0.35); margin-bottom:12px;">'
+                            f'<div style="font-size:0.65rem; color:rgba(231,238,249,0.52);">FIRST FAILURE POINT</div>'
+                            f'<div style="font-size:0.95rem; color:#FF4D6D; font-weight:950; margin-top:5px;">{first_failure_point}</div>'
+                        f'</div>'
+
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>Largest Loss Driver</span><b style="color:#FF4D6D;">{largest_loss_driver}</b></div>'
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>Correlation Failure</span><b style="color:#FFB020;">{correlation_failure}</b></div>'
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>Liquidity Stress</span><b style="color:{liquidity_color};">{liquidity_mode}</b></div>'
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>Hedge Effectiveness</span><b style="color:{hedge_color};">{hedge_effectiveness}</b></div>'
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>Capital at Risk</span><b style="color:#FF4D6D;">${capital_at_risk:,.0f}</b></div>'
+
+                        f'<div style="height:1px; background:rgba(255,255,255,0.08); margin:16px 0;"></div>'
+
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:12px;">'
+                            f'DEFENSE SLEEVE EFFECTIVENESS'
+                        f'</div>'
+
+                        f'<div style="display:grid; gap:9px;">'
+                            f'<div style="display:flex; justify-content:space-between;"><span>TLT / Duration</span><b style="color:#73CFFF;">{"Helpful" if selected_shock in ["2008 Crisis", "COVID Crash"] else "Mixed"}</b></div>'
+                            f'<div style="display:flex; justify-content:space-between;"><span>GLD / Gold</span><b style="color:#2EE59D;">Helpful</b></div>'
+                            f'<div style="display:flex; justify-content:space-between;"><span>SHY / Cash-like</span><b style="color:#2EE59D;">Stabilizer</b></div>'
+                            f'<div style="display:flex; justify-content:space-between;"><span>Growth Sleeve</span><b style="color:#FF4D6D;">Primary Damage</b></div>'
+                        f'</div>'
+                    f'</div>'
+                )
+
+                st.markdown(breakpoint_html, unsafe_allow_html=True)
+
+         # -----------------------------
+            # Institutional Deep Dive Row
+            # -----------------------------
+            deep_left, deep_mid, deep_right = st.columns([1.05, 1.05, 1.25], gap="medium")
+
+            with deep_left:
+                st.markdown("### Scenario Assumptions")
+
+                st.markdown(
+                    f'<div class="portfolio-card" style="min-height:300px; padding:16px;">'
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">STRESS INPUTS</div>'
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>Scenario</span><b style="color:#E7EEF9;">{selected_shock}</b></div>'
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>Portfolio Shock</span><b style="color:#FF4D6D;">{portfolio_shock:.1f}%</b></div>'
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>SPY Shock</span><b style="color:#FF4D6D;">{spy_shock:.1f}%</b></div>'
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>Recovery Window</span><b style="color:#73CFFF;">{recovery_months} mo</b></div>'
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>Liquidity Mode</span><b style="color:{liquidity_color};">{liquidity_mode}</b></div>'
+                        f'<div style="height:1px; background:rgba(255,255,255,0.08); margin:15px 0;"></div>'
+                        f'<div style="color:rgba(231,238,249,0.68); font-size:0.82rem; line-height:1.55;">'
+                            f'Scenario applies a forced drawdown path, liquidity penalty, and recovery slope against the active allocation.'
+                        f'</div>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+            with deep_mid:
+                st.markdown("### Defense Sleeve Effectiveness")
+
+                defense_rows = [
+                    ("TLT / Duration", "Helpful" if selected_shock in ["2008 Crisis", "COVID Crash"] else "Mixed", "#73CFFF"),
+                    ("GLD / Gold", "Helpful", "#2EE59D"),
+                    ("SHY / Cash-like", "Stabilizer", "#2EE59D"),
+                    ("Growth Sleeve", "Primary Damage", "#FF4D6D"),
+                    ("Core Beta", "Systemic Hit", "#FFB020"),
+                ]
+
+                defense_html = (
+                    f'<div class="portfolio-card" style="min-height:300px; padding:16px;">'
+                    f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">HEDGE RESPONSE</div>'
+                )
+
+                for label, value, color in defense_rows:
+                    defense_html += (
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:12px;">'
+                            f'<span>{label}</span>'
+                            f'<b style="color:{color};">{value}</b>'
+                        f'</div>'
+                    )
+
+                defense_html += f'</div>'
+
+                st.markdown(defense_html, unsafe_allow_html=True)
+
+            with deep_right:
+                st.markdown("### AI Crisis Interpretation")
+
+                crisis_read = (
+                    f"[Primary Failure Path]<br>"
+                    f"Cross-asset correlation compression drives the majority of downside transmission. "
+                    f"{largest_loss_driver} becomes the dominant drag vector as beta dispersion collapses under {selected_shock}.<br><br>"
+
+                    f"[Liquidity Regime]<br>"
+                    f"Liquidity conditions deteriorate materially during the stress window. "
+                    f"Defensive rotation remains partially effective, though execution quality weakens as volatility expands and market depth thins.<br><br>"
+
+                    f"[Portfolio Fragility]<br>"
+                    f"Portfolio drawdown reaches <b style='color:#FF4D6D;'>${dollar_loss:,.0f}</b>, "
+                    f"with stressed NAV declining to <b>${stressed_value:,.0f}</b>. "
+                    f"Relative drawdown spread versus SPY widens to "
+                    f"<b style='color:#FFB020;'>{drawdown_gap:+.1f}%</b>, indicating elevated systematic exposure.<br><br>"
+
+                    f"[Hedge Efficiency]<br>"
+                    f"Duration and gold sleeves absorb portions of systemic pressure, while growth concentration remains the primary volatility amplifier. "
+                    f"Hedge stack effectiveness currently registers as "
+                    f"<b style='color:{hedge_color};'>{hedge_effectiveness}</b>.<br><br>"
+
+                    f"[AI Risk Directive]<br>"
+                    f"Reduce crowded beta exposure, prioritize liquidity preservation, and avoid leverage expansion until volatility normalization confirms regime stabilization."
+                )
+
+                st.markdown(
+                    f'<div class="portfolio-card" style="min-height:300px; padding:16px;">'
+                        f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">'
+                            f'<div style="font-size:0.78rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em;">CRISIS DESK READ</div>'
+                            f'<div style="font-size:0.72rem; color:#FF4D6D; font-weight:900;">LIVE STRESS</div>'
+                        f'</div>'
+                        f'<div style="color:#E7EEF9; font-size:0.88rem; line-height:1.62;">{crisis_read}</div>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+            st.stop()
+
+        if selected_view == "Factor Engine":
+            factor_tickers = [p["ticker"] for p in recommendations if p["ticker"] != "CASH"]
+            factor_total = sum(p["dollars"] for p in recommendations if p["ticker"] != "CASH")
+
+            factor_weights = {
+                p["ticker"]: p["dollars"] / factor_total
+                for p in recommendations
+                if p["ticker"] != "CASH"
+            }
+
+            factor_map = {
+                "Market Beta": ["SPY", "VTI", "QQQ"],
+                "Growth": ["QQQ", "NVDA", "MSFT", "AMZN", "SMH", "TSLA"],
+                "Quality": ["MSFT", "AAPL", "GOOGL"],
+                "Momentum": ["NVDA", "SMH", "MSTR", "TSLA"],
+                "Duration": ["TLT", "IEF"],
+                "Defensive": ["GLD", "SHY", "TLT"],
+                "High Beta / Convexity": ["MSTR", "TSLA", "NVDA", "SMH"],
+            }
+
+            factor_scores = {}
+
+            for factor, names in factor_map.items():
+                score = 0
+                for ticker, weight in factor_weights.items():
+                    if ticker in names:
+                        score += weight * 100
+                factor_scores[factor] = min(100, score)
+
+            market_beta_score = min(100, max(0, float(live_perf["sharpe"]) * 35 if live_perf else 50))
+            factor_scores["Market Beta"] = max(factor_scores.get("Market Beta", 0), market_beta_score)
+
+            growth_score = factor_scores.get("Growth", 0)
+            defensive_score = factor_scores.get("Defensive", 0)
+            high_beta_score = factor_scores.get("High Beta / Convexity", 0)
+            duration_score = factor_scores.get("Duration", 0)
+
+            crowding_score = min(100, growth_score * 0.7 + high_beta_score * 0.9)
+            balance_score = min(100, defensive_score * 1.2 + duration_score * 0.8)
+            style_drift = max(0, crowding_score - balance_score)
+
+            dominant_factor = max(factor_scores, key=factor_scores.get)
+            dominant_factor_value = factor_scores[dominant_factor]
+
+            factor_risk_label = "Crowded Growth" if crowding_score >= 55 else "Balanced Factor Mix" if balance_score >= 25 else "Beta-Led"
+            factor_risk_color = "#FF4D6D" if crowding_score >= 65 else "#FFB020" if crowding_score >= 40 else "#2EE59D"
+
+            factor_health = 100
+            factor_health -= min(35, crowding_score * 0.35)
+            factor_health -= min(25, style_drift * 0.30)
+            factor_health += min(20, balance_score * 0.25)
+            factor_health = max(0, min(100, factor_health))
+
+            factor_health_label = "Strong" if factor_health >= 75 else "Watch" if factor_health >= 55 else "Crowded"
+            factor_health_color = "#2EE59D" if factor_health >= 75 else "#FFB020" if factor_health >= 55 else "#FF4D6D"
+
+            st.markdown(
+                f'<div class="portfolio-card" style="padding:22px; margin-top:12px;">'
+                    f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                        f'<div>'
+                            f'<div style="font-size:1.75rem; font-weight:950; color:#E7EEF9;">Factor Engine</div>'
+                            f'<div style="color:rgba(231,238,249,0.62); margin-top:6px;">'
+                                f'Institutional factor exposure, crowding, and style-drift analysis tied to the active allocation.'
+                            f'</div>'
+                        f'</div>'
+                        f'<div style="text-align:right;">'
+                            f'<div style="font-size:0.7rem; color:rgba(231,238,249,0.52);">FACTOR MODEL</div>'
+                            f'<div style="font-size:1rem; color:#2EE59D; font-weight:900;">LIVE</div>'
+                        f'</div>'
+                    f'</div>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            factor_metric_cards = [
+                ("Dominant Factor", dominant_factor, "#73CFFF"),
+                ("Dominant Load", f"{dominant_factor_value:.0f}/100", "#73CFFF"),
+                ("Growth Load", f"{growth_score:.0f}/100", "#2EE59D"),
+                ("High Beta", f"{high_beta_score:.0f}/100", "#FF4D6D"),
+                ("Defense Load", f"{defensive_score:.0f}/100", "#FFB020"),
+                ("Crowding", f"{crowding_score:.0f}/100", factor_risk_color),
+                ("Style Drift", f"{style_drift:.0f}/100", "#FFB020"),
+                ("Factor Health", f"{factor_health:.0f}/100", factor_health_color),
+            ]
+
+            metric_html = (
+                f'<div style="display:grid; grid-template-columns:repeat(8, minmax(0, 1fr)); '
+                f'gap:10px; margin-top:14px; margin-bottom:14px;">'
+            )
+
+            for label, value, color in factor_metric_cards:
+                metric_html += (
+                    f'<div class="metric-tile" style="min-height:105px; padding:14px;">'
+                        f'<div class="metric-label">{label}</div>'
+                        f'<div class="metric-value" style="color:{color}; font-size:1.25rem;">{value}</div>'
+                        f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:12px; overflow:hidden;">'
+                            f'<div style="width:78%; height:100%; background:{color}; border-radius:999px;"></div>'
+                        f'</div>'
+                    f'</div>'
+                )
+
+            metric_html += f'</div>'
+
+            st.markdown(metric_html, unsafe_allow_html=True)
+
+            factor_left, factor_mid, factor_right = st.columns([1.15, 1.25, 1.05], gap="medium")
+
+            with factor_left:
+                st.markdown("### Factor Loadings")
+
+                factor_rows = ""
+
+                for factor, score in sorted(factor_scores.items(), key=lambda x: x[1], reverse=True):
+                    color = "#FF4D6D" if score >= 55 else "#FFB020" if score >= 30 else "#2EE59D"
+
+                    factor_rows += (
+                        f'<div style="margin-bottom:13px;">'
+                            f'<div style="display:flex; justify-content:space-between; font-size:0.78rem;">'
+                                f'<span style="color:#E7EEF9;">{factor}</span>'
+                                f'<span style="color:{color}; font-weight:950;">{score:.0f}</span>'
+                            f'</div>'
+                            f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:5px; overflow:hidden;">'
+                                f'<div style="width:{score:.1f}%; height:100%; background:{color}; border-radius:999px;"></div>'
+                            f'</div>'
+                        f'</div>'
+                    )
+
+                st.markdown(
+                    f'<div class="portfolio-card" style="min-height:430px; padding:16px;">'
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">'
+                            f'LIVE FACTOR STACK'
+                        f'</div>'
+                        f'{factor_rows}'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+            with factor_mid:
+                st.markdown("### Factor Exposure Map")
+
+                fig_factor = go.Figure()
+
+                fig_factor.add_trace(
+                    go.Bar(
+                        x=list(factor_scores.keys()),
+                        y=list(factor_scores.values()),
+                        marker=dict(
+                            color=[
+                                "#FF4D6D" if v >= 55 else "#FFB020" if v >= 30 else "#2EE59D"
+                                for v in factor_scores.values()
+                            ]
+                        ),
+                    )
+                )
+
+                fig_factor.update_layout(
+                    height=430,
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(3,8,20,0.58)",
+                    font=dict(color="#E7EEF9"),
+                    margin=dict(l=10, r=10, t=10, b=10),
+                    xaxis=dict(gridcolor="rgba(255,255,255,0.055)"),
+                    yaxis=dict(gridcolor="rgba(255,255,255,0.06)", range=[0, 100]),
+                    showlegend=False,
+                )
+
+                st.plotly_chart(fig_factor, use_container_width=True)
+
+            with factor_right:
+                st.markdown("### Factor Crowding")
+
+                crowd_html = (
+                    f'<div class="portfolio-card" style="min-height:430px; padding:16px;">'
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">'
+                            f'CROWDING / STYLE DRIFT'
+                        f'</div>'
+
+                        f'<div style="padding:14px; border-radius:14px; background:{factor_risk_color}18; border:1px solid {factor_risk_color}55; margin-bottom:12px;">'
+                            f'<div style="font-size:0.68rem; color:rgba(231,238,249,0.55);">FACTOR POSTURE</div>'
+                            f'<div style="font-size:1.25rem; font-weight:950; color:{factor_risk_color}; margin-top:5px;">{factor_risk_label}</div>'
+                        f'</div>'
+
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:11px;"><span>Growth Crowding</span><b style="color:#FF4D6D;">{crowding_score:.0f}/100</b></div>'
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:11px;"><span>Defense Balance</span><b style="color:#2EE59D;">{balance_score:.0f}/100</b></div>'
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:11px;"><span>Style Drift</span><b style="color:#FFB020;">{style_drift:.0f}/100</b></div>'
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:11px;"><span>Factor Health</span><b style="color:{factor_health_color};">{factor_health_label}</b></div>'
+
+                        f'<div style="height:1px; background:rgba(255,255,255,0.08); margin:15px 0;"></div>'
+
+                        f'<div style="color:rgba(231,238,249,0.68); font-size:0.82rem; line-height:1.55;">'
+                            f'Engine detects whether the allocation is dominated by beta, growth, duration, defensive ballast, or high-convexity exposure.'
+                        f'</div>'
+                    f'</div>'
+                )
+
+                st.markdown(crowd_html, unsafe_allow_html=True)
+
+            bottom_left, bottom_mid, bottom_right = st.columns([1.05, 1.05, 1.25], gap="medium")
+
+            with bottom_left:
+                st.markdown("### Holding Factor Attribution")
+
+                holding_rows = ""
+
+                for ticker, weight in sorted(factor_weights.items(), key=lambda x: x[1], reverse=True):
+                    tags = []
+
+                    if ticker in factor_map["Growth"]:
+                        tags.append("Growth")
+                    if ticker in factor_map["High Beta / Convexity"]:
+                        tags.append("High Beta")
+                    if ticker in factor_map["Defensive"]:
+                        tags.append("Defense")
+                    if ticker in factor_map["Duration"]:
+                        tags.append("Duration")
+                    if ticker in factor_map["Market Beta"]:
+                        tags.append("Beta")
+
+                    tag_text = " / ".join(tags) if tags else "Idiosyncratic"
+                    severity = weight * 100
+                    color = "#FF4D6D" if severity >= 15 else "#FFB020" if severity >= 7 else "#2EE59D"
+
+                    holding_rows += (
+                        f'<div style="display:grid; grid-template-columns:0.7fr 0.6fr 1.4fr; gap:8px; '
+                        f'padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06); align-items:center;">'
+                            f'<div style="padding:4px 8px; border-radius:999px; background:{color}20; border:1px solid {color}55; color:{color}; font-weight:950; font-size:0.72rem;">{ticker}</div>'
+                            f'<div style="font-size:0.78rem; font-weight:850;">{weight:.1%}</div>'
+                            f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.70);">{tag_text}</div>'
+                        f'</div>'
+                    )
+
+                st.markdown(
+                    f'<div class="portfolio-card" style="min-height:315px; padding:14px;">'
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:10px;">'
+                            f'HOLDING ATTRIBUTION'
+                        f'</div>'
+                        f'{holding_rows}'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+            with bottom_mid:
+                st.markdown("### Regime Sensitivity")
+
+                regime_rows = [
+                    ("Risk-On", "Positive", growth_score, "#2EE59D"),
+                    ("Rates Up", "Pressure", duration_score, "#FFB020"),
+                    ("Growth Unwind", "Exposed", growth_score + high_beta_score, "#FF4D6D"),
+                    ("Defensive Rotation", "Buffered", defensive_score, "#73CFFF"),
+                    ("Liquidity Shock", "Watch", high_beta_score, "#FFB020"),
+                ]
+
+                regime_html = (
+                    f'<div class="portfolio-card" style="min-height:315px; padding:14px;">'
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:12px;">'
+                            f'FACTOR REGIME MAP'
+                        f'</div>'
+                )
+
+                for name, status, score, color in regime_rows:
+                    regime_html += (
+                        f'<div style="margin-bottom:12px;">'
+                            f'<div style="display:flex; justify-content:space-between; font-size:0.78rem;">'
+                                f'<span>{name}</span>'
+                                f'<span style="color:{color}; font-weight:950;">{status}</span>'
+                            f'</div>'
+                            f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:5px; overflow:hidden;">'
+                                f'<div style="width:{min(100, score):.1f}%; height:100%; background:{color}; border-radius:999px;"></div>'
+                            f'</div>'
+                        f'</div>'
+                    )
+
+                regime_html += f'</div>'
+
+                st.markdown(regime_html, unsafe_allow_html=True)
+
+            with bottom_right:
+                st.markdown("### AI Factor Interpretation")
+
+                factor_read = (
+                    f"[Factor Desk Read]<br>"
+                    f"Book is currently dominated by <b style='color:#73CFFF;'>{dominant_factor}</b> exposure. "
+                    f"Primary factor load registers at <b>{dominant_factor_value:.0f}/100</b>, with crowding score at "
+                    f"<b style='color:{factor_risk_color};'>{crowding_score:.0f}/100</b>.<br><br>"
+
+                    f"[Crowding Risk]<br>"
+                    f"Growth and high-beta sleeves create the main style concentration. "
+                    f"Factor drift is <b style='color:#FFB020;'>{style_drift:.0f}/100</b>, meaning the book may behave less diversified than headline allocation implies.<br><br>"
+
+                    f"[Defense Read]<br>"
+                    f"Defensive ballast scores <b style='color:#2EE59D;'>{balance_score:.0f}/100</b>. "
+                    f"Duration, gold, and cash-like sleeves provide partial offset but do not fully neutralize beta compression.<br><br>"
+
+                    f"[AI Factor Directive]<br>"
+                    f"Keep growth exposure if regime stays risk-on; trim high-beta crowding if dispersion breaks."
+                )
+
+                st.markdown(
+                    f'<div class="portfolio-card" style="min-height:315px; padding:16px;">'
+                        f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">'
+                            f'<div style="font-size:0.78rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em;">AI FACTOR INTERPRETATION</div>'
+                            f'<div style="font-size:0.72rem; color:#2EE59D; font-weight:900;">LIVE FACTOR READ</div>'
+                        f'</div>'
+                        f'<div style="color:#E7EEF9; font-size:0.88rem; line-height:1.62;">{factor_read}</div>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+            st.markdown(
+                f'<div class="portfolio-card" style="margin-top:10px; padding:10px 14px; display:flex; justify-content:center; gap:28px; '
+                f'color:rgba(231,238,249,0.68); font-size:0.78rem;">'
+                    f'<span style="color:#2EE59D; font-weight:950;">FACTOR MODEL LIVE</span>'
+                    f'<span>Dominant: {dominant_factor}</span>'
+                    f'<span>Crowding: {crowding_score:.0f}/100</span>'
+                    f'<span>Style Drift: {style_drift:.0f}/100</span>'
+                    f'<span>Health: {factor_health_label}</span>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            st.stop()
+
+        if selected_view == "Correlation Engine":
+            corr = calculate_allocation_correlation_matrix(
+                recommendations,
+                st.session_state.allocation_horizon
+            )
+
+            st.markdown(
+                f'<div class="portfolio-card" style="padding:22px; margin-top:12px;">'
+                    f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                        f'<div>'
+                            f'<div style="font-size:1.75rem; font-weight:950; color:#E7EEF9;">Correlation Engine</div>'
+                            f'<div style="color:rgba(231,238,249,0.62); margin-top:6px;">'
+                                f'Institutional correlation clustering, hidden concentration, and diversification integrity analysis.'
+                            f'</div>'
+                        f'</div>'
+                        f'<div style="text-align:right;">'
+                            f'<div style="font-size:0.7rem; color:rgba(231,238,249,0.52);">CORRELATION MODEL</div>'
+                            f'<div style="font-size:1rem; color:#2EE59D; font-weight:900;">LIVE</div>'
+                        f'</div>'
+                    f'</div>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            if corr is None:
+                st.warning("Correlation Engine data unavailable. Try again once market data loads.")
+                st.stop()
+
+            corr_pairs = []
+
+            for i, t1 in enumerate(corr.columns):
+                for t2 in corr.columns[i + 1:]:
+                    c = float(corr.loc[t1, t2])
+                    corr_pairs.append((t1, t2, c))
+
+            corr_pairs = sorted(corr_pairs, key=lambda x: abs(x[2]), reverse=True)
+
+            high_corr_pairs = [p for p in corr_pairs if p[2] >= 0.75]
+            inverse_pairs = [p for p in corr_pairs if p[2] <= -0.25]
+
+            avg_corr = np.mean([p[2] for p in corr_pairs]) if corr_pairs else 0
+            max_corr = max([p[2] for p in corr_pairs]) if corr_pairs else 0
+            cluster_count = len(high_corr_pairs)
+            hedge_pairs = len(inverse_pairs)
+
+            concentration_score = min(
+                100,
+                (avg_corr * 55) +
+                (max_corr * 20) +
+                (cluster_count * 3)
+            )
+
+            diversification_score = max(
+                0,
+                min(
+                    100,
+                    85
+                    - concentration_score
+                    + (hedge_pairs * 6)
+                    + (defensive_score * 0.25 if "defensive_score" in locals() else 0)
+                )
+            )
+
+            corr_state = "Compressed" if concentration_score >= 65 else "Clustered" if concentration_score >= 40 else "Diversified"
+            corr_color = "#FF4D6D" if concentration_score >= 65 else "#FFB020" if concentration_score >= 40 else "#2EE59D"
+
+            metric_cards = [
+                ("Average Corr.", f"{avg_corr:.2f}", "#E7EEF9"),
+                ("Max Pair Corr.", f"{max_corr:.2f}", "#FF4D6D" if max_corr >= 0.75 else "#2EE59D"),
+                ("High-Corr Pairs", f"{cluster_count}", "#FFB020"),
+                ("Hedge Pairs", f"{hedge_pairs}", "#73CFFF"),
+                ("Concentration", f"{concentration_score:.0f}/100", corr_color),
+                ("Diversification", f"{diversification_score:.0f}/100", "#2EE59D" if diversification_score >= 65 else "#FFB020"),
+                ("Correlation State", corr_state, corr_color),
+            ]
+
+            metric_html = (
+                f'<div style="display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); '
+                f'gap:10px; margin-top:14px; margin-bottom:14px;">'
+            )
+
+            for label, value, color in metric_cards:
+                metric_html += (
+                    f'<div class="metric-tile" style="min-height:105px; padding:14px;">'
+                        f'<div class="metric-label">{label}</div>'
+                        f'<div class="metric-value" style="color:{color}; font-size:1.25rem;">{value}</div>'
+                        f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:12px; overflow:hidden;">'
+                            f'<div style="width:78%; height:100%; background:{color}; border-radius:999px;"></div>'
+                        f'</div>'
+                    f'</div>'
+                )
+
+            metric_html += f'</div>'
+            st.markdown(metric_html, unsafe_allow_html=True)
+
+            left_col, mid_col, right_col = st.columns([1.15, 1.25, 1.05], gap="medium")
+
+            with left_col:
+                st.markdown("### Correlation Heatmap")
+
+                fig_corr = go.Figure(
+                    data=go.Heatmap(
+                        z=corr.values,
+                        x=corr.columns,
+                        y=corr.index,
+                        colorscale=[
+                            [0, "#FF4D6D"],
+                            [0.5, "#091733"],
+                            [1, "#2EE59D"],
+                        ],
+                        zmin=-1,
+                        zmax=1,
+                        colorbar=dict(title="Corr"),
+                    )
+                )
+
+                fig_corr.update_layout(
+                    height=480,
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(3,8,20,0.58)",
+                    font=dict(color="#E7EEF9"),
+                    margin=dict(l=10, r=10, t=10, b=10),
+                )
+
+                st.plotly_chart(fig_corr, use_container_width=True)
+
+            with mid_col:
+                st.markdown("### Hidden Cluster Stack")
+
+                cluster_rows = ""
+
+                for t1, t2, c in corr_pairs[:8]:
+                    color = "#FF4D6D" if c >= 0.85 else "#FFB020" if c >= 0.65 else "#2EE59D"
+                    label = "Compression" if c >= 0.85 else "Cluster" if c >= 0.65 else "Loose"
+
+                    cluster_rows += (
+                        f'<div style="margin-bottom:12px;">'
+                            f'<div style="display:flex; justify-content:space-between; font-size:0.78rem;">'
+                                f'<span style="color:#E7EEF9;">{t1} / {t2}</span>'
+                                f'<span style="color:{color}; font-weight:950;">{c:.2f}</span>'
+                            f'</div>'
+                            f'<div style="display:flex; justify-content:space-between; font-size:0.68rem; color:rgba(231,238,249,0.55); margin-top:2px;">'
+                                f'<span>{label}</span><span>pair risk</span>'
+                            f'</div>'
+                            f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:5px; overflow:hidden;">'
+                                f'<div style="width:{abs(c) * 100:.1f}%; height:100%; background:{color}; border-radius:999px;"></div>'
+                            f'</div>'
+                        f'</div>'
+                    )
+
+                st.markdown(
+                    f'<div class="portfolio-card" style="min-height:480px; padding:16px;">'
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">'
+                            f'PAIRWISE CORRELATION STACK'
+                        f'</div>'
+                        f'{cluster_rows}'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+            with right_col:
+                st.markdown("### Diversification Integrity")
+
+                integrity_html = (
+                    f'<div class="portfolio-card" style="min-height:480px; padding:16px;">'
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">'
+                            f'DIVERSIFICATION CHECK'
+                        f'</div>'
+
+                        f'<div style="padding:14px; border-radius:14px; background:{corr_color}18; border:1px solid {corr_color}55; margin-bottom:14px;">'
+                            f'<div style="font-size:0.68rem; color:rgba(231,238,249,0.55);">CORRELATION POSTURE</div>'
+                            f'<div style="font-size:1.25rem; font-weight:950; color:{corr_color}; margin-top:5px;">{corr_state}</div>'
+                        f'</div>'
+
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:11px;"><span>Avg Pair Correlation</span><b>{avg_corr:.2f}</b></div>'
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:11px;"><span>Cluster Count</span><b style="color:#FFB020;">{cluster_count}</b></div>'
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:11px;"><span>Hedge Pairs</span><b style="color:#73CFFF;">{hedge_pairs}</b></div>'
+                        f'<div style="display:flex; justify-content:space-between; margin-bottom:11px;"><span>Diversification Score</span><b style="color:#2EE59D;">{diversification_score:.0f}/100</b></div>'
+
+                        f'<div style="height:1px; background:rgba(255,255,255,0.08); margin:15px 0;"></div>'
+
+                        f'<div style="color:rgba(231,238,249,0.68); font-size:0.82rem; line-height:1.55;">'
+                            f'Engine checks whether positions are genuinely diversifying the allocation or collapsing into the same risk trade under stress.'
+                        f'</div>'
+                    f'</div>'
+                )
+
+                st.markdown(integrity_html, unsafe_allow_html=True)
+
+            bottom_left, bottom_mid, bottom_right = st.columns([1.05, 1.05, 1.25], gap="medium")
+
+            with bottom_left:
+                st.markdown("### Correlation Regime Map")
+
+                regime_rows = [
+                    ("Risk-On", "Stable", avg_corr * 100, "#2EE59D"),
+                    ("Vol Shock", "Compresses", concentration_score, "#FF4D6D"),
+                    ("Liquidity Stress", "Pairs Tighten", concentration_score * 0.9, "#FFB020"),
+                    ("Growth Unwind", "Cluster Risk", cluster_count * 15, "#FF4D6D"),
+                    ("Defensive Bid", "Hedges Engage", hedge_pairs * 25, "#73CFFF"),
+                ]
+
+                regime_html = (
+                    f'<div class="portfolio-card" style="min-height:315px; padding:14px;">'
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:12px;">'
+                            f'CORRELATION REGIME MAP'
+                        f'</div>'
+                )
+
+                for name, status, score, color in regime_rows:
+                    regime_html += (
+                        f'<div style="margin-bottom:12px;">'
+                            f'<div style="display:flex; justify-content:space-between; font-size:0.78rem;">'
+                                f'<span>{name}</span>'
+                                f'<span style="color:{color}; font-weight:950;">{status}</span>'
+                            f'</div>'
+                            f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:5px; overflow:hidden;">'
+                                f'<div style="width:{min(100, max(4, abs(score))):.1f}%; height:100%; background:{color}; border-radius:999px;"></div>'
+                            f'</div>'
+                        f'</div>'
+                    )
+
+                regime_html += f'</div>'
+
+                st.markdown(regime_html, unsafe_allow_html=True)
+
+            with bottom_mid:
+                st.markdown("### Pair Failure Watchlist")
+
+                watch_rows = ""
+
+                for t1, t2, c in corr_pairs[:6]:
+                    color = "#FF4D6D" if c >= 0.85 else "#FFB020" if c >= 0.65 else "#2EE59D"
+
+                    watch_rows += (
+                        f'<div style="display:grid; grid-template-columns:1.1fr 0.5fr 1fr; gap:8px; '
+                        f'padding:9px 0; border-bottom:1px solid rgba(255,255,255,0.06); align-items:center;">'
+                            f'<div style="color:#E7EEF9; font-weight:900; font-size:0.78rem;">{t1}/{t2}</div>'
+                            f'<div style="color:{color}; font-weight:950;">{c:.2f}</div>'
+                            f'<div style="color:{color}; font-size:0.72rem;">{"Fail Together" if c >= 0.75 else "Monitor"}</div>'
+                        f'</div>'
+                    )
+
+                st.markdown(
+                    f'<div class="portfolio-card" style="min-height:315px; padding:14px;">'
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:10px;">'
+                            f'PAIR FAILURE WATCHLIST'
+                        f'</div>'
+                        f'{watch_rows}'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+            with bottom_right:
+                st.markdown("### AI Correlation Interpretation")
+
+                corr_read = (
+                    f"[Correlation Desk Read]<br>"
+                    f"Book correlation state is <b style='color:{corr_color};'>{corr_state}</b>. "
+                    f"Average pair correlation sits at <b>{avg_corr:.2f}</b>, with <b>{cluster_count}</b> high-correlation clusters detected.<br><br>"
+
+                    f"[Hidden Concentration]<br>"
+                    f"Highest pair correlation is <b style='color:#FF4D6D;'>{corr_pairs[0][0]} / {corr_pairs[0][1]} at {corr_pairs[0][2]:.2f}</b>. "
+                    f"Headline allocation may overstate diversification if these pairs compress further under volatility stress.<br><br>"
+
+                    f"[Hedge Integrity]<br>"
+                    f"Hedge pair count registers at <b style='color:#73CFFF;'>{hedge_pairs}</b>. "
+                    f"Defensive ballast is useful only if inverse or low-correlation behavior survives the shock window.<br><br>"
+
+                    f"[AI Correlation Directive]<br>"
+                    f"Treat highly correlated growth sleeves as one risk block; preserve hedge dispersion before adding exposure."
+                )
+
+                st.markdown(
+                    f'<div class="portfolio-card" style="min-height:315px; padding:16px;">'
+                        f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">'
+                            f'<div style="font-size:0.78rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em;">AI CORRELATION INTERPRETATION</div>'
+                            f'<div style="font-size:0.72rem; color:#2EE59D; font-weight:900;">LIVE CORRELATION READ</div>'
+                        f'</div>'
+                        f'<div style="color:#E7EEF9; font-size:0.88rem; line-height:1.62;">{corr_read}</div>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+            st.markdown(
+                f'<div class="portfolio-card" style="margin-top:10px; padding:10px 14px; display:flex; justify-content:center; gap:28px; '
+                f'color:rgba(231,238,249,0.68); font-size:0.78rem;">'
+                    f'<span style="color:#2EE59D; font-weight:950;">CORRELATION MODEL LIVE</span>'
+                    f'<span>State: {corr_state}</span>'
+                    f'<span>Avg Corr: {avg_corr:.2f}</span>'
+                    f'<span>Clusters: {cluster_count}</span>'
+                    f'<span>Diversification: {diversification_score:.0f}/100</span>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            st.stop()
+
+        if selected_view == "Scenario Engine":
+            scenario_presets = {
+                "Inflation Reacceleration": {
+                    "growth": -1.0, "inflation": 3.5, "rates": 2.0, "oil": 18.0, "usd": 4.0,
+                    "credit": 1.2, "ai_spend": -8.0, "spy": -12.0, "vol": 1.45,
+                    "regime": "Persistent Inflation Regime",
+                    "color": "#FFB020",
+                },
+                "AI Capex Deceleration": {
+                    "growth": -0.5, "inflation": 0.4, "rates": -0.2, "oil": -2.0, "usd": 1.5,
+                    "credit": 0.8, "ai_spend": -28.0, "spy": -9.0, "vol": 1.35,
+                    "regime": "Multiple Compression Cycle",
+                    "color": "#FF4D6D",
+                },
+                "Liquidity Crisis": {
+                    "growth": -2.0, "inflation": -0.5, "rates": -1.0, "oil": -10.0, "usd": 6.0,
+                    "credit": 3.0, "ai_spend": -15.0, "spy": -24.0, "vol": 2.10,
+                    "regime": "Liquidity Stress Regime",
+                    "color": "#FF4D6D",
+                },
+                "Geopolitical Supply Shock": {
+                    "growth": -1.2, "inflation": 2.8, "rates": 1.0, "oil": 35.0, "usd": 5.0,
+                    "credit": 1.4, "ai_spend": -6.0, "spy": -14.0, "vol": 1.65,
+                    "regime": "Geopolitical Supply Shock",
+                    "color": "#FF4D6D",
+                },
+                "Global Demand Shock": {
+                    "growth": -3.0, "inflation": -1.5, "rates": -2.0, "oil": -22.0, "usd": 3.5,
+                    "credit": 2.2, "ai_spend": -12.0, "spy": -20.0, "vol": 1.85,
+                    "regime": "Demand Contraction Regime",
+                    "color": "#73CFFF",
+                },
+                "Credit Contagion Event": {
+                    "growth": -2.3, "inflation": -0.8, "rates": -1.5, "oil": -14.0, "usd": 7.0,
+                    "credit": 3.8, "ai_spend": -18.0, "spy": -27.0, "vol": 2.25,
+                    "regime": "Credit Contagion Event",
+                    "color": "#FF4D6D",
+                },
+                "Soft Landing / Melt-Up": {
+                    "growth": 1.4, "inflation": -0.7, "rates": -0.8, "oil": -3.0, "usd": -2.0,
+                    "credit": -0.5, "ai_spend": 12.0, "spy": 14.0, "vol": 0.80,
+                    "regime": "Risk-On Expansion",
+                    "color": "#2EE59D",
+                },
+            }
+
+            st.markdown(
+                f'<div class="portfolio-card" style="padding:22px; margin-top:12px;">'
+                    f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                        f'<div>'
+                            f'<div style="font-size:1.75rem; font-weight:950; color:#E7EEF9;">Scenario Engine</div>'
+                            f'<div style="color:rgba(231,238,249,0.62); margin-top:6px;">'
+                                f'Macro scenario transmission, regime shift, and portfolio survivability modeling.'
+                            f'</div>'
+                        f'</div>'
+                        f'<div style="text-align:right;">'
+                            f'<div style="font-size:0.7rem; color:rgba(231,238,249,0.52);">SCENARIO MODEL</div>'
+                            f'<div style="font-size:1rem; color:#2EE59D; font-weight:900;">LIVE</div>'
+                        f'</div>'
+                    f'</div>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            control_cols = st.columns([1.35, 1, 1, 1, 1], gap="medium")
+
+            with control_cols[0]:
+                selected_scenario = st.selectbox(
+                    "Scenario Preset",
+                    list(scenario_presets.keys()),
+                    key="scenario_engine_preset"
+                )
+
+            base_scenario = scenario_presets[selected_scenario]
+
+            with control_cols[1]:
+                custom_growth = st.slider("GDP Growth Shock", -5.0, 3.0, float(base_scenario["growth"]), 0.1, key="scenario_growth")
+
+            with control_cols[2]:
+                custom_inflation = st.slider("Inflation Shock", -3.0, 5.0, float(base_scenario["inflation"]), 0.1, key="scenario_inflation")
+
+            with control_cols[3]:
+                custom_rates = st.slider("Rates Shock", -3.0, 3.0, float(base_scenario["rates"]), 0.1, key="scenario_rates")
+
+            with control_cols[4]:
+                custom_ai_spend = st.slider("AI Spend Shock", -40.0, 25.0, float(base_scenario["ai_spend"]), 1.0, key="scenario_ai_spend")
+
+            scenario = base_scenario.copy()
+            scenario["growth"] = custom_growth
+            scenario["inflation"] = custom_inflation
+            scenario["rates"] = custom_rates
+            scenario["ai_spend"] = custom_ai_spend
+
+            scenario_intensity = (
+                abs(scenario["growth"]) * 9
+                + abs(scenario["inflation"]) * 7
+                + abs(scenario["rates"]) * 8
+                + abs(scenario["credit"]) * 10
+                + abs(scenario["ai_spend"]) * 0.7
+                + abs(scenario["spy"]) * 1.2
+            )
+            scenario_intensity = max(0, min(100, scenario_intensity))
+
+            scenario_prob = min(85, max(8, 18 + scenario_intensity * 0.45))
+            vol_shift = (scenario["vol"] - 1) * 100
+
+            scenario_tickers = [p["ticker"] for p in recommendations if p["ticker"] != "CASH"]
+            scenario_total = sum(p["dollars"] for p in recommendations if p["ticker"] != "CASH")
+            scenario_weights = {
+                p["ticker"]: p["dollars"] / scenario_total
+                for p in recommendations
+                if p["ticker"] != "CASH"
+            }
+
+            scenario_reactions = {}
+
+            for ticker, weight in scenario_weights.items():
+                impact = scenario["spy"] * 0.65
+
+                if ticker in ["SPY", "VTI"]:
+                    impact += scenario["spy"] * 0.35
+
+                if ticker in ["QQQ", "NVDA", "MSFT", "AMZN", "SMH", "TSLA"]:
+                    impact += scenario["ai_spend"] * 0.35
+                    impact += scenario["rates"] * -3.8
+                    impact += scenario["credit"] * -2.0
+
+                if ticker in ["MSTR", "TSLA"]:
+                    impact += scenario["vol"] * -5.5
+                    impact += scenario["credit"] * -2.8
+
+                if ticker in ["TLT"]:
+                    impact += scenario["rates"] * -7.0
+                    impact += scenario["growth"] * -2.0
+
+                if ticker in ["GLD"]:
+                    impact += scenario["inflation"] * 2.2
+                    impact += scenario["oil"] * 0.12
+                    impact += scenario["usd"] * -0.7
+
+                if ticker in ["SHY"]:
+                    impact += -1.0 if scenario["credit"] > 2 else 0.5
+
+                scenario_reactions[ticker] = impact
+
+            portfolio_impact = sum(
+                scenario_reactions[ticker] * weight
+                for ticker, weight in scenario_weights.items()
+            )
+
+            stressed_value = portfolio_size * (1 + portfolio_impact / 100)
+            dollar_impact = portfolio_size - stressed_value
+            spy_gap = portfolio_impact - scenario["spy"]
+
+            recovery_months = max(3, min(48, int(8 + scenario_intensity * 0.38)))
+            tail_risk = min(100, scenario_intensity * 0.85 + max(0, -portfolio_impact) * 0.8)
+            survival_score = max(0, min(100, 100 - tail_risk + max(0, scenario_weights.get("TLT", 0) + scenario_weights.get("GLD", 0) + scenario_weights.get("SHY", 0)) * 35))
+
+            survival_color = "#2EE59D" if survival_score >= 70 else "#FFB020" if survival_score >= 45 else "#FF4D6D"
+            tail_color = "#FF4D6D" if tail_risk >= 70 else "#FFB020" if tail_risk >= 40 else "#2EE59D"
+            impact_color = "#2EE59D" if portfolio_impact >= 0 else "#FFB020" if portfolio_impact > -10 else "#FF4D6D"
+
+            first_failure = "growth multiple compression" if scenario["ai_spend"] < -10 or scenario["rates"] > 1 else "equity beta drawdown" if scenario["spy"] < -10 else "macro factor drift"
+            beneficiary = "GLD / SHY defense sleeve" if scenario["inflation"] > 1 or scenario["credit"] > 2 else "TLT duration sleeve" if scenario["rates"] < -1 else "growth sleeve"
+            regime_shift = scenario["regime"]
+
+            metric_cards = [
+                ("Scenario Prob.", f"{scenario_prob:.0f}%", "#73CFFF"),
+                ("Portfolio Impact", f"{portfolio_impact:+.1f}%", impact_color),
+                ("Stressed Value", f"${stressed_value:,.0f}", "#E7EEF9"),
+                ("SPY Gap", f"{spy_gap:+.1f}%", "#FFB020"),
+                ("Vol Shift", f"{vol_shift:+.0f}%", "#FF4D6D" if vol_shift > 25 else "#2EE59D"),
+                ("Recovery Window", f"{recovery_months} mo", "#73CFFF"),
+                ("Tail Risk", f"{tail_risk:.0f}/100", tail_color),
+                ("Survival Score", f"{survival_score:.0f}/100", survival_color),
+            ]
+
+            metric_html = (
+                f'<div style="display:grid; grid-template-columns:repeat(8, minmax(0, 1fr)); gap:10px; margin-top:14px; margin-bottom:14px;">'
+            )
+
+            for label, value, color in metric_cards:
+                metric_html += (
+                    f'<div class="metric-tile" style="min-height:105px; padding:14px;">'
+                        f'<div class="metric-label">{label}</div>'
+                        f'<div class="metric-value" style="color:{color}; font-size:1.22rem;">{value}</div>'
+                        f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:12px; overflow:hidden;">'
+                            f'<div style="width:78%; height:100%; background:{color}; border-radius:999px;"></div>'
+                        f'</div>'
+                    f'</div>'
+                )
+
+            metric_html += f'</div>'
+            st.markdown(metric_html, unsafe_allow_html=True)
+              
+            upper_left, upper_right = st.columns([1.0, 1.35], gap="medium")
+
+            with upper_left:
+                st.markdown("### Scenario Transmission")
+
+                transmission_rows = [
+                    ("First Failure Point", first_failure, "#FF4D6D"),
+                    ("Primary Beneficiary", beneficiary, "#2EE59D"),
+                    ("Regime Shift", regime_shift, "#73CFFF"),
+                    ("Volatility Expansion", f"{vol_shift:+.0f}%", "#FF4D6D"),
+                    ("Liquidity Pressure", "Elevated" if scenario["credit"] > 2 else "Moderate", "#FFB020"),
+                ]
+
+                transmission_html = (
+                    f'<div class="portfolio-card" style="min-height:300px; padding:16px;">'
+                    f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">SCENARIO TRANSMISSION MAP</div>'
+                )
+
+                for label, value, color in transmission_rows:
+                    transmission_html += (
+                        f'<div style="margin-bottom:12px;">'
+                        f'<div style="display:flex; justify-content:space-between; font-size:0.82rem;">'
+                        f'<span>{label}</span><b style="color:{color};">{value}</b>'
+                        f'</div>'
+                        f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:5px; overflow:hidden;">'
+                        f'<div style="width:78%; height:100%; background:{color}; border-radius:999px;"></div>'
+                        f'</div>'
+                        f'</div>'
+                    )
+
+                transmission_html += f'</div>'
+                st.markdown(transmission_html, unsafe_allow_html=True)
+
+                st.markdown("### Macro Pressure Map")
+
+                macro_rows = [
+                    ("GDP Shock", scenario["growth"], "#FF4D6D" if scenario["growth"] < 0 else "#2EE59D"),
+                    ("Inflation", scenario["inflation"], "#FFB020"),
+                    ("Rates", scenario["rates"], "#73CFFF"),
+                    ("Oil", scenario["oil"], "#FF4D6D" if scenario["oil"] > 10 else "#2EE59D"),
+                    ("USD", scenario["usd"], "#73CFFF"),
+                    ("Credit Stress", scenario["credit"], "#FF4D6D"),
+                    ("AI Spending", scenario["ai_spend"], "#FF4D6D" if scenario["ai_spend"] < 0 else "#2EE59D"),
+                ]
+
+                macro_html = (
+                    f'<div class="portfolio-card" style="min-height:300px; padding:16px;">'
+                    f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">MACRO PRESSURE STACK</div>'
+                )
+
+                for label, value, color in macro_rows:
+                    width = min(100, max(5, abs(value) * 12))
+                    macro_html += (
+                        f'<div style="margin-bottom:10px;">'
+                        f'<div style="display:flex; justify-content:space-between; font-size:0.78rem;">'
+                        f'<span>{label}</span><b style="color:{color};">{value:+.1f}</b>'
+                        f'</div>'
+                        f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:5px; overflow:hidden;">'
+                        f'<div style="width:{width:.1f}%; height:100%; background:{color}; border-radius:999px;"></div>'
+                        f'</div>'
+                        f'</div>'
+                    )
+
+                macro_html += f'</div>'
+                st.markdown(macro_html, unsafe_allow_html=True)
+
+            with upper_right:
+                st.markdown("### Scenario Outcome Matrix")
+
+                sorted_reactions = sorted(scenario_reactions.items(), key=lambda x: x[1])
+
+                outcome_html = (
+                    f'<div class="portfolio-card" style="min-height:300px; padding:16px;">'
+                    f'<div style="display:grid; grid-template-columns:0.8fr 0.8fr 0.8fr 1fr; gap:10px; padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:8px; font-size:0.68rem; color:rgba(231,238,249,0.52); font-weight:900;">'
+                    f'<div>ASSET</div><div>MOVE</div><div>REGIME</div><div>IMPACT INTENSITY</div>'
+                    f'</div>'
+                )
+
+                for ticker, impact in sorted_reactions[:8]:
+                    if impact <= -20:
+                        color = "#FF4D6D"      # crisis
+                    elif impact <= -8:
+                        color = "#FFB020"      # stress
+                    elif impact < 0:
+                        color = "#73CFFF"      # moderate/system
+                    else:
+                        color = "#2EE59D"      # positive
+                    regime_tag = "Defense" if ticker in ["TLT", "GLD", "SHY"] else "Growth"
+                    width = min(100, max(5, abs(impact) * 3))
+
+                    outcome_html += (
+                        f'<div style="display:grid; grid-template-columns:0.8fr 0.8fr 0.8fr 1fr; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); align-items:center;">'
+                        f'<div style="font-weight:950;">{ticker}</div>'
+                        f'<div style="color:{color}; font-weight:950;">{impact:+.1f}%</div>'
+                        f'<div style="color:rgba(231,238,249,0.70); font-size:0.74rem;">{regime_tag}</div>'
+                        f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); overflow:hidden;">'
+                        f'<div style="width:{width:.1f}%; height:100%; background:{color}; border-radius:999px;"></div>'
+                        f'</div>'
+                        f'</div>'
+                    )
+
+                outcome_html += f'</div>'
+                st.markdown(outcome_html, unsafe_allow_html=True)
+
+                st.markdown("### Portfolio Survivability")
+
+                survivability_html = (
+                    f'<div class="portfolio-card" style="min-height:300px; padding:16px;">'
+                    f'<div style="display:grid; grid-template-columns:0.7fr 1.3fr; gap:18px; align-items:center;">'
+                    f'<div style="text-align:center;">'
+                    f'<div style="margin:0 auto; width:145px; height:145px; border-radius:50%; background:conic-gradient({survival_color} 0deg, {survival_color} {survival_score * 3.6:.0f}deg, rgba(255,255,255,0.08) {survival_score * 3.6:.0f}deg); display:flex; align-items:center; justify-content:center;">'
+                    f'<div style="width:102px; height:102px; border-radius:50%; background:#091733; display:flex; flex-direction:column; align-items:center; justify-content:center;">'
+                    f'<div style="font-size:2rem; color:{survival_color}; font-weight:950;">{survival_score:.0f}</div>'
+                    f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.58);">/100</div>'
+                    f'</div></div>'
+                    f'<div style="margin-top:8px; font-size:0.72rem; color:rgba(231,238,249,0.55); font-weight:900;">SURVIVAL SCORE</div>'
+                    f'</div>'
+                    f'<div>'
+                    f'<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>Tail Risk</span><b style="color:{tail_color};">{tail_risk:.0f}/100</b></div>'
+                    f'<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>Recovery Window</span><b style="color:#73CFFF;">{recovery_months} mo</b></div>'
+                    f'<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>Liquidity Integrity</span><b style="color:#FFB020;">{"Fragile" if scenario["credit"] > 2 else "Stable"}</b></div>'
+                    f'<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>Defense Response</span><b style="color:#2EE59D;">Partial Offset</b></div>'
+                    f'<div style="display:flex; justify-content:space-between;"><span>Scenario Severity</span><b style="color:{tail_color};">{scenario_intensity:.0f}/100</b></div>'
+                    f'</div>'
+                    f'</div>'
+                    f'</div>'
+                )
+
+                st.markdown(survivability_html, unsafe_allow_html=True)
+
+            # -----------------------------
+            # AI Scenario Interpretation - full width
+            # -----------------------------
+            st.markdown("### AI Scenario Interpretation")
+
+            scenario_read = (
+                f"[Scenario Desk Read]<br>"
+                f"Current scenario path implies <b style='color:{base_scenario['color']};'>{regime_shift}</b>. "
+                f"Portfolio impact projects at <b style='color:{impact_color};'>{portfolio_impact:+.1f}%</b>, "
+                f"with survivability score currently registering at <b>{survival_score:.0f}/100</b>.<br><br>"
+
+                f"[Transmission Path]<br>"
+                f"Primary stress transmission flows through <b style='color:#FF4D6D;'>{first_failure}</b>. "
+                f"Volatility expansion and factor compression intensify as liquidity conditions weaken and cross-asset dispersion narrows.<br><br>"
+
+                f"[Defense Integrity]<br>"
+                f"Defensive ballast response remains <b style='color:#2EE59D;'>partial</b>. "
+                f"{beneficiary} acts as the primary stabilizing sleeve, though protection weakens if correlation compression accelerates.<br><br>"
+
+                f"[Macro Pressure]<br>"
+                f"Macro stack reflects GDP shock of <b>{scenario['growth']:+.1f}</b>, inflation shift of "
+                f"<b>{scenario['inflation']:+.1f}</b>, and AI spending shock of <b>{scenario['ai_spend']:+.0f}%</b>.<br><br>"
+
+                f"[AI Scenario Directive]<br>"
+                f"Reduce concentrated beta exposure during regime instability. Preserve liquidity optionality until volatility normalization and macro dispersion stabilize."
+            )
+
+            st.markdown(
+                f'<div class="portfolio-card" style="min-height:210px; padding:16px;">'
+                    f'<div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:0; border-top:1px solid rgba(255,255,255,0.08);">'
+                        f'<div style="padding:14px; border-right:1px solid rgba(255,255,255,0.08);"><b style="color:#73CFFF;">Scenario Desk Read</b><br><br>{scenario_read.split("<br><br>")[0]}</div>'
+                        f'<div style="padding:14px; border-right:1px solid rgba(255,255,255,0.08);"><b style="color:#FF4D6D;">Transmission Path</b><br><br>{scenario_read.split("<br><br>")[1]}</div>'
+                        f'<div style="padding:14px; border-right:1px solid rgba(255,255,255,0.08);"><b style="color:#2EE59D;">Defense Integrity</b><br><br>{scenario_read.split("<br><br>")[2]}</div>'
+                        f'<div style="padding:14px; border-right:1px solid rgba(255,255,255,0.08);"><b style="color:#FFB020;">Macro Pressure</b><br><br>{scenario_read.split("<br><br>")[3]}</div>'
+                        f'<div style="padding:14px;"><b style="color:#2EE59D;">AI Scenario Directive</b><br><br>{scenario_read.split("<br><br>")[4]}</div>'
+                    f'</div>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            st.markdown(
+                f'<div class="portfolio-card" style="margin-top:10px; padding:10px 14px; display:flex; justify-content:center; gap:28px; color:rgba(231,238,249,0.68); font-size:0.78rem;">'
+                    f'<span style="color:#2EE59D; font-weight:950;">SCENARIO MODEL LIVE</span>'
+                    f'<span>Preset: {selected_scenario}</span>'
+                    f'<span>Regime: {regime_shift}</span>'
+                    f'<span>Severity: {scenario_intensity:.0f}/100</span>'
+                    f'<span>Recovery: {recovery_months} mo</span>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+            st.stop()
+
+        if selected_view == "AI Recommendations":
+            # -----------------------------
+            # AI Recommendations — Portfolio Action Layer
+            # -----------------------------
+
+            rec_tickers = [p["ticker"] for p in recommendations if p["ticker"] != "CASH"]
+            rec_total = sum(p["dollars"] for p in recommendations if p["ticker"] != "CASH")
+
+            rec_weights = {
+                p["ticker"]: p["dollars"] / rec_total
+                for p in recommendations
+                if p["ticker"] != "CASH"
+            }
+
+            growth_names = ["QQQ", "NVDA", "MSFT", "AMZN", "SMH", "TSLA", "MSTR"]
+            defense_names = ["TLT", "GLD", "SHY"]
+            beta_names = ["SPY", "VTI", "QQQ"]
+
+            growth_weight = sum(rec_weights.get(t, 0) for t in growth_names) * 100
+            defense_weight = sum(rec_weights.get(t, 0) for t in defense_names) * 100
+            beta_weight = sum(rec_weights.get(t, 0) for t in beta_names) * 100
+
+            rec_vol_state = "Contained" if market_regime["vix"] < 18 else "Elevated" if market_regime["vix"] < 25 else "Stress"
+            rec_regime_score = market_regime["score"]
+
+            action_bias = "Add Risk" if rec_regime_score >= 75 and rec_vol_state == "Contained" else "Hold / Rebalance" if rec_regime_score >= 55 else "De-Risk"
+            action_color = "#2EE59D" if action_bias == "Add Risk" else "#FFB020" if action_bias == "Hold / Rebalance" else "#FF4D6D"
+
+            hedge_need = "Low" if defense_weight >= 20 else "Moderate" if defense_weight >= 10 else "High"
+            hedge_color = "#2EE59D" if hedge_need == "Low" else "#FFB020" if hedge_need == "Moderate" else "#FF4D6D"
+
+            crowding_level = "High" if growth_weight >= 45 else "Moderate" if growth_weight >= 25 else "Low"
+            crowding_color = "#FF4D6D" if crowding_level == "High" else "#FFB020" if crowding_level == "Moderate" else "#2EE59D"
+
+            liquidity_need = "Preserve" if rec_vol_state != "Contained" or rec_regime_score < 60 else "Normal"
+            liquidity_color = "#FFB020" if liquidity_need == "Preserve" else "#2EE59D"
+
+            recommendation_score = 78
+            recommendation_score -= 12 if crowding_level == "High" else 4 if crowding_level == "Moderate" else 0
+            recommendation_score -= 10 if rec_vol_state == "Elevated" else 22 if rec_vol_state == "Stress" else 0
+            recommendation_score += 8 if rec_regime_score >= 70 else 0
+            recommendation_score = max(0, min(100, recommendation_score))
+
+            recommendation_color = "#2EE59D" if recommendation_score >= 75 else "#FFB020" if recommendation_score >= 55 else "#FF4D6D"
+
+            # -----------------------------
+            # Suggested target weights
+            # -----------------------------
+            suggested_weights = {}
+
+            for ticker, weight in rec_weights.items():
+                current_pct = weight * 100
+                suggested = current_pct
+
+                if ticker in growth_names and crowding_level == "High":
+                    suggested *= 0.82
+                elif ticker in growth_names and rec_vol_state == "Elevated":
+                    suggested *= 0.92
+
+                if ticker in defense_names and hedge_need in ["Moderate", "High"]:
+                    suggested *= 1.18
+
+                if ticker in ["SHY"] and liquidity_need == "Preserve":
+                    suggested *= 1.35
+
+                if ticker in beta_names and rec_regime_score >= 70 and rec_vol_state == "Contained":
+                    suggested *= 1.08
+
+                suggested_weights[ticker] = suggested
+
+            raw_total = sum(suggested_weights.values())
+
+            if raw_total > 0:
+                suggested_weights = {
+                    ticker: value / raw_total * 100
+                    for ticker, value in suggested_weights.items()
+                }
+
+            # -----------------------------
+            # Header
+            # -----------------------------
+            st.markdown(
+                f'<div class="portfolio-card" style="padding:22px; margin-top:12px;">'
+                    f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                        f'<div>'
+                            f'<div style="font-size:1.75rem; font-weight:950; color:#E7EEF9;">AI Recommendations</div>'
+                            f'<div style="color:rgba(231,238,249,0.62); margin-top:6px;">'
+                                f'Portfolio action layer translating risk, factor, regime, and scenario signals into tactical adjustments.'
+                            f'</div>'
+                        f'</div>'
+                        f'<div style="text-align:right;">'
+                            f'<div style="font-size:0.7rem; color:rgba(231,238,249,0.52);">AI ACTION MODEL</div>'
+                            f'<div style="font-size:1rem; color:#2EE59D; font-weight:900;">LIVE</div>'
+                        f'</div>'
+                    f'</div>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            rec_metrics = [
+                ("Action Bias", action_bias, action_color),
+                ("Recommendation Score", f"{recommendation_score}/100", recommendation_color),
+                ("Growth Load", f"{growth_weight:.0f}%", crowding_color),
+                ("Defense Load", f"{defense_weight:.0f}%", hedge_color),
+                ("Liquidity Bias", liquidity_need, liquidity_color),
+                ("Regime", market_regime["regime"], market_regime["color"]),
+            ]
+
+            metric_html = (
+                f'<div style="display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); '
+                f'gap:10px; margin-top:14px; margin-bottom:14px;">'
+            )
+
+            for label, value, color in rec_metrics:
+                metric_html += (
+                    f'<div class="metric-tile" style="min-height:105px; padding:14px;">'
+                        f'<div class="metric-label">{label}</div>'
+                        f'<div class="metric-value" style="color:{color}; font-size:1.12rem;">{value}</div>'
+                        f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:12px; overflow:hidden;">'
+                            f'<div style="width:78%; height:100%; background:{color}; border-radius:999px;"></div>'
+                        f'</div>'
+                    f'</div>'
+                )
+
+            metric_html += '</div>'
+            st.markdown(metric_html, unsafe_allow_html=True)
+
+            # -----------------------------
+            # Main layout
+            # -----------------------------
+            left_col, right_col = st.columns([1.1, 1.35], gap="medium")
+
+            with left_col:
+                st.markdown("### Portfolio Action Stack")
+
+                action_rows = [
+                    ("Beta Exposure", "Hold" if action_bias != "De-Risk" else "Trim", beta_weight, "#73CFFF"),
+                    ("Growth / AI Sleeve", "Trim" if crowding_level == "High" else "Hold", growth_weight, crowding_color),
+                    ("Defense Sleeve", "Add" if hedge_need in ["Moderate", "High"] else "Hold", defense_weight, hedge_color),
+                    ("Liquidity Sleeve", "Add" if liquidity_need == "Preserve" else "Hold", rec_weights.get("SHY", 0) * 100, liquidity_color),
+                    ("High Beta / Convexity", "Trim" if rec_vol_state != "Contained" else "Watch", sum(rec_weights.get(t, 0) for t in ["MSTR", "TSLA", "NVDA", "SMH"]) * 100, "#FFB020"),
+                ]
+
+                action_html = (
+                    f'<div class="portfolio-card" style="min-height:350px; padding:16px;">'
+                    f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">TACTICAL ACTION MAP</div>'
+                )
+
+                for sleeve, action, score, color in action_rows:
+                    action_html += (
+                        f'<div style="padding:11px 12px; margin-bottom:10px; border-radius:14px; background:{color}16; border:1px solid {color}44;">'
+                            f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                                f'<div style="font-weight:950; color:#E7EEF9;">{sleeve}</div>'
+                                f'<div style="color:{color}; font-weight:950;">{action}</div>'
+                            f'</div>'
+                            f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:8px; overflow:hidden;">'
+                                f'<div style="width:{min(100, max(5, score * 1.4)):.1f}%; height:100%; background:{color}; border-radius:999px;"></div>'
+                            f'</div>'
+                        f'</div>'
+                    )
+
+                action_html += '</div>'
+                st.markdown(action_html, unsafe_allow_html=True)
+
+                st.markdown("### Tradeoff Analysis")
+
+                tradeoff_html = (
+                    f'<div class="portfolio-card" style="min-height:260px; padding:16px;">'
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">PM TRADEOFF MAP</div>'
+                        f'<div style="display:grid; gap:10px;">'
+                            f'<div style="display:flex; justify-content:space-between;"><span>Expected Return Pressure</span><b style="color:#FFB020;">Moderate</b></div>'
+                            f'<div style="display:flex; justify-content:space-between;"><span>Survivability Improvement</span><b style="color:#2EE59D;">Positive</b></div>'
+                            f'<div style="display:flex; justify-content:space-between;"><span>Correlation Relief</span><b style="color:#73CFFF;">Partial</b></div>'
+                            f'<div style="display:flex; justify-content:space-between;"><span>Liquidity Optionality</span><b style="color:{liquidity_color};">{liquidity_need}</b></div>'
+                            f'<div style="display:flex; justify-content:space-between;"><span>Upside Sacrifice</span><b style="color:#FFB020;">Controlled</b></div>'
+                        f'</div>'
+                        f'<div style="height:1px; background:rgba(255,255,255,0.08); margin:16px 0;"></div>'
+                        f'<div style="font-size:0.82rem; color:rgba(231,238,249,0.70); line-height:1.55;">'
+                            f'Recommendation layer prioritizes cleaner risk posture without fully abandoning the active regime bias.'
+                        f'</div>'
+                    f'</div>'
+                )
+
+                st.markdown(tradeoff_html, unsafe_allow_html=True)
+
+            with right_col:
+                st.markdown("### Position Adjustment Engine")
+
+                adjustment_html = (
+                    f'<div class="portfolio-card" style="min-height:350px; padding:16px;">'
+                    f'<div style="display:grid; grid-template-columns:0.8fr 0.75fr 0.75fr 0.75fr 1fr; gap:10px; padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:8px; font-size:0.68rem; color:rgba(231,238,249,0.52); font-weight:900;">'
+                    f'<div>ASSET</div><div>CURRENT</div><div>SUGGESTED</div><div>ACTION</div><div>REASON</div>'
+                    f'</div>'
+                )
+
+                for ticker, current_weight in sorted(rec_weights.items(), key=lambda x: x[1], reverse=True):
+                    current_pct = current_weight * 100
+                    suggested_pct = suggested_weights.get(ticker, current_pct)
+                    delta = suggested_pct - current_pct
+
+                    if delta > 0.75:
+                        action = "Add"
+                        color = "#2EE59D"
+                    elif delta < -0.75:
+                        action = "Trim"
+                        color = "#FF4D6D"
+                    else:
+                        action = "Hold"
+                        color = "#73CFFF"
+
+                    if ticker in growth_names:
+                        reason = "growth beta"
+                    elif ticker in defense_names:
+                        reason = "defense ballast"
+                    elif ticker in beta_names:
+                        reason = "core beta"
+                    else:
+                        reason = "idiosyncratic"
+
+                    adjustment_html += (
+                        f'<div style="display:grid; grid-template-columns:0.8fr 0.75fr 0.75fr 0.75fr 1fr; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); align-items:center;">'
+                            f'<div style="font-weight:950; color:#E7EEF9;">{ticker}</div>'
+                            f'<div>{current_pct:.1f}%</div>'
+                            f'<div style="color:{color}; font-weight:950;">{suggested_pct:.1f}%</div>'
+                            f'<div style="color:{color}; font-weight:950;">{action}</div>'
+                            f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.68);">{reason}</div>'
+                        f'</div>'
+                    )
+
+                adjustment_html += '</div>'
+                st.markdown(adjustment_html, unsafe_allow_html=True)
+
+                st.markdown("### Tactical Theme Board")
+
+                theme_rows = [
+                    ("AI Infrastructure", "Constructive", 82, "#2EE59D"),
+                    ("Liquidity Preservation", "High Priority", 76, liquidity_color),
+                    ("Defense Rotation", "Selective", 62, hedge_color),
+                    ("High Beta Chase", "Avoid", 28, "#FF4D6D"),
+                    ("Duration Hedge", "Conditional", 48, "#73CFFF"),
+                ]
+
+                theme_html = (
+                    f'<div class="portfolio-card" style="min-height:260px; padding:16px;">'
+                    f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">TACTICAL THEMES</div>'
+                )
+
+                for theme, state, score, color in theme_rows:
+                    theme_html += (
+                        f'<div style="margin-bottom:13px;">'
+                            f'<div style="display:flex; justify-content:space-between; font-size:0.78rem;">'
+                                f'<span>{theme}</span>'
+                                f'<b style="color:{color};">{state}</b>'
+                            f'</div>'
+                            f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:5px; overflow:hidden;">'
+                                f'<div style="width:{score}%; height:100%; background:{color}; border-radius:999px;"></div>'
+                            f'</div>'
+                        f'</div>'
+                    )
+
+                theme_html += '</div>'
+                st.markdown(theme_html, unsafe_allow_html=True)
+
+            # -----------------------------
+            # AI Recommendation Desk Read
+            # -----------------------------
+            st.markdown("### AI Recommendation Desk")
+
+            rec_read = (
+                f"[Action Read]<br>"
+                f"Current action bias is <b style='color:{action_color};'>{action_bias}</b>. "
+                f"Book remains exposed to {growth_weight:.0f}% growth-linked risk with {defense_weight:.0f}% defensive ballast. "
+                f"Recommendation score sits at <b style='color:{recommendation_color};'>{recommendation_score}/100</b>.<br><br>"
+
+                f"[Portfolio Adjustment]<br>"
+                f"Primary adjustment path is to preserve core beta while controlling crowded growth exposure. "
+                f"Defense sleeve should remain active as long as volatility state is <b>{rec_vol_state}</b> and correlation risk is not fully resolved.<br><br>"
+
+                f"[Tradeoff]<br>"
+                f"Reducing high-beta exposure may cap some upside, but improves liquidity optionality, survivability, and drawdown control under regime instability.<br><br>"
+
+                f"[AI Recommendation Directive]<br>"
+                f"Do not chase additional beta until dispersion quality improves. Keep the book liquid, balanced, and regime-aware."
+            )
+
+            st.markdown(
+                f'<div class="portfolio-card" style="min-height:230px; padding:16px;">'
+                    f'<div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:0; border-top:1px solid rgba(255,255,255,0.08);">'
+                        f'<div style="padding:14px; border-right:1px solid rgba(255,255,255,0.08);"><b style="color:{action_color};">Action Read</b><br><br>{rec_read.split("<br><br>")[0]}</div>'
+                        f'<div style="padding:14px; border-right:1px solid rgba(255,255,255,0.08);"><b style="color:#73CFFF;">Portfolio Adjustment</b><br><br>{rec_read.split("<br><br>")[1]}</div>'
+                        f'<div style="padding:14px; border-right:1px solid rgba(255,255,255,0.08);"><b style="color:#FFB020;">Tradeoff</b><br><br>{rec_read.split("<br><br>")[2]}</div>'
+                        f'<div style="padding:14px;"><b style="color:#2EE59D;">AI Directive</b><br><br>{rec_read.split("<br><br>")[3]}</div>'
+                    f'</div>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            st.markdown(
+                f'<div class="portfolio-card" style="margin-top:10px; padding:10px 14px; display:flex; justify-content:center; gap:28px; '
+                f'color:rgba(231,238,249,0.68); font-size:0.78rem;">'
+                    f'<span style="color:#2EE59D; font-weight:950;">AI RECOMMENDATIONS LIVE</span>'
+                    f'<span>Action: {action_bias}</span>'
+                    f'<span>Growth: {growth_weight:.0f}%</span>'
+                    f'<span>Defense: {defense_weight:.0f}%</span>'
+                    f'<span>Score: {recommendation_score}/100</span>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            st.stop()
+
+        if selected_view == "AI Insights":
+            # -----------------------------
+            # AI Insights — Trader Desk Layer
+            # -----------------------------
+
+            ai_factor_state = "Growth Skew" if "Growth" in portfolio_type or risk_level in ["Medium", "High"] else "Defensive Skew"
+            ai_liquidity_state = "Stable" if market_regime["score"] >= 55 else "Thin"
+            ai_vol_state = "Contained" if market_regime["vix"] < 18 else "Elevated" if market_regime["vix"] < 25 else "Stress"
+            ai_correlation_state = "Compression Watch" if risk_level in ["Medium", "High"] else "Balanced"
+            ai_crowding_state = "Moderate" if risk_level == "Medium" else "High" if risk_level == "High" else "Low"
+            ai_policy_state = "Rates Sensitive" if "Growth" in portfolio_type else "Policy Neutral"
+
+            insight_score = 82
+            insight_score -= 12 if ai_vol_state == "Elevated" else 0
+            insight_score -= 22 if ai_vol_state == "Stress" else 0
+            insight_score -= 10 if ai_crowding_state == "High" else 0
+            insight_score += 6 if market_regime["score"] >= 70 else 0
+            insight_score = max(0, min(100, insight_score))
+
+            insight_color = "#2EE59D" if insight_score >= 75 else "#FFB020" if insight_score >= 55 else "#FF4D6D"
+
+            desk_thesis = (
+                f"Book remains positioned for {market_regime['regime'].lower()} with {ai_factor_state.lower()} "
+                f"and {ai_crowding_state.lower()} crowding pressure. Defensive ballast is present, but the portfolio "
+                f"still depends on equity beta, growth leadership, and contained volatility."
+            )
+
+            alert_rows = [
+                ("REGIME", market_regime["regime"], market_regime["color"], "Macro tape still defines downstream risk assumptions."),
+                ("FACTOR", ai_factor_state, "#73CFFF", "Current allocation leans into growth/market beta transmission."),
+                ("CORRELATION", ai_correlation_state, "#FFB020", "Diversification quality depends on dispersion holding up."),
+                ("VOLATILITY", ai_vol_state, "#FF4D6D" if ai_vol_state == "Stress" else "#FFB020" if ai_vol_state == "Elevated" else "#2EE59D", "Vol expansion would pressure convexity and survivability."),
+                ("LIQUIDITY", ai_liquidity_state, "#2EE59D" if ai_liquidity_state == "Stable" else "#FF4D6D", "Liquidity condition affects recovery and rebalance flexibility."),
+            ]
+
+            st.markdown(
+                f'<div class="portfolio-card" style="padding:22px; margin-top:12px;">'
+                    f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                        f'<div>'
+                            f'<div style="font-size:1.75rem; font-weight:950; color:#E7EEF9;">AI Insights</div>'
+                            f'<div style="color:rgba(231,238,249,0.62); margin-top:6px;">'
+                                f'Trader-desk intelligence layer across regime, factor, risk, correlation, and scenario signals.'
+                            f'</div>'
+                        f'</div>'
+                        f'<div style="text-align:right;">'
+                            f'<div style="font-size:0.7rem; color:rgba(231,238,249,0.52);">AI DESK MODEL</div>'
+                            f'<div style="font-size:1rem; color:#2EE59D; font-weight:900;">LIVE</div>'
+                        f'</div>'
+                    f'</div>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            insight_metrics = [
+                ("Desk Conviction", f"{insight_score}/100", insight_color),
+                ("Regime", market_regime["regime"], market_regime["color"]),
+                ("Vol State", ai_vol_state, "#2EE59D" if ai_vol_state == "Contained" else "#FFB020"),
+                ("Crowding", ai_crowding_state, "#FFB020"),
+                ("Liquidity", ai_liquidity_state, "#2EE59D"),
+                ("Policy", ai_policy_state, "#73CFFF"),
+            ]
+
+            metric_html = '<div style="display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:10px; margin-top:14px; margin-bottom:14px;">'
+
+            for label, value, color in insight_metrics:
+                metric_html += (
+                    f'<div class="metric-tile" style="min-height:105px; padding:14px;">'
+                        f'<div class="metric-label">{label}</div>'
+                        f'<div class="metric-value" style="color:{color}; font-size:1.15rem;">{value}</div>'
+                        f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:12px; overflow:hidden;">'
+                            f'<div style="width:78%; height:100%; background:{color}; border-radius:999px;"></div>'
+                        f'</div>'
+                    f'</div>'
+                )
+
+            metric_html += '</div>'
+            st.markdown(metric_html, unsafe_allow_html=True)
+
+            left_col, right_col = st.columns([1.25, 1.35], gap="medium")
+
+            with left_col:
+                st.markdown("### Portfolio State Read")
+
+                st.markdown(
+                    f'<div class="portfolio-card" style="min-height:310px; padding:18px;">'
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">'
+                            f'INTERNAL TRADER DESK'
+                        f'</div>'
+                        f'<div style="font-size:1.05rem; line-height:1.65; color:#E7EEF9; font-weight:650;">'
+                            f'{desk_thesis}'
+                        f'</div>'
+                        f'<div style="height:1px; background:rgba(255,255,255,0.08); margin:18px 0;"></div>'
+                        f'<div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px;">'
+                            f'<div style="padding:12px; border-radius:14px; background:rgba(46,229,157,0.08); border:1px solid rgba(46,229,157,0.22);">'
+                                f'<div style="font-size:0.65rem; color:rgba(231,238,249,0.55);">PRIMARY SUPPORT</div>'
+                                f'<div style="color:#2EE59D; font-weight:950; margin-top:5px;">Regime + liquidity</div>'
+                            f'</div>'
+                            f'<div style="padding:12px; border-radius:14px; background:rgba(255,77,109,0.08); border:1px solid rgba(255,77,109,0.22);">'
+                                f'<div style="font-size:0.65rem; color:rgba(231,238,249,0.55);">PRIMARY RISK</div>'
+                                f'<div style="color:#FF4D6D; font-weight:950; margin-top:5px;">Beta compression</div>'
+                            f'</div>'
+                        f'</div>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+                st.markdown("### Cross-Engine Alerts")
+
+                alert_html = (
+                    f'<div class="portfolio-card" style="min-height:330px; padding:16px;">'
+                    f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">SIGNAL STACK</div>'
+                )
+
+                for label, value, color, note in alert_rows:
+                    alert_html += (
+                        f'<div style="padding:11px 12px; margin-bottom:10px; border-radius:14px; background:{color}16; border:1px solid {color}44;">'
+                            f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                                f'<div style="font-size:0.68rem; color:rgba(231,238,249,0.55); font-weight:900; letter-spacing:0.08em;">{label}</div>'
+                                f'<div style="color:{color}; font-weight:950;">{value}</div>'
+                            f'</div>'
+                            f'<div style="font-size:0.76rem; color:rgba(231,238,249,0.68); margin-top:6px;">{note}</div>'
+                        f'</div>'
+                    )
+
+                alert_html += '</div>'
+                st.markdown(alert_html, unsafe_allow_html=True)
+
+            with right_col:
+                st.markdown("### Live Intelligence Feed")
+
+                feed_rows = [
+                    ("09:31", "Regime signal remains risk-on; allocation still benefits from growth leadership.", "#2EE59D"),
+                    ("09:34", "Correlation compression risk remains active across beta-heavy sleeves.", "#FFB020"),
+                    ("09:41", "Defensive ballast offsets part of stress path but does not neutralize growth exposure.", "#73CFFF"),
+                    ("09:47", "Scenario layer flags AI-spend slowdown as the main downside transmission channel.", "#FF4D6D"),
+                    ("09:52", "Risk desk bias: keep liquidity optionality before increasing high-beta exposure.", "#FFB020"),
+                ]
+
+                feed_html = (
+                    f'<div class="portfolio-card" style="min-height:310px; padding:16px;">'
+                    f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">DESK FEED</div>'
+                )
+
+                for time_label, text, color in feed_rows:
+                    feed_html += (
+                        f'<div style="display:grid; grid-template-columns:0.45fr 1fr; gap:12px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.06);">'
+                            f'<div style="color:{color}; font-weight:950;">{time_label}</div>'
+                            f'<div style="color:#E7EEF9; font-size:0.82rem; line-height:1.45;">{text}</div>'
+                        f'</div>'
+                    )
+
+                feed_html += '</div>'
+                st.markdown(feed_html, unsafe_allow_html=True)
+
+                st.markdown("### Conviction Matrix")
+
+                conviction_rows = [
+                    ("AI Infrastructure", "High", 82, "#2EE59D"),
+                    ("Growth Beta", "Positive / crowded", 68, "#FFB020"),
+                    ("Duration", "Neutral", 45, "#73CFFF"),
+                    ("Gold / Defense", "Useful ballast", 58, "#2EE59D"),
+                    ("Liquidity", "Preserve optionality", 72, "#FFB020"),
+                    ("Small Caps", "Weak signal", 28, "#FF4D6D"),
+                ]
+
+                conviction_html = (
+                    f'<div class="portfolio-card" style="min-height:330px; padding:16px;">'
+                    f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em; font-weight:900; margin-bottom:14px;">THEME CONVICTION</div>'
+                )
+
+                for theme, state, score, color in conviction_rows:
+                    conviction_html += (
+                        f'<div style="margin-bottom:13px;">'
+                            f'<div style="display:flex; justify-content:space-between; font-size:0.78rem;">'
+                                f'<span>{theme}</span>'
+                                f'<b style="color:{color};">{state}</b>'
+                            f'</div>'
+                            f'<div style="height:7px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:5px; overflow:hidden;">'
+                                f'<div style="width:{score}%; height:100%; background:{color}; border-radius:999px;"></div>'
+                            f'</div>'
+                        f'</div>'
+                    )
+
+                conviction_html += '</div>'
+                st.markdown(conviction_html, unsafe_allow_html=True)
+
+            st.markdown("### AI Desk Interpretation")
+
+            ai_insight_read = (
+                f"[Desk Read]<br>"
+                f"{desk_thesis}<br><br>"
+
+                f"[Signal Priority]<br>"
+                f"Regime remains the primary support variable. Correlation compression and growth crowding remain the main portfolio fragility channels.<br><br>"
+
+                f"[Risk Watch]<br>"
+                f"Watch for volatility expansion, factor dispersion collapse, and AI-spend deceleration. Those conditions would pressure survivability before headline return deteriorates.<br><br>"
+
+                f"[Trader Bias]<br>"
+                f"Stay constructive while regime holds. Do not add beta if dispersion deteriorates."
+            )
+
+            st.markdown(
+                f'<div class="portfolio-card" style="min-height:220px; padding:16px;">'
+                    f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">'
+                        f'<div style="font-size:0.78rem; color:rgba(231,238,249,0.52); letter-spacing:0.08em;">AI DESK INTERPRETATION</div>'
+                        f'<div style="font-size:0.72rem; color:#2EE59D; font-weight:900;">LIVE INTELLIGENCE</div>'
+                    f'</div>'
+                    f'<div style="color:#E7EEF9; font-size:0.88rem; line-height:1.62;">'
+                        f'{ai_insight_read}'
+                    f'</div>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            st.markdown(
+                f'<div class="portfolio-card" style="margin-top:10px; padding:10px 14px; display:flex; justify-content:center; gap:28px; '
+                f'color:rgba(231,238,249,0.68); font-size:0.78rem;">'
+                    f'<span style="color:#2EE59D; font-weight:950;">AI INSIGHTS LIVE</span>'
+                    f'<span>Regime: {market_regime["regime"]}</span>'
+                    f'<span>Vol: {ai_vol_state}</span>'
+                    f'<span>Crowding: {ai_crowding_state}</span>'
+                    f'<span>Desk Score: {insight_score}/100</span>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            st.stop()
+
         if selected_view != "Command Center":
             st.markdown(
                 f'<div class="portfolio-card" style="padding:22px; margin-top:12px;">'
@@ -4331,7 +7539,9 @@ with nav_col:
                 f'</div>',
                 unsafe_allow_html=True,
             )
-            st.stop()
+                        
+           
+            
 
         # -----------------------------
         # Command Center top grid
