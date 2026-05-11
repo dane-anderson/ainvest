@@ -3365,74 +3365,116 @@ if mode == "Allocation Engine":
     # -----------------------------
     nav_col, terminal_col = st.columns([0.72, 5.9], gap="medium")
 
-    # -----------------------------
-    # Left command selector
-    # -----------------------------
-    with nav_col:
-        st.markdown(
-            f'<div class="portfolio-card" style="padding:16px 12px; margin-bottom:10px;">'
-                f'<div style="display:flex; align-items:center; gap:10px;">'
-                    f'<div style="width:34px; height:34px; border-radius:10px; background:linear-gradient(135deg,#3A8DFF,#4B5DFF); '
-                    f'display:flex; align-items:center; justify-content:center; font-weight:950; color:white;">A</div>'
-                    f'<div>'
-                        f'<div style="font-size:1.35rem; font-weight:950; color:#E7EEF9; letter-spacing:-0.04em;">AInvest</div>'
-                        f'<div style="color:rgba(231,238,249,0.52); font-size:0.72rem;">Command Terminal</div>'
-                    f'</div>'
+  # -----------------------------
+# Left command selector
+# -----------------------------
+with nav_col:
+    st.markdown(
+        f'<div class="portfolio-card" style="padding:16px 12px; margin-bottom:10px;">'
+            f'<div style="display:flex; align-items:center; gap:10px;">'
+                f'<div style="width:34px; height:34px; border-radius:10px; background:linear-gradient(135deg,#3A8DFF,#4B5DFF); '
+                f'display:flex; align-items:center; justify-content:center; font-weight:950; color:white;">A</div>'
+                f'<div>'
+                    f'<div style="font-size:1.35rem; font-weight:950; color:#E7EEF9; letter-spacing:-0.04em;">AInvest</div>'
+                    f'<div style="color:rgba(231,238,249,0.52); font-size:0.72rem;">Command Terminal</div>'
                 f'</div>'
+            f'</div>'
+            f'<div style="height:1px; background:rgba(255,255,255,0.08); margin:16px 0;"></div>'
+            f'<div style="color:rgba(231,238,249,0.45); font-size:0.68rem; font-weight:900; letter-spacing:0.12em; margin-bottom:8px;">'
+                f'PORTFOLIO SYSTEMS'
+            f'</div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
 
-                f'<div style="height:1px; background:rgba(255,255,255,0.08); margin:16px 0;"></div>'
+    st.markdown(
+        """
+        <div style="
+            color:rgba(231,238,249,0.45);
+            font-size:0.58rem;
+            font-weight:900;
+            letter-spacing:0.12em;
+            margin-top:10px;
+            margin-bottom:8px;
+        ">
+            ANALYTICAL ENGINES
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-                f'<div style="color:rgba(231,238,249,0.45); font-size:0.68rem; font-weight:900; letter-spacing:0.12em; margin-bottom:8px;">'
-                    f'PORTFOLIO SYSTEMS'
-                f'</div>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
+    engine_views = [
+        "Command Center",
+        "Monte Carlo Engine",
+        "Risk Engine",
+        "Stress Test Engine",
+        "Factor Engine",
+        "Correlation Engine",
+        "Scenario Engine",
+        "Market Regime Engine",
+    ]
 
-        engine_views = [
-            "Command Center",
-            "Monte Carlo Lab",
-            "Risk Engine",
-            "Stress Test Engine",
-            "Factor Engine",
-            "Correlation Engine",
-            "Scenario Engine",
-            "AI Insights",
-            "Market Regime",
-            "AI Recommendations",
-        ]
-        
+    for view in engine_views:
+        active = st.session_state.allocation_engine_view == view
 
-        for view in engine_views:
-            active = st.session_state.allocation_engine_view == view
+        if st.button(
+            view,
+            key=f"allocation_engine_{view}",
+            use_container_width=True,
+            type="primary" if active else "secondary",
+        ):
+            st.session_state.allocation_engine_view = view
+            st.rerun()
 
-            button_type = "primary" if active else "secondary"
+    st.markdown(
+        """
+        <div style="
+            color:rgba(231,238,249,0.45);
+            font-size:0.58rem;
+            font-weight:900;
+            letter-spacing:0.12em;
+            margin-top:14px;
+            margin-bottom:8px;
+        ">
+            AI LAYER
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-            if st.button(
-                view,
-                key=f"allocation_nav_{view}",
-                use_container_width=True,
-                type=button_type,
-            ):
-                st.session_state.allocation_engine_view = view
-                st.rerun()
+    ai_views = [
+        "AI Insights",
+        "AI Recommendations",
+    ]
 
-        st.markdown(
-            f'<div class="portfolio-card" style="margin-top:12px; padding:12px;">'
-                f'<div style="display:flex; justify-content:space-between; align-items:center;">'
-                    f'<div class="mini-label">MARKET REGIME</div>'
-                    f'<div style="width:8px; height:8px; border-radius:50%; background:#2EE59D; box-shadow:0 0 10px #2EE59D;"></div>'
-                f'</div>'
-                f'<div style="color:#2EE59D; font-size:1.05rem; font-weight:950; margin-top:6px;">Risk-On</div>'
-                f'<div style="height:46px; margin-top:10px; border-radius:10px; '
-                f'background:linear-gradient(135deg, rgba(46,229,157,0.03), rgba(46,229,157,0.18)); '
-                f'border-bottom:1px solid rgba(46,229,157,0.35);"></div>'
-                f'<div style="display:flex; justify-content:space-between; margin-top:10px; color:rgba(231,238,249,0.45); font-size:0.68rem;">'
-                    f'<span>Status</span><span style="color:#2EE59D;">LIVE</span>'
-                f'</div>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
+    for view in ai_views:
+        active = st.session_state.allocation_engine_view == view
+
+        if st.button(
+            view,
+            key=f"allocation_engine_{view}",
+            use_container_width=True,
+            type="primary" if active else "secondary",
+        ):
+            st.session_state.allocation_engine_view = view
+            st.rerun()
+
+    st.markdown(
+        f'<div class="portfolio-card" style="margin-top:12px; padding:12px;">'
+            f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                f'<div class="mini-label">MARKET REGIME</div>'
+                f'<div style="width:8px; height:8px; border-radius:50%; background:#2EE59D; box-shadow:0 0 10px #2EE59D;"></div>'
+            f'</div>'
+            f'<div style="color:#2EE59D; font-size:1.05rem; font-weight:950; margin-top:6px;">Risk-On</div>'
+            f'<div style="height:46px; margin-top:10px; border-radius:10px; '
+            f'background:linear-gradient(135deg, rgba(46,229,157,0.03), rgba(46,229,157,0.18)); '
+            f'border-bottom:1px solid rgba(46,229,157,0.35);"></div>'
+            f'<div style="display:flex; justify-content:space-between; margin-top:10px; color:rgba(231,238,249,0.45); font-size:0.68rem;">'
+                f'<span>Status</span><span style="color:#2EE59D;">LIVE</span>'
+            f'</div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
 
     # -----------------------------
     # Terminal screen
@@ -4319,7 +4361,7 @@ if mode == "Allocation Engine":
                         )
                     )
                 fig_growth.update_layout(
-                    height=315,
+                    height=440,
                     paper_bgcolor="rgba(0,0,0,0)",
                     plot_bgcolor="rgba(0,0,0,0)",
                     font=dict(color="#E7EEF9"),
@@ -4342,18 +4384,28 @@ if mode == "Allocation Engine":
                         hole=0.58,
                         textinfo="percent",
                         hoverinfo="label+percent",
+                        domain=dict(x=[0.12, 0.88], y=[0.18, 0.88]),
                         marker=dict(colors=[bucket_colors.get(k, "#E7EEF9") for k in allocation.keys()]),
                     )
                 ]
             )
             fig_alloc.update_layout(
-                height=315,
-                margin=dict(l=0, r=0, t=8, b=8),
+                height=440,
+                margin=dict(l=0, r=0, t=8, b=15),
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
                 font=dict(color="#E7EEF9", size=10),
+
                 showlegend=True,
-                legend=dict(orientation="v", font=dict(size=9, color="#E7EEF9")),
+
+                legend=dict(
+                    orientation="h",
+                    y=-0.04,
+                    x=0.5,
+                    xanchor="center",
+                    font=dict(size=9, color="#E7EEF9"),
+                    bgcolor="rgba(0,0,0,0)",
+                ),
             )
             st.plotly_chart(fig_alloc, use_container_width=True)
 
@@ -4389,11 +4441,95 @@ if mode == "Allocation Engine":
             )
 
         # -----------------------------
-        # Mid row: AI + deployment map + plan controls
+        # Mid row: Plan Controls + AI + deployment map
         # -----------------------------
-        mid_left, mid_mid, mid_right = st.columns([1.35, 1.35, 0.9], gap="medium")
+        mid_left, mid_mid, mid_right = st.columns([0.95, 1.35, 1.35], gap="medium")
 
+        # ---------------------------------
+        # LEFT — PLAN CONTROLS
+        # ---------------------------------
         with mid_left:
+
+            st.markdown("### Plan Controls")
+
+            with st.container():
+
+                st.number_input(
+                    "Portfolio Size ($)",
+                    min_value=1000,
+                    max_value=10000000,
+                    step=1000,
+                    value=100000,
+                    key="allocation_portfolio_size"
+                )
+
+                st.markdown("**Mandate**")
+
+                mandate_cols = st.columns(2)
+
+                for i, mandate_option in enumerate(
+                    ["Growth", "Defensive", "Absolute Return", "Opportunistic"]
+                ):
+
+                    with mandate_cols[i % 2]:
+
+                        if st.button(
+                            mandate_option,
+                            key=f"allocation_mandate_{mandate_option}",
+                            use_container_width=True,
+                            type="primary"
+                            if st.session_state.allocation_mandate == mandate_option
+                            else "secondary",
+                        ):
+
+                            st.session_state.allocation_mandate = mandate_option
+                            st.rerun()
+
+                st.markdown("**Risk Budget**")
+
+                risk_cols = st.columns(3)
+
+                for i, risk_option in enumerate(["Low", "Medium", "High"]):
+
+                    with risk_cols[i]:
+
+                        if st.button(
+                            risk_option,
+                            key=f"allocation_risk_{risk_option}",
+                            use_container_width=True,
+                            type="primary"
+                            if st.session_state.allocation_risk == risk_option
+                            else "secondary",
+                        ):
+
+                            st.session_state.allocation_risk = risk_option
+                            st.rerun()
+
+                st.markdown("**Horizon**")
+
+                horizon_cols = st.columns(4)
+
+                for i, horizon in enumerate(["1Y", "3Y", "5Y", "10Y"]):
+
+                    with horizon_cols[i]:
+
+                        if st.button(
+                            horizon,
+                            key=f"allocation_horizon_{horizon}",
+                            use_container_width=True,
+                            type="primary"
+                            if st.session_state.allocation_horizon == horizon
+                            else "secondary",
+                        ):
+
+                            st.session_state.allocation_horizon = horizon
+                            st.rerun()
+
+        # ---------------------------------
+        # MIDDLE — AI EXECUTIVE SUMMARY
+        # ---------------------------------
+        with mid_mid:
+
             allocation_ai_text = generate_allocation_brief(
                 portfolio_type,
                 risk_level,
@@ -4408,59 +4544,78 @@ if mode == "Allocation Engine":
                 outperformance,
                 st.session_state.allocation_horizon,
             )
+
             st.markdown(
                 f'<div class="portfolio-card" style="min-height:245px;">'
                     f'<div class="engine-card-title">AI Executive Summary</div>'
-                    f'<div style="font-size:0.82rem; line-height:1.5; color:#E7EEF9;">{allocation_ai_text.replace(chr(10), "<br>")}</div>'
+                    f'<div style="font-size:0.82rem; line-height:1.5; color:#E7EEF9;">'
+                        f'{allocation_ai_text.replace(chr(10), "<br>")}'
+                    f'</div>'
                 f'</div>',
                 unsafe_allow_html=True,
             )
 
-        with mid_mid:
+        # ---------------------------------
+        # RIGHT — CAPITAL DEPLOYMENT MAP
+        # ---------------------------------
+        with mid_right:
+
             st.markdown("### 4. Capital Deployment Map")
-            map_html = f'<div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">'
-            for bucket, weight in allocation.items():
+
+            deployment_order = [
+                "Core Beta",
+                "Growth Tilt",
+                "Alpha Sleeve",
+                "Defensive Hedge",
+                "Liquidity",
+            ]
+
+            map_html = (
+                f'<div style="display:grid; '
+                f'grid-template-columns:repeat(2, 1fr); gap:10px;">'
+            )
+
+            for bucket in deployment_order:
+
+                if bucket not in allocation:
+                    continue
+
+                weight = allocation[bucket]
+
                 dollar_value = portfolio_size * (weight / 100)
+
                 color = bucket_colors.get(bucket, "#E7EEF9")
+
                 map_html += (
-                    f'<div class="portfolio-card" style="min-height:105px; background:linear-gradient(135deg,{color}2B,rgba(9,23,51,0.94));">'
-                        f'<div style="font-size:0.70rem; color:rgba(231,238,249,0.75);">{bucket}</div>'
-                        f'<div style="font-size:1.45rem; font-weight:950; color:{color}; margin-top:5px;">{weight}%</div>'
-                        f'<div style="color:#E7EEF9; font-size:0.8rem;">${dollar_value:,.0f}</div>'
-                        f'<div style="color:rgba(231,238,249,0.55); font-size:0.64rem; margin-top:5px;">{assets[bucket]}</div>'
+                    f'<div class="portfolio-card" '
+                    f'style="min-height:105px; '
+                    f'background:linear-gradient(135deg,{color}2B,rgba(9,23,51,0.94));">'
+
+                        f'<div style="font-size:0.70rem; '
+                        f'color:rgba(231,238,249,0.75);">'
+                            f'{bucket}'
+                        f'</div>'
+
+                        f'<div style="font-size:1.45rem; '
+                        f'font-weight:950; color:{color}; margin-top:5px;">'
+                            f'{weight}%'
+                        f'</div>'
+
+                        f'<div style="color:#E7EEF9; font-size:0.8rem;">'
+                            f'${dollar_value:,.0f}'
+                        f'</div>'
+
+                        f'<div style="color:rgba(231,238,249,0.55); '
+                        f'font-size:0.64rem; margin-top:5px;">'
+                            f'{assets[bucket]}'
+                        f'</div>'
+
                     f'</div>'
                 )
+
             map_html += f'</div>'
+
             st.markdown(map_html, unsafe_allow_html=True)
-
-        with mid_right:
-            st.markdown("### Plan Controls")
-            with st.container():
-                st.number_input("Portfolio Size ($)", min_value=1000, max_value=10000000, step=1000, value=100000, key="allocation_portfolio_size")
-
-                st.markdown("**Mandate**")
-                mandate_cols = st.columns(2)
-                for i, mandate_option in enumerate(["Growth", "Defensive", "Absolute Return", "Opportunistic"]):
-                    with mandate_cols[i % 2]:
-                        if st.button(mandate_option, key=f"allocation_mandate_{mandate_option}", use_container_width=True, type="primary" if st.session_state.allocation_mandate == mandate_option else "secondary"):
-                            st.session_state.allocation_mandate = mandate_option
-                            st.rerun()
-
-                st.markdown("**Risk Budget**")
-                risk_cols = st.columns(3)
-                for i, risk_option in enumerate(["Low", "Medium", "High"]):
-                    with risk_cols[i]:
-                        if st.button(risk_option, key=f"allocation_risk_{risk_option}", use_container_width=True, type="primary" if st.session_state.allocation_risk == risk_option else "secondary"):
-                            st.session_state.allocation_risk = risk_option
-                            st.rerun()
-
-                st.markdown("**Horizon**")
-                horizon_cols = st.columns(4)
-                for i, horizon in enumerate(["1Y", "3Y", "5Y", "10Y"]):
-                    with horizon_cols[i]:
-                        if st.button(horizon, key=f"allocation_horizon_{horizon}", use_container_width=True, type="primary" if st.session_state.allocation_horizon == horizon else "secondary"):
-                            st.session_state.allocation_horizon = horizon
-                            st.rerun()
 
         # -----------------------------
         # Analytical engines
