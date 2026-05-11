@@ -72,119 +72,101 @@ Single-ticker analysis engine:
 
 ---
 
-## ⚙️ Allocation Engine
+# ⚙️ Allocation Engine
 
-Institutional-style capital allocation command center:
+Advanced capital allocation and portfolio construction workspace built for institutional-style analysis.
 
 Dynamic portfolio construction based on:
+
 - mandate: growth, defensive, absolute return, opportunistic
+
 - risk budget
+
 - time horizon
+
 - portfolio size
 
-Automatically builds:
-- capital deployment plan: ticker, shares, dollars, bucket
-- allocation map across strategy sleeves
-- projected return, volatility, drawdown, Sharpe, and SPY outperformance
-- benchmark comparison vs:
+Automatically generates:
+
+- capital deployment plan: ticker, shares, dollars, strategy sleeve
+
+- portfolio allocation map
+
+- projected return, volatility, drawdown, Sharpe ratio, and SPY outperformance
+
+- benchmark comparison against:
+
   - SPY
+
   - Growth Strategy
+
   - Concentrated Alpha
+
   - Defensive Allocation
 
 Integrated analytical engines:
-- Monte Carlo Lab
+
+- Monte Carlo Engine
+
 - Risk Engine
+
 - Stress Test Engine
+
 - Factor Exposure Engine
+
 - Correlation Engine
+
 - Scenario Engine
-- AI Insights
+
 - Market Regime Engine
-- AI Recommendations layer
+
+- AI Insights
+
+- AI Recommendations Layer
 
 Advanced analytics:
+
 - live price-based position sizing
-- risk contribution breakdown by bucket
-- stress testing across recession, inflation, tech selloff, rates shock, credit crunch, and bull market scenarios
-- factor exposure analysis across market, size, value, momentum, quality, low volatility, and growth
-- correlation heatmap to detect hidden overlap and fake diversification
-- custom scenario builder for GDP, inflation, rates, and equity shocks
+
+- risk contribution breakdown by allocation sleeve
+
+- recession, inflation, rates shock, tech selloff, credit crunch, and bull market stress testing
+
+- factor exposure analysis across:
+
+  - market beta
+
+  - size
+
+  - value
+
+  - momentum
+
+  - quality
+
+  - low volatility
+
+  - growth
+
+- correlation heatmap for overlap and diversification analysis
+
+- custom macro scenario builder for GDP, inflation, rates, and equity shocks
+
 - portfolio health scoring
-- capital deployment map by strategic sleeve
+
+- strategic sleeve exposure visualization
 
 AI layer:
+
 - AI executive summary
+
 - PM-style allocation brief
-- internal desk-style interpretation
-- positioning, exposure, risk, adjustment, and takeaway sections
 
-👉 This transforms AInvest from a stock/portfolio dashboard into a multi-engine institutional allocation workspace.
+- desk-style portfolio interpretation
 
-## 🧭 Market Regime Engine (NEW)
+- exposure, positioning, adjustment, and risk commentary
 
-Institutional-style macro regime workspace:
-
-- Live market regime classification:
-  - Risk-On Expansion
-  - Late Cycle
-  - Risk-Off
-  - Recession
-- Regime transition positioning model
-- Regime timeline engine showing recent macro state progression
-- Confidence strip for:
-  - trend strength
-  - regime stability
-  - volatility state
-  - cross-asset confirmation
-- AI macro desk interpretation written like an internal trading desk note
-- Signal stack across:
-  - equity trend
-  - growth leadership
-  - duration
-  - gold
-  - volatility
-- Transition risk monitor with severity bars
-- Cross-asset read panel
-- Macro factor heatmap covering:
-  - liquidity
-  - growth
-  - inflation
-  - rates
-  - credit
-  - volatility
-  - USD
-  - commodities
-
-👉 This transforms AInvest into a broader market-regime intelligence system, not just a portfolio or stock analysis tool.
-
-
-## 🎲 Monte Carlo Engine (NEW)
-
-Institutional-style portfolio simulation engine:
-
-- Forward-looking portfolio path simulation
-- Adjustable:
-  - investment horizon
-  - simulation count
-  - volatility stress
-  - confidence interval
-- Probability distribution modeling
-- Drawdown visualization
-- Expected range forecasting
-- Confidence band analysis
-- AI-assisted interpretation of simulation outcomes
-- Portfolio stress behavior under varying volatility regimes
-
-Advanced capabilities:
-
-- Scenario-aware portfolio projection
-- Tail-risk exploration
-- Portfolio survivability testing
-- Risk-adjusted growth analysis
-- Future capital path visualization
-
-👉 This introduces probabilistic forecasting and institutional-style simulation analysis into AInvest.
+👉 Transforms AInvest from a stock analysis dashboard into a multi-engine portfolio intelligence platform.
 
 ---
 
