@@ -1017,6 +1017,313 @@ def fetch_recent_headlines(ticker: str) -> list[str]:
 # -----------------------------
 # Helpers
 # -----------------------------
+from datetime import datetime, time as dt_time
+import pytz
+
+def get_market_status():
+    eastern = pytz.timezone("US/Eastern")
+    now = datetime.now(eastern)
+
+    current_time = now.time()
+    weekday = now.weekday()
+
+    premarket_start = dt_time(4, 0)
+    market_open = dt_time(9, 30)
+    market_close = dt_time(16, 0)
+    afterhours_end = dt_time(20, 0)
+
+    if weekday >= 5:
+        return {
+            "label": "MARKET CLOSED — WEEKEND",
+            "color": "#6B7280",
+            "detail": "Opens Monday 9:30 AM ET",
+            "emoji": "⚫",
+        }
+
+    if premarket_start <= current_time < market_open:
+        return {
+            "label": "PRE-MARKET ACTIVE",
+            "color": "#3A8DFF",
+            "detail": "Market opens 9:30 AM ET",
+            "emoji": "🔵",
+        }
+
+    if market_open <= current_time < market_close:
+        close_dt = eastern.localize(datetime.combine(now.date(), market_close))
+        remaining = close_dt - now
+
+        hours = remaining.seconds // 3600
+        minutes = (remaining.seconds % 3600) // 60
+
+        return {
+            "label": "US MARKET OPEN",
+            "color": "#2EE59D",
+            "detail": f"Closes in {hours}h {minutes}m",
+            "emoji": "🟢",
+        }
+
+    if market_close <= current_time < afterhours_end:
+        return {
+            "label": "AFTER HOURS ACTIVE",
+            "color": "#A855F7",
+            "detail": "Extended trading session live",
+            "emoji": "🟣",
+        }
+
+    return {
+        "label": "MARKET CLOSED",
+        "color": "#6B7280",
+        "detail": "Next open 9:30 AM ET",
+        "emoji": "⚫",
+    }
+
+@st.cache_data(show_spinner=False, ttl=120)
+def get_market_index_snapshot():
+    status = get_market_status()
+
+    if status["label"] == "AFTER HOURS ACTIVE":
+        tickers = {
+            "ES": "ES=F",
+            "NQ": "NQ=F",
+            "VIX": "^VIX",
+            "BTC": "BTC-USD",
+            "10Y": "^TNX",
+        }
+    else:
+        tickers = {
+            "S&P": "^GSPC",
+            "Nasdaq": "^IXIC",
+            "Dow": "^DJI",
+            "VIX": "^VIX",
+            "BTC": "BTC-USD",
+            "10Y": "^TNX",
+        }
+
+    results = {}
+    html_parts = []
+
+    for name, symbol in tickers.items():
+        try:
+            hist = yf.Ticker(symbol).history(period="2d", interval="5m")
+
+            if hist.empty or len(hist) < 2:
+                continue
+
+            latest = float(hist["Close"].iloc[-1])
+            prev = float(hist["Close"].iloc[0])
+
+            pct = ((latest - prev) / prev) * 100 if prev else 0
+            color = "#2EE59D" if pct >= 0 else "#FF4D6D"
+            sign = "+" if pct >= 0 else ""
+
+            results[name] = {
+                "latest": latest,
+                "pct": pct,
+                "color": color,
+                "sign": sign,
+            }
+
+            if name == "10Y":
+                display = f'10Y {latest / 10:.2f}%'
+            elif name == "VIX":
+                display = f'VIX {latest:.1f} {sign}{pct:.1f}%'
+            else:
+                display = f'{name} {sign}{pct:.2f}%'
+
+            html_parts.append(
+                f'<span style="color:{color}; font-weight:800;">{display}</span>'
+            )
+
+        except Exception:
+            continue
+
+    return results, " · ".join(html_parts)
+
+
+def get_risk_pulse(snapshot):
+    spy = snapshot.get("S&P", {}).get("pct", 0)
+    nasdaq = snapshot.get("Nasdaq", {}).get("pct", 0)
+    vix = snapshot.get("VIX", {}).get("pct", 0)
+    btc = snapshot.get("BTC", {}).get("pct", 0)
+
+    risk_score = 50
+
+    if spy > 0:
+        risk_score += 10
+    else:
+        risk_score -= 10
+
+    if nasdaq > spy:
+        risk_score += 10
+    else:
+        risk_score -= 10
+
+    if vix > 3:
+        risk_score -= 15
+    elif vix < -3:
+        risk_score += 10
+
+    if btc > 1:
+        risk_score += 5
+    elif btc < -1:
+        risk_score -= 5
+
+    if risk_score >= 60:
+        return "🟢 Risk-On", "#2EE59D"
+    elif risk_score <= 40:
+        return "🔴 Risk-Off", "#FF4D6D"
+    else:
+        return "🟡 Mixed", "#FFB020"
+    
+def get_market_regime(snapshot):
+    spy = snapshot.get("S&P", {}).get("pct", 0)
+    nasdaq = snapshot.get("Nasdaq", {}).get("pct", 0)
+    vix = snapshot.get("VIX", {}).get("pct", 0)
+    ten_year = snapshot.get("10Y", {}).get("latest", 0)
+
+    if nasdaq > 1 and vix < 0:
+        return "Growth Leadership", "#2EE59D"
+
+    if vix > 5:
+        return "Volatility Expansion", "#FF4D6D"
+
+    if ten_year > 45:
+        return "Rates Pressure", "#FFB020"
+
+    if spy < 0 and nasdaq < 0:
+        return "Risk-Off Rotation", "#FF4D6D"
+
+    return "Mixed Regime", "#94A3B8"
+
+def get_fallback_macro_note(snapshot):
+    spy = snapshot.get("S&P", {}).get("pct", 0)
+    nasdaq = snapshot.get("Nasdaq", {}).get("pct", 0)
+    vix = snapshot.get("VIX", {}).get("pct", 0)
+    btc = snapshot.get("BTC", {}).get("pct", 0)
+
+    if vix > 5:
+        return "AI MACRO: Volatility pressure expanding across risk assets."
+
+    if nasdaq > spy and btc > 1:
+        return "AI MACRO: Growth appetite improving beneath the surface."
+
+    if spy < 0 and vix > 2:
+        return "AI MACRO: Defensive positioning driving session tone."
+
+    if btc > 2:
+        return "AI MACRO: Risk assets strengthening with crypto leadership."
+
+    return "AI MACRO: Mixed cross-asset positioning with no dominant driver."
+
+@st.cache_data(show_spinner=False, ttl=300)
+def generate_ai_macro_note(snapshot):
+    if not api_key or client is None:
+        return get_fallback_macro_note(snapshot)
+
+    spy = snapshot.get("S&P", snapshot.get("ES", {})).get("pct", 0)
+    nasdaq = snapshot.get("Nasdaq", snapshot.get("NQ", {})).get("pct", 0)
+    dow = snapshot.get("Dow", {}).get("pct", 0)
+    vix = snapshot.get("VIX", {}).get("pct", 0)
+    btc = snapshot.get("BTC", {}).get("pct", 0)
+    ten_year = snapshot.get("10Y", {}).get("latest", 0)
+
+    prompt = f"""
+You are an institutional macro desk analyst.
+
+Write ONE short market note for a trading terminal.
+
+Rules:
+- max 18 words
+- no hype
+- no full explanation
+- no "this suggests"
+- no "investors should"
+- direct desk language
+- mention the main driver only
+
+Market snapshot:
+S&P/ES: {spy:+.2f}%
+Nasdaq/NQ: {nasdaq:+.2f}%
+Dow: {dow:+.2f}%
+VIX: {vix:+.2f}%
+BTC: {btc:+.2f}%
+10Y yield proxy: {ten_year:.2f}
+"""
+
+    try:
+        response = client.responses.create(
+            model="gpt-4.1-mini",
+            input=prompt,
+        )
+        text = (response.output_text or "").strip()
+        return f"AI MACRO: {text}" if text else get_fallback_macro_note(snapshot)
+    except Exception:
+        return get_fallback_macro_note(snapshot)
+
+def render_market_status_bar():
+    status = get_market_status()
+    snapshot, market_line = get_market_index_snapshot()
+    risk_pulse, risk_color = get_risk_pulse(snapshot)
+    regime, regime_color = get_market_regime(snapshot)
+    macro_note = generate_ai_macro_note(snapshot)
+
+    status_html = (
+        f'<div style="'
+        f'margin-top:-4px;'
+        f'margin-bottom:18px;'
+        f'padding:13px 18px;'
+        f'border-radius:16px;'
+        f'background:rgba(9,23,51,0.88);'
+        f'border:1px solid rgba(255,255,255,0.08);'
+        f'display:flex;'
+        f'flex-direction:column;'
+        f'gap:8px;">'
+
+            f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+
+                f'<div style="font-size:1.05rem; font-weight:900; color:{status["color"]};">'
+                    f'{status["emoji"]} {status["label"]}'
+                f'</div>'
+
+                f'<div style="color:rgba(231,238,249,0.72); font-size:0.90rem; font-weight:700;">'
+                    f'{status["detail"]}'
+                f'</div>'
+
+            f'</div>'
+
+            f'<div style="color:rgba(231,238,249,0.72); font-size:0.88rem; font-weight:700;">'
+                f'{market_line}'
+            f'</div>'
+
+            f'<div style="display:flex; justify-content:space-between; align-items:center; gap:18px;">'
+
+                f'<div style="display:flex; align-items:center; gap:14px; white-space:nowrap;">'
+
+                    f'<span style="color:{risk_color}; font-size:0.86rem; font-weight:900;">'
+                        f'RISK PULSE: {risk_pulse}'
+                    f'</span>'
+
+                    f'<span style="color:rgba(231,238,249,0.28);">|</span>'
+
+                    f'<span style="color:{regime_color}; font-size:0.86rem; font-weight:900;">'
+                        f'REGIME: {regime}'
+                    f'</span>'
+
+                f'</div>'
+
+                f'<div style="color:rgba(231,238,249,0.62); font-size:0.82rem; font-weight:600; text-align:right;">'
+                    f'{macro_note}'
+                f'</div>'
+
+            f'</div>'
+
+        f'</div>'
+    )
+
+    st.markdown(status_html, unsafe_allow_html=True)
+
+
+
 def get_model_risk(confidence: float) -> str:
     if confidence >= 75:
         return "Medium"
@@ -1527,6 +1834,9 @@ mode = st.radio(
 active_ticker = st.session_state.active_ticker
 
 is_landing = mode == "Stock Lens" and not active_ticker
+
+if not is_landing:
+    render_market_status_bar()
 
 if is_landing:
     st.markdown(
