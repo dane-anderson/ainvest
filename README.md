@@ -60,148 +60,106 @@ into clear, decision-ready output.
 ---
 
 ## 🧩 Core Features
+## 🔍 Stock Lens
 
-### 🔍 Stock Lens
-Single-ticker analysis engine:
+Single-ticker analysis engine for live market structure, signal interpretation, and AI trader insight.
 
-- Signal (Bullish / Neutral / Bearish)
+Features:
+- Bullish / Neutral / Bearish signal classification
 - Conviction score
 - Risk level
-- AI trader-style insight
-- Real-time price + structure
+- Real-time price and daily change
+- Intraday market structure chart
+- VWAP / EMA technical context
+- Recent headline feed
+- AI trader-style interpretation
 
----
+👉 Stock Lens is the single-name intelligence layer of AInvest.
 
-# ⚙️ Allocation Engine
+
+## 📊 Portfolio Lab
+
+Multi-asset portfolio analysis system for portfolio construction, benchmark comparison, and PM-style review.
+
+Features:
+- Add multiple tickers dynamically
+- Equal-weight or custom-weight portfolios
+- Portfolio-level return analysis
+- Volatility, Sharpe ratio, and max drawdown
+- Benchmark comparison against SPY and strategy baskets
+- Stress scenario simulation
+- AI portfolio brief written in PM-style language
+
+👉 Portfolio Lab is the portfolio intelligence layer of AInvest.
+
+
+## ⚙️ Allocation Engine
 
 Advanced capital allocation and portfolio construction workspace built for institutional-style analysis.
 
 Dynamic portfolio construction based on:
-
-- mandate: growth, defensive, absolute return, opportunistic
-
-- risk budget
-
-- time horizon
-
-- portfolio size
+- Mandate: growth, defensive, absolute return, opportunistic
+- Risk budget
+- Time horizon
+- Portfolio size
 
 Automatically generates:
-
-- capital deployment plan: ticker, shares, dollars, strategy sleeve
-
-- portfolio allocation map
-
-- projected return, volatility, drawdown, Sharpe ratio, and SPY outperformance
-
-- benchmark comparison against:
-
+- Capital deployment plan: ticker, shares, dollars, strategy sleeve
+- Portfolio allocation map
+- Projected return, volatility, drawdown, Sharpe ratio, and SPY outperformance
+- Benchmark comparison against:
   - SPY
-
   - Growth Strategy
-
   - Concentrated Alpha
-
   - Defensive Allocation
 
 Integrated analytical engines:
-
 - Monte Carlo Engine
-
 - Risk Engine
-
 - Stress Test Engine
-
 - Factor Exposure Engine
-
 - Correlation Engine
-
 - Scenario Engine
-
 - Market Regime Engine
-
 - AI Insights
-
 - AI Recommendations Layer
 
 Advanced analytics:
-
-- live price-based position sizing
-
-- risk contribution breakdown by allocation sleeve
-
-- recession, inflation, rates shock, tech selloff, credit crunch, and bull market stress testing
-
-- factor exposure analysis across:
-
-  - market beta
-
-  - size
-
-  - value
-
-  - momentum
-
-  - quality
-
-  - low volatility
-
-  - growth
-
-- correlation heatmap for overlap and diversification analysis
-
-- custom macro scenario builder for GDP, inflation, rates, and equity shocks
-
-- portfolio health scoring
-
-- strategic sleeve exposure visualization
+- Live price-based position sizing
+- Risk contribution breakdown by allocation sleeve
+- Recession, inflation, rates shock, tech selloff, credit crunch, and bull market stress testing
+- Factor exposure analysis across market beta, size, value, momentum, quality, low volatility, and growth
+- Correlation heatmap for overlap and diversification analysis
+- Custom macro scenario builder for GDP, inflation, rates, and equity shocks
+- Portfolio health scoring
+- Strategic sleeve exposure visualization
 
 AI layer:
-
 - AI executive summary
-
 - PM-style allocation brief
+- Desk-style portfolio interpretation
+- Exposure, positioning, adjustment, and risk commentary
 
-- desk-style portfolio interpretation
-
-- exposure, positioning, adjustment, and risk commentary
-
-👉 Transforms AInvest from a stock analysis dashboard into a multi-engine portfolio intelligence platform.
+👉 Allocation Engine transforms AInvest from a stock analysis dashboard into a multi-engine portfolio intelligence platform.
 
 ---
+## System Architecture
 
-### 📊 Portfolio Lab (NEW)
-Multi-asset portfolio analysis system:
-
-- Add multiple tickers dynamically
-- Equal weight or custom weighting
-- Portfolio-level metrics:
-  - Return
-  - Volatility
-  - Sharpe
-  - Max drawdown
-- Benchmark comparison (SPY + strategies)
-- Stress scenario simulation
-- AI portfolio brief (PM-style insight)
-
-👉 This is the foundation for portfolio intelligence tooling, not just stock analysis.
-
----
-## 🧠 System Architecture
-
-AInvest operates as a layered financial intelligence pipeline designed to simulate institutional-style investment workflows.
+AInvest operates as a layered financial intelligence pipeline designed to structure market data, quantitative analytics, simulation systems, and AI reasoning into a unified investment workflow.
 
 ### 1. Market Data Layer
-Handles live financial data ingestion and preprocessing.
+
+Handles live market data ingestion, normalization, and preprocessing.
 
 Responsibilities:
-- Real-time market data retrieval
-- Portfolio benchmark construction
+- Real-time financial data retrieval
 - Historical return normalization
-- Data cleaning + fallback handling
+- Benchmark construction
+- Cross-asset market monitoring
+- Data cleaning and fallback handling
 - Defensive runtime safeguards
 
-Sources:
+Data sources:
 - yfinance
 - PostgreSQL ranked datasets
 - Precomputed cloud allocation pipelines
@@ -209,6 +167,7 @@ Sources:
 ---
 
 ### 2. Quantitative Signal Layer
+
 Transforms raw market data into structured portfolio and market signals.
 
 Capabilities:
@@ -221,16 +180,17 @@ Capabilities:
 - Regime transition analysis
 
 Outputs:
-- bullish / neutral / bearish bias
-- portfolio bucket weights
-- macro regime classification
-- stress indicators
-- factor exposure metrics
+- Bullish / neutral / bearish classifications
+- Portfolio bucket weights
+- Macro regime classifications
+- Stress indicators
+- Factor exposure metrics
 
 ---
 
 ### 3. Portfolio Intelligence Layer
-Performs portfolio construction and institutional-style analytics.
+
+Performs portfolio construction, simulation, and risk analytics.
 
 Systems include:
 - Allocation Engine
@@ -242,42 +202,49 @@ Systems include:
 - Monte Carlo simulation framework
 
 Capabilities:
-- capital deployment modeling
-- benchmark comparison
-- volatility analysis
-- drawdown forecasting
-- probabilistic scenario simulation
-- tail-risk evaluation
-- survivability testing
+- Capital deployment modeling
+- Benchmark comparison
+- Volatility analysis
+- Drawdown forecasting
+- Probabilistic scenario simulation
+- Tail-risk evaluation
+- Survivability testing
 
 ---
 
 ### 4. AI Reasoning Layer
-LLMs interpret quantitative outputs into structured investment narratives.
+
+LLMs interpret quantitative outputs into structured investment intelligence.
 
 AI-generated outputs include:
-- trader-style signal interpretation
+- Trader-style signal interpretation
 - PM-style portfolio briefs
-- macro desk commentary
-- scenario interpretation
-- allocation rationale
-- risk observations
+- AI macro desk commentary
+- Scenario interpretation
+- Allocation rationale
+- Risk observations
 
-→ Converts quantitative outputs into human-readable financial intelligence.
+This layer converts quantitative outputs into decision-oriented financial intelligence.
 
 ---
 
 ### 5. Presentation Layer
+
 Institutional-style decision interface built in Streamlit.
 
 Design principles:
-- decision-first workflows
-- modular analytical engines
-- macro terminal aesthetic
-- high-density information layout
-- portfolio manager style presentation
+- Decision-first workflows
+- Modular analytical engines
+- High-density information layout
+- Real-time market intelligence rendering
+- Portfolio manager-style presentation
 
-The interface is designed to resemble modern internal investment research and portfolio systems rather than traditional retail dashboards.
+The interface is designed to resemble internal portfolio research and market intelligence systems rather than traditional retail dashboards.
+
+
+---
+
+
 ## ☁️ Cloud Infrastructure & Data Pipeline (NEW)
 
 AInvest now operates on a cloud-backed architecture designed for scalable financial computation workflows.
@@ -316,7 +283,45 @@ Recent upgrades introduced:
 👉 These upgrades move AInvest closer to a real-world fintech systems architecture rather than a simple dashboard application.
 
 ---
+## Institutional Market Intelligence Upgrade
 
+AInvest now includes a live institutional-style market intelligence layer designed to mirror professional trading desk workflows.
+
+New features added:
+
+- Dynamic market session tracking
+  - Pre-Market
+  - Market Open
+  - After Hours
+  - Futures Session
+
+- Real-time cross-asset monitoring:
+  - S&P 500
+  - Nasdaq
+  - Dow Jones
+  - VIX
+  - Bitcoin
+  - 10Y Treasury Yield
+
+- Futures-aware after-hours architecture using:
+  - ES futures
+  - NQ futures
+  - RTY futures
+
+- AI-generated macro desk commentary
+- Risk Pulse engine:
+  - Risk-On
+  - Risk-Off
+  - Mixed regime detection
+
+- Live market regime classification
+- Institutional-style cross-asset intelligence strip
+- Dynamic macro positioning interpretation
+- Continuous session-aware market monitoring
+
+👉 This upgrade transforms AInvest from a standard finance dashboard into a real-time institutional market intelligence platform inspired by hedge fund and trading desk infrastructure.
+
+---
 
 ## 🔁 End-to-End Flow
 
@@ -328,24 +333,55 @@ Recent upgrades introduced:
 
 ---
 
-## ✨ Capabilities
+## Capabilities
 
-- 📊 Quant-style signal generation  
-- 🧠 AI interpretation layer  
-- 📉 Portfolio analytics + benchmarking  
-- ⚡ Real-time processing  
-- 🛡 Resilient data handling  
+- Quantitative signal generation
+- AI-driven market interpretation
+- Real-time cross-asset monitoring
+- Portfolio analytics and benchmarking
+- Institutional-style portfolio construction
+- Monte Carlo simulation and probabilistic modeling
+- Stress testing and scenario analysis
+- Market regime classification
+- AI-generated macro desk commentary
+- Risk-aware capital allocation workflows
+- Factor exposure and correlation analysis
+- Cloud-backed ranking and data pipelines
+- Real-time portfolio intelligence systems
+- Resilient market data handling and fallback architecture
 
 ---
 
 ## 🛠 Tech Stack
 
+### Languages & Frameworks
 - Python
 - Streamlit
-- Pandas / NumPy
-- yfinance
-- OpenAI API
+
+### Data & Analytics
+- Pandas
+- NumPy
 - Plotly
+- yfinance
+
+### AI Layer
+- OpenAI API
+- GPT-4.1-mini
+
+### Cloud Infrastructure
+- Render
+- PostgreSQL
+- GitHub CI/CD
+- Cron-based cloud pipelines
+
+### Systems & Architecture
+- Monte Carlo simulation engine
+- Portfolio allocation engine
+- Stress testing framework
+- Correlation analysis engine
+- Factor exposure system
+- Market regime classification engine
+- AI macro intelligence layer
 
 ---
 
