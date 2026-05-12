@@ -4029,8 +4029,8 @@ if mode == "Allocation Engine":
                 mc_deep_sims = st.slider(
                     "Simulations",
                     500,
-                    5000,
-                    1000,
+                    2000,
+                    500,
                     step=500,
                     key="mc_deep_sims"
                 )
