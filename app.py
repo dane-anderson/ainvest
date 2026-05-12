@@ -1765,6 +1765,53 @@ def calculate_strategy_benchmark_metrics(tickers, timeframe):
 
     return results
 
+def calculate_allocation_risk_engine(recommendations, horizon):
+    if not recommendations:
+        return {
+            "risk_score": 50,
+            "risk_level": "Medium",
+            "concentration": 0,
+            "equity_exposure": 0,
+            "cash_exposure": 0,
+            "largest_position": "N/A",
+        }
+
+    total_dollars = sum(float(p.get("dollars", 0)) for p in recommendations)
+
+    if total_dollars <= 0:
+        total_dollars = 1
+
+    non_cash = [p for p in recommendations if p.get("ticker") != "CASH"]
+    cash = [p for p in recommendations if p.get("ticker") == "CASH"]
+
+    largest_position_pct = max(
+        [float(p.get("dollars", 0)) / total_dollars * 100 for p in non_cash],
+        default=0,
+    )
+
+    cash_pct = sum(float(p.get("dollars", 0)) for p in cash) / total_dollars * 100
+
+    concentration_risk = min(40, largest_position_pct)
+    cash_buffer = min(20, cash_pct)
+
+    risk_score = round(55 + concentration_risk - cash_buffer)
+
+    if risk_score >= 70:
+        risk_level = "High"
+    elif risk_score >= 50:
+        risk_level = "Medium"
+    else:
+        risk_level = "Low"
+
+    return {
+        "risk_score": risk_score,
+        "risk_level": risk_level,
+        "concentration": round(largest_position_pct, 1),
+        "equity_exposure": round(100 - cash_pct, 1),
+        "cash_exposure": round(cash_pct, 1),
+        "largest_position": non_cash[0].get("ticker", "N/A") if non_cash else "N/A",
+    }
+
 def benchmark_takeaway(title, bench_metrics, portfolio_metrics):
     if not bench_metrics or not portfolio_metrics:
         return "Benchmark read unavailable."
