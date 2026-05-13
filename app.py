@@ -1,7 +1,10 @@
 import os
 from typing import Any
 from monte_carlo_engine import run_monte_carlo
-
+from streamlit_autorefresh import st_autorefresh
+from alpaca.data.historical import NewsClient
+from alpaca.data.requests import NewsRequest
+import requests
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -15,10 +18,22 @@ import base64
 if "last_call" not in st.session_state:
     st.session_state.last_call = 0
 
+from alpaca.data.historical.stock import StockHistoricalDataClient
+
+alpaca_client = StockHistoricalDataClient(
+    st.secrets["ALPACA_API_KEY"],
+    st.secrets["ALPACA_SECRET_KEY"]
+)
+from alpaca.data.historical.stock import StockHistoricalDataClient
+from alpaca.data.requests import StockLatestQuoteRequest, StockBarsRequest
+from alpaca.data.timeframe import TimeFrame
+from alpaca.data.enums import DataFeed
 
 # -----------------------------
 # Page config
 # -----------------------------
+
+
 st.set_page_config(
     page_title="AInvest",
     layout="wide",
@@ -975,16 +990,16 @@ def load_top_signals() -> pd.DataFrame:
 
 
 @st.cache_data(show_spinner=False, ttl=900)
-def fetch_recent_headlines(ticker: str) -> list[str]:
-    titles = []
+def fetch_recent_headlines(ticker: str) -> list[dict]:
+    headlines = []
+
     try:
         stock = yf.Ticker(ticker)
 
-        raw_news = []
         try:
             raw_news = stock.get_news()
         except Exception:
-            pass
+            raw_news = []
 
         if not raw_news:
             try:
@@ -992,27 +1007,80 @@ def fetch_recent_headlines(ticker: str) -> list[str]:
             except Exception:
                 raw_news = []
 
-        for item in raw_news[:6]:
-            title = None
-            if isinstance(item, dict):
-                title = (
-                    item.get("title")
-                    or item.get("content", {}).get("title")
-                    or item.get("headline")
-                )
+        for item in raw_news[:8]:
+            if not isinstance(item, dict):
+                continue
 
-            if title and isinstance(title, str):
-                clean = title.strip()
-                if clean and clean not in titles:
-                    titles.append(clean)
+            content = item.get("content", {}) if isinstance(item.get("content"), dict) else {}
 
-            if len(titles) >= 3:
+            title = (
+                item.get("title")
+                or content.get("title")
+                or item.get("headline")
+            )
+
+            url = (
+                item.get("link")
+                or item.get("url")
+                or content.get("canonicalUrl", {}).get("url")
+                or content.get("clickThroughUrl", {}).get("url")
+            )
+
+            if title:
+                clean_title = str(title).strip()
+
+                if clean_title and not any(h["title"] == clean_title for h in headlines):
+                    headlines.append({
+                        "title": clean_title,
+                        "url": url
+                    })
+
+            if len(headlines) >= 4:
                 break
+
     except Exception:
         return []
 
-    return titles[:3]
+    return headlines
+@st.cache_data(show_spinner=False, ttl=300)
+def fetch_alpaca_headlines(ticker: str) -> list[dict]:
+    try:
+        api_key = st.secrets.get("ALPACA_API_KEY", None)
+        secret_key = st.secrets.get("ALPACA_SECRET_KEY", None)
 
+        if not api_key or not secret_key:
+            return fetch_recent_headlines(ticker)
+
+        news_client = NewsClient(api_key, secret_key)
+
+        request = NewsRequest(
+            symbols=ticker,
+            limit=4,
+            include_content=False,
+        )
+
+        news = news_client.get_news(request)
+        df = news.df
+
+        if df is None or df.empty:
+            return fetch_recent_headlines(ticker)
+
+        headlines = []
+
+        for _, row in df.head(4).iterrows():
+            title = row.get("headline") or row.get("title")
+            url = row.get("url")
+
+            if title:
+                headlines.append({
+                    "title": str(title).strip(),
+                    "url": url,
+                })
+
+        return headlines if headlines else fetch_recent_headlines(ticker)
+
+    except Exception:
+        return fetch_recent_headlines(ticker)
 
 # -----------------------------
 # Helpers
@@ -1076,68 +1144,122 @@ def get_market_status():
         "detail": "Next open 9:30 AM ET",
         "emoji": "⚫",
     }
-
-@st.cache_data(show_spinner=False, ttl=120)
+@st.cache_data(show_spinner=False, ttl=15)
 def get_market_index_snapshot():
-    status = get_market_status()
-
-    if status["label"] == "AFTER HOURS ACTIVE":
-        tickers = {
-            "ES": "ES=F",
-            "NQ": "NQ=F",
-            "VIX": "^VIX",
-            "BTC": "BTC-USD",
-            "10Y": "^TNX",
+    symbols = {
+            "S&P": "SPY",
+            "Nasdaq": "QQQ",
+            "Dow": "DIA",
+            "Russell": "IWM",
+            "Bonds": "TLT",
         }
-    else:
-        tickers = {
-            "S&P": "^GSPC",
-            "Nasdaq": "^IXIC",
-            "Dow": "^DJI",
-            "VIX": "^VIX",
-            "BTC": "BTC-USD",
-            "10Y": "^TNX",
-        }
+        
 
     results = {}
     html_parts = []
 
-    for name, symbol in tickers.items():
-        try:
-            hist = yf.Ticker(symbol).history(period="2d", interval="5m")
+    try:
+        api_key = st.secrets.get("ALPACA_API_KEY")
+        secret_key = st.secrets.get("ALPACA_SECRET_KEY")
 
-            if hist.empty or len(hist) < 2:
+        headers = {
+            "APCA-API-KEY-ID": api_key,
+            "APCA-API-SECRET-KEY": secret_key,
+        }
+
+        symbol_list = ",".join(symbols.values())
+
+        quote_url = (
+            f"https://data.alpaca.markets/v2/stocks/quotes/latest"
+            f"?symbols={symbol_list}"
+        )
+
+        bars_url = (
+            f"https://data.alpaca.markets/v2/stocks/bars"
+            f"?symbols={symbol_list}&timeframe=1Day&limit=2"
+        )
+
+        quote_data = requests.get(quote_url, headers=headers, timeout=5).json()
+        bar_data = requests.get(bars_url, headers=headers, timeout=5).json()
+
+        quotes = quote_data.get("quotes", {})
+        bars = bar_data.get("bars", {})
+
+        for display_name, symbol in symbols.items():
+            quote = quotes.get(symbol)
+            symbol_bars = bars.get(symbol, [])
+
+            if not quote or not symbol_bars:
+
+                try:
+                    yf_data = yf.Ticker(symbol).history(period="2d")
+
+                    if len(yf_data) >= 2:
+
+                        latest = float(yf_data["Close"].iloc[-1])
+                        prev_close = float(yf_data["Close"].iloc[-2])
+
+                        pct = ((latest - prev_close) / prev_close) * 100
+
+                        color = "#2EE59D" if pct >= 0 else "#FF4D6D"
+                        sign = "+" if pct >= 0 else ""
+                        arrow = "▲" if pct >= 0 else "▼"
+
+                        results[display_name] = {
+                            "latest": latest,
+                            "pct": pct,
+                            "color": color,
+                        }
+
+                        html_parts.append(
+                            f'<span style="color:{color}; font-weight:900; margin-right:12px;">'
+                            f'{display_name} {sign}{pct:.2f}% {arrow}'
+                            f'</span>'
+                        )
+
+                except Exception:
+                    pass
+
                 continue
 
-            latest = float(hist["Close"].iloc[-1])
-            prev = float(hist["Close"].iloc[0])
+            bid = quote.get("bp")
+            ask = quote.get("ap")
 
-            pct = ((latest - prev) / prev) * 100 if prev else 0
+            if bid and ask:
+                latest = round((bid + ask) / 2, 2)
+            else:
+                latest = float(symbol_bars[-1].get("c", 0))
+
+            if len(symbol_bars) >= 2:
+                prev_close = float(symbol_bars[-2].get("c", latest))
+            else:
+                prev_close = float(symbol_bars[-1].get("o", latest))
+
+            pct = ((latest - prev_close) / prev_close) * 100 if prev_close else 0
+
             color = "#2EE59D" if pct >= 0 else "#FF4D6D"
             sign = "+" if pct >= 0 else ""
+            arrow = "▲" if pct >= 0 else "▼"
 
-            results[name] = {
+            results[display_name] = {
                 "latest": latest,
                 "pct": pct,
                 "color": color,
-                "sign": sign,
             }
 
-            if name == "10Y":
-                display = f'10Y {latest / 10:.2f}%'
-            elif name == "VIX":
-                display = f'VIX {latest:.1f} {sign}{pct:.1f}%'
-            else:
-                display = f'{name} {sign}{pct:.2f}%'
-
             html_parts.append(
-                f'<span style="color:{color}; font-weight:800;">{display}</span>'
+                f'<span style="color:{color}; font-weight:900; margin-right:12px;">'
+                f'{display_name} {sign}{pct:.2f}% {arrow}'
+                f'</span>'
             )
 
-        except Exception:
-            continue
+        if not html_parts:
+            return results, '<span style="color:#FFB020; font-weight:900;">Alpaca market tape loading…</span>'
 
-    return results, " · ".join(html_parts)
+        return results, "".join(html_parts)
+
+    except Exception as e:
+        return {}, f'<span style="color:#FFB020; font-weight:900;">Market tape unavailable: {e}</span>'
 
 
 def get_risk_pulse(snapshot):
@@ -1260,7 +1382,7 @@ BTC: {btc:+.2f}%
     except Exception:
         return get_fallback_macro_note(snapshot)
 
-def render_market_status_bar():
+def render_market_command_box():
     status = get_market_status()
     snapshot, market_line = get_market_index_snapshot()
     risk_pulse, risk_color = get_risk_pulse(snapshot)
@@ -1268,52 +1390,53 @@ def render_market_status_bar():
     macro_note = generate_ai_macro_note(snapshot)
 
     status_html = (
-        f'<div style="'
-        f'margin-top:-4px;'
-        f'margin-bottom:18px;'
-        f'padding:13px 18px;'
-        f'border-radius:16px;'
-        f'background:rgba(9,23,51,0.88);'
-        f'border:1px solid rgba(255,255,255,0.08);'
-        f'display:flex;'
-        f'flex-direction:column;'
-        f'gap:8px;">'
+        f'<div class="portfolio-card" style="'
+        f'padding:16px 18px;'
+        f'min-height:116px;'
+        f'margin-top:8px;'
+        f'background:linear-gradient(135deg, rgba(9,23,51,0.94), rgba(5,12,28,0.96));'
+        f'border:1px solid rgba(115,207,255,0.18);'
+        f'box-shadow:0 0 22px rgba(46,229,157,0.06);">'
 
             f'<div style="display:flex; justify-content:space-between; align-items:center;">'
 
-                f'<div style="font-size:1.05rem; font-weight:900; color:{status["color"]};">'
+                f'<div style="font-weight:950; color:{status["color"]}; font-size:0.95rem;">'
                     f'{status["emoji"]} {status["label"]}'
                 f'</div>'
 
-                f'<div style="color:rgba(231,238,249,0.72); font-size:0.90rem; font-weight:700;">'
+                f'<div style="color:rgba(231,238,249,0.72); font-size:0.75rem; font-weight:800;">'
                     f'{status["detail"]}'
                 f'</div>'
 
             f'</div>'
 
-            f'<div style="color:rgba(231,238,249,0.72); font-size:0.88rem; font-weight:700;">'
+            f'<div style="margin-top:10px; font-size:0.82rem; font-weight:900;">'
                 f'{market_line}'
             f'</div>'
 
-            f'<div style="display:flex; justify-content:space-between; align-items:center; gap:18px;">'
+            f'<div style="display:flex; gap:18px; margin-top:12px; font-size:0.76rem; font-weight:900;">'
 
-                f'<div style="display:flex; align-items:center; gap:14px; white-space:nowrap;">'
-
-                    f'<span style="color:{risk_color}; font-size:0.86rem; font-weight:900;">'
-                        f'RISK PULSE: {risk_pulse}'
-                    f'</span>'
-
-                    f'<span style="color:rgba(231,238,249,0.28);">|</span>'
-
-                    f'<span style="color:{regime_color}; font-size:0.86rem; font-weight:900;">'
-                        f'REGIME: {regime}'
-                    f'</span>'
-
+                f'<div style="color:{risk_color};">'
+                    f'RISK PULSE: {risk_pulse}'
                 f'</div>'
 
-                f'<div style="color:rgba(231,238,249,0.62); font-size:0.82rem; font-weight:600; text-align:right;">'
-                    f'{macro_note}'
+                f'<div style="color:rgba(231,238,249,0.60);">|</div>'
+
+                f'<div style="color:{regime_color};">'
+                    f'REGIME: {regime}'
                 f'</div>'
+
+            f'</div>'
+
+            f'<div style="'
+            f'margin-top:10px;'
+            f'padding-top:9px;'
+            f'border-top:1px solid rgba(255,255,255,0.08);'
+            f'color:rgba(231,238,249,0.72);'
+            f'font-size:0.76rem;'
+            f'line-height:1.35;">'
+
+                f'{macro_note}'
 
             f'</div>'
 
@@ -1954,12 +2077,15 @@ active_ticker = st.session_state.active_ticker
 
 
 if active_ticker:
-    brand_col, input_col, button_col = st.columns([1.25, 3.6, 0.95], gap="medium")
+    header_left, header_right = st.columns([0.38, 0.62], gap="large")
 
-    with brand_col:
+    with header_left:
         st.markdown("<div style='margin-top:-4px;'>", unsafe_allow_html=True)
         st.image("assets/logo.png", width=230)
         st.markdown("</div>", unsafe_allow_html=True)
+
+    with header_right:
+        render_market_command_box()
 
 mode = st.radio(
     "",
@@ -1972,8 +2098,7 @@ active_ticker = st.session_state.active_ticker
 
 is_landing = mode == "Stock Lens" and not active_ticker
 
-if not is_landing:
-    render_market_status_bar()
+
 
 if is_landing:
     st.markdown(
@@ -2272,7 +2397,7 @@ if mode == "Stock Lens" and active_ticker:
     try:
         stock = yf.Ticker(active_ticker)
         hist = stock.history(period="1mo")
-        headlines = fetch_recent_headlines(active_ticker)
+        headlines = fetch_alpaca_headlines(active_ticker)
 
         if not hist.empty and len(hist) >= 2:
             latest_price = round(float(hist["Close"].iloc[-1]), 2)
@@ -2399,7 +2524,7 @@ if mode == "Stock Lens" and active_ticker:
         st.session_state.last_call = current_time
 
         confidence = snapshot.get("confidence", 50)
-
+        risk = snapshot.get("risk", "Medium")
         ai_text = generate_ai_explanation(
             ticker=active_ticker,
             confidence=confidence,
@@ -2493,28 +2618,64 @@ if mode == "Stock Lens" and active_ticker:
             st.markdown(insight_html, unsafe_allow_html=True)
 
         with bottom_right:
+            headline_rows = ""
+
             if headlines:
-                news_items = "".join([
-                    f'<div class="headline-row">'
-                    f'<div class="headline-title">{h}</div>'
-                    f'</div>'
-                    for h in headlines
-                ])
+                for h in headlines[:4]:
+                    if isinstance(h, dict):
+                        title = h.get("title", "Headline")
+                        url = h.get("url") or h.get("link")
+                    else:
+                        title = str(h)
+                        url = None
+
+                    if url:
+                        headline_rows += (
+                            f'<a href="{url}" target="_blank" style="text-decoration:none;">'
+                                f'<div class="headline-item" style="'
+                                f'padding:11px 0; '
+                                f'border-bottom:1px solid rgba(255,255,255,0.08); '
+                                f'color:#E7EEF9; '
+                                f'font-size:0.86rem; '
+                                f'line-height:1.45; '
+                                f'font-weight:750;">'
+                                    f'{title}'
+                                f'</div>'
+                            f'</a>'
+                        )
+                    else:
+                        headline_rows += (
+                            f'<div class="headline-item" style="'
+                            f'padding:11px 0; '
+                            f'border-bottom:1px solid rgba(255,255,255,0.08); '
+                            f'color:#E7EEF9; '
+                            f'font-size:0.86rem; '
+                            f'line-height:1.45; '
+                            f'font-weight:750;">'
+                                f'{title}'
+                            f'</div>'
+                        )
             else:
-                news_items = '<div class="headline-title">No recent headlines</div>'
+                headline_rows = (
+                    f'<div style="color:rgba(231,238,249,0.62); font-size:0.86rem;">'
+                    f'No recent headlines available.'
+                    f'</div>'
+                )
 
             news_html = (
-                f'<div class="bottom-card">'
-                f'<div class="card-heading">'
-                f'<div class="card-title">Latest Headlines</div>'
-                f'</div>'
-
-                f'<div class="card-body">'
-                f'{news_items}'
-                f'</div>'
-
+                f'<div class="bottom-card" style="padding:18px;">'
+                    f'<div class="card-heading" style="margin-bottom:8px;">'
+                        f'<div class="card-title">Latest Headlines</div>'
+                        f'<div style="font-size:0.72rem; color:rgba(231,238,249,0.50); margin-top:3px;">'
+                            f'Recent ticker-specific market news'
+                        f'</div>'
+                    f'</div>'
+                    f'<div class="card-body">'
+                        f'{headline_rows}'
+                    f'</div>'
                 f'</div>'
             )
+
             st.markdown(news_html, unsafe_allow_html=True)
 
         st.markdown(
