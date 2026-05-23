@@ -29,6 +29,8 @@ from alpaca.data.requests import StockLatestQuoteRequest, StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
 from alpaca.data.enums import DataFeed
 
+OPENAI_CALL_LIMIT = 10
+OPENAI_TIME_WINDOW = 300  # 5 minutes
 # -----------------------------
 # Page config
 # -----------------------------
@@ -1088,6 +1090,25 @@ def fetch_alpaca_headlines(ticker: str) -> list[dict]:
 from datetime import datetime, time as dt_time
 import pytz
 
+def rate_limit_openai() -> bool:
+    now = time.time()
+
+    if "openai_calls" not in st.session_state:
+        st.session_state.openai_calls = []
+
+    st.session_state.openai_calls = [
+        t for t in st.session_state.openai_calls
+        if now - t < OPENAI_TIME_WINDOW
+    ]
+
+    if len(st.session_state.openai_calls) >= OPENAI_CALL_LIMIT:
+        st.warning("AI insight limit reached. Try again in a few minutes.")
+        return False
+
+    st.session_state.openai_calls.append(now)
+    return True
+
+
 def get_market_status():
     eastern = pytz.timezone("US/Eastern")
     now = datetime.now(eastern)
@@ -1373,14 +1394,22 @@ BTC: {btc:+.2f}%
 """
 
     try:
-        response = client.responses.create(
-            model="gpt-4.1-mini",
-            input=prompt,
-        )
-        text = (response.output_text or "").strip()
-        return f"AI MACRO: {text}" if text else get_fallback_macro_note(snapshot)
+        if rate_limit_openai():
+            response = client.responses.create(
+                model="gpt-4.1-mini",
+                input=prompt,
+            )
+
+            text = (response.output_text or "").strip()
+
+            return text if text else "AI trader insight unavailable right now."
+
+        else:
+            return "AI insight temporarily limited. Please try again in a few minutes."
+
     except Exception:
-        return get_fallback_macro_note(snapshot)
+        return "AI trader insight unavailable right now."
+        
 
 def render_market_command_box():
     status = get_market_status()
@@ -1738,12 +1767,15 @@ Recent headlines:
 
 
     try:
-        response = client.responses.create(
-            model="gpt-4.1-mini",
-            input=prompt,
+        if rate_limit_openai():
+            response = client.responses.create(
+                model="gpt-4.1-mini",
+                input=prompt,
         )
-        text = (response.output_text or "").strip()
-        return text if text else "AI trader insight unavailable right now."
+        else:
+            return "AI insight temporarily limited. Please try again in a few minutes."
+            text = (response.output_text or "").strip()
+            return text if text else "AI trader insight unavailable right now."
     except Exception:
         return "AI trader insight unavailable right now."
     
@@ -1805,14 +1837,22 @@ def generate_portfolio_brief(tickers, metrics, timeframe):
     """
 
     try:
-        response = client.responses.create(
-            model="gpt-4.1-mini",
-            input=prompt,
-        )
-        return (response.output_text or "").strip()
+        if rate_limit_openai():
+            response = client.responses.create(
+                model="gpt-4.1-mini",
+                input=prompt,
+            )
+
+            text = (response.output_text or "").strip()
+
+            return text if text else "AI trader insight unavailable right now."
+
+        else:
+            return "AI insight temporarily limited. Please try again in a few minutes."
+
     except Exception:
-        return "AI portfolio brief unavailable right now."
-    
+        return "AI trader insight unavailable right now."
+
 @st.cache_data(show_spinner=False, ttl=900)
 def build_portfolio_benchmark_chart(tickers, timeframe):
     period_map = {
@@ -3482,11 +3522,23 @@ Performance gap: {outperformance:.1f} pts
 """
 
     try:
-        response = client.responses.create(
-            model="gpt-4.1-mini",
-            input=prompt,
-        )
-        return (response.output_text or "").strip()
+        if rate_limit_openai():
+
+            response = client.responses.create(
+
+                model="gpt-4.1-mini",
+
+                input=prompt,
+
+            )
+
+            text = (response.output_text or "").strip()
+
+            return text if text else "AI trader insight unavailable right now."
+
+        else:
+
+            return "AI insight temporarily limited. Please try again in a few minutes."
     except Exception:
         return "AI allocation brief unavailable right now."
     
@@ -3713,13 +3765,21 @@ Rules:
 """
 
     try:
-        response = client.responses.create(
-            model="gpt-4.1-mini",
-            input=prompt,
-        )
-        return (response.output_text or "").strip()
+        if rate_limit_openai():
+            response = client.responses.create(
+                model="gpt-4.1-mini",
+                input=prompt,
+            )
+
+            text = (response.output_text or "").strip()
+
+            return text if text else "AI trader insight unavailable right now."
+
+        else:
+            return "AI insight temporarily limited. Please try again in a few minutes."
+
     except Exception:
-        return "AI regime interpretation unavailable right now."
+        return "AI trader insight unavailable right now."
 
 
 if mode == "Allocation Engine":
