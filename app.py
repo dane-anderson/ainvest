@@ -2571,7 +2571,14 @@ if mode == "Stock Lens" and active_ticker:
             chart_hist["VWAP_TEMP"] = np.where(cum_vol > 0, cum_pv / cum_vol, np.nan)
             if not pd.isna(chart_hist["VWAP_TEMP"].iloc[-1]):
                 vwap = float(chart_hist["VWAP_TEMP"].iloc[-1])
+            if "vwap" not in locals():
+                vwap = None
 
+            if "chart_high" not in locals():
+                chart_high = None
+
+            if "chart_low" not in locals():
+                chart_low = None
     current_time = time.time()
 
     if current_time - st.session_state.last_call < 5:
