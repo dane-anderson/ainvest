@@ -25,9 +25,14 @@ from alpaca.data.requests import StockLatestQuoteRequest, StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
 from alpaca.data.enums import DataFeed
 
-ALPACA_API_KEY = os.getenv("ALPACA_API_KEY") or st.secrets.get("ALPACA_API_KEY", "")
-ALPACA_SECRET_KEY = os.getenv("ALPACA_SECRET_KEY") or st.secrets.get("ALPACA_SECRET_KEY", "")
+def get_secret(name, default=""):
+    try:
+        return os.getenv(name) or st.secrets.get(name, default)
+    except Exception:
+        return os.getenv(name, default)
 
+ALPACA_API_KEY = get_secret("ALPACA_API_KEY")
+ALPACA_SECRET_KEY = get_secret("ALPACA_SECRET_KEY")
 if ALPACA_API_KEY and ALPACA_SECRET_KEY:
     alpaca_client = StockHistoricalDataClient(
         ALPACA_API_KEY,
