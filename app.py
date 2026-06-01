@@ -2576,6 +2576,8 @@ if mode == "Stock Lens" and active_ticker:
 
         confidence = snapshot.get("confidence", 50)
         risk = snapshot.get("risk", "Medium")
+
+        source_used = snapshot.get("source_used", "Unavailable")
         ai_text = generate_ai_explanation(
             ticker=active_ticker,
             confidence=confidence,
@@ -2586,7 +2588,7 @@ if mode == "Stock Lens" and active_ticker:
             headlines=tuple(headlines),
             extra_inputs=tuple(snapshot.get("explanation_inputs", [])),
         )
-        source_used = snapshot.get("source_used", "Unavailable")
+       
         ai_signal_summary = compact_ai_summary(
             latest_price=latest_price,
             daily_change_pct=daily_change_pct,
