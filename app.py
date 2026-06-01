@@ -25,14 +25,12 @@ from alpaca.data.requests import StockLatestQuoteRequest, StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
 from alpaca.data.enums import DataFeed
 
-def get_secret(name, default=""):
-    try:
-        return os.getenv(name) or st.secrets.get(name, default)
-    except Exception:
-        return os.getenv(name, default)
+def get_env(name, default=""):
+    """Get environment variable. Never use st.secrets for critical vars."""
+    return os.getenv(name, default)
 
-ALPACA_API_KEY = get_secret("ALPACA_API_KEY")
-ALPACA_SECRET_KEY = get_secret("ALPACA_SECRET_KEY")
+ALPACA_API_KEY = get_env("ALPACA_API_KEY", "")
+ALPACA_SECRET_KEY = get_env("ALPACA_SECRET_KEY", "")
 if ALPACA_API_KEY and ALPACA_SECRET_KEY:
     alpaca_client = StockHistoricalDataClient(
         ALPACA_API_KEY,
@@ -1059,8 +1057,8 @@ def fetch_recent_headlines(ticker: str) -> list[dict]:
 @st.cache_data(show_spinner=False, ttl=300)
 def fetch_alpaca_headlines(ticker: str) -> list[dict]:
     try:
-        api_key = st.secrets.get("ALPACA_API_KEY", None)
-        secret_key = st.secrets.get("ALPACA_SECRET_KEY", None)
+        api_key = os.getenv("ALPACA_API_KEY") or os.getenv("APCA_API_KEY_ID")
+        secret_key = os.getenv("ALPACA_SECRET_KEY") or os.getenv("APCA_API_SECRET_KEY")
 
         if not api_key or not secret_key:
             return fetch_recent_headlines(ticker)
@@ -1192,8 +1190,11 @@ def get_market_index_snapshot():
     html_parts = []
 
     try:
-        api_key = st.secrets.get("ALPACA_API_KEY")
-        secret_key = st.secrets.get("ALPACA_SECRET_KEY")
+        api_key = get_env("ALPACA_API_KEY", "")
+        secret_key = get_env("ALPACA_SECRET_KEY", "")
+
+        if not api_key or not secret_key:
+            return {}, '<span style="color:#FFB020; font-weight:900;">Market tape unavailable: Missing Alpaca credentials</span>'
 
         headers = {
             "APCA-API-KEY-ID": api_key,
