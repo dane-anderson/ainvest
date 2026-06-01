@@ -18,16 +18,23 @@ import base64
 if "last_call" not in st.session_state:
     st.session_state.last_call = 0
 
-from alpaca.data.historical.stock import StockHistoricalDataClient
+import os
 
-alpaca_client = StockHistoricalDataClient(
-    st.secrets["ALPACA_API_KEY"],
-    st.secrets["ALPACA_SECRET_KEY"]
-)
 from alpaca.data.historical.stock import StockHistoricalDataClient
 from alpaca.data.requests import StockLatestQuoteRequest, StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
 from alpaca.data.enums import DataFeed
+
+ALPACA_API_KEY = os.getenv("ALPACA_API_KEY") or st.secrets.get("ALPACA_API_KEY", "")
+ALPACA_SECRET_KEY = os.getenv("ALPACA_SECRET_KEY") or st.secrets.get("ALPACA_SECRET_KEY", "")
+
+if ALPACA_API_KEY and ALPACA_SECRET_KEY:
+    alpaca_client = StockHistoricalDataClient(
+        ALPACA_API_KEY,
+        ALPACA_SECRET_KEY
+    )
+else:
+    alpaca_client = None
 
 OPENAI_CALL_LIMIT = 10
 OPENAI_TIME_WINDOW = 300  # 5 minutes
@@ -1873,6 +1880,8 @@ def build_portfolio_benchmark_chart(tickers, timeframe):
 
     all_tickers = list(set(tickers + ["SPY", "QQQ", "SMH", "NVDA", "MSFT", "AAPL", "AMZN", "GOOGL", "TLT"]))
 
+    
+
     prices = yf.download(
         all_tickers,
         period=period,
@@ -1924,6 +1933,8 @@ def calculate_portfolio_metrics(tickers, timeframe, custom_weights=None):
     period = period_map.get(timeframe, "5y")
 
     all_tickers = list(set(tickers + ["SPY"]))
+
+   
 
     prices = yf.download(
         all_tickers,
