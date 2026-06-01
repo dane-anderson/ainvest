@@ -2496,6 +2496,7 @@ if mode == "Stock Lens" and active_ticker:
 
     if latest_price is None and hist.empty:
         st.error("Could not load data for that ticker. Try another symbol.")
+        st.stop()
     else:
         if not match.empty:
             stock_row = match.iloc[0]
@@ -2581,25 +2582,30 @@ if mode == "Stock Lens" and active_ticker:
             chart_hist["VWAP_TEMP"] = np.where(cum_vol > 0, cum_pv / cum_vol, np.nan)
             if not pd.isna(chart_hist["VWAP_TEMP"].iloc[-1]):
                 vwap = float(chart_hist["VWAP_TEMP"].iloc[-1])
-            if "vwap" not in locals():
-                vwap = None
 
-            if "chart_high" not in locals():
-                chart_high = None
+        if "vwap" not in locals():
+            vwap = None
 
-            if "chart_low" not in locals():
-                chart_low = None
+        if "chart_high" not in locals():
+            chart_high = None
+
+        if "chart_low" not in locals():
+            chart_low = None
+
     current_time = time.time()
+
+    # Initialize these BEFORE rate limit check to avoid NameErrors when accessing below
+    signal = snapshot.get("signal", signal) if "signal" in locals() else "Neutral"
+    color = snapshot.get("color", color) if "color" in locals() else "#FFB020"
+    source_used = snapshot.get("source_used", source_used) if "source_used" in locals() else "Live market fallback"
+    confidence = snapshot.get("confidence", 50)
+    risk = snapshot.get("risk", "Medium")
 
     if current_time - st.session_state.last_call < 5:
         ai_text = "AI insight paused briefly to prevent too many requests. Try again in a few seconds."
     else:
         st.session_state.last_call = current_time
 
-        confidence = snapshot.get("confidence", 50)
-        risk = snapshot.get("risk", "Medium")
-
-        source_used = snapshot.get("source_used", "Unavailable")
         ai_text = generate_ai_explanation(
             ticker=active_ticker,
             confidence=confidence,
