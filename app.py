@@ -2661,7 +2661,7 @@ if mode == "Stock Lens" and active_ticker:
                 f'</div>'
 
                 f'<div class="card-body">'
-                f'{ai_text.replace(chr(10), "<br>")}'
+                f'{(ai_text or "No AI insight available yet.").replace(chr(10), "<br>")}'
                 f'</div>'
 
                 f'</div>'
