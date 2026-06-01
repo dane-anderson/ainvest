@@ -2131,6 +2131,16 @@ df = load_top_signals()
 # -----------------------------
 active_ticker = st.session_state.active_ticker
 
+vwap = None
+
+chart_high = None
+
+chart_low = None
+
+chart_hist = pd.DataFrame()
+
+source_used = "Unavailable"
+
 
 if active_ticker:
     header_left, header_right = st.columns([0.38, 0.62], gap="large")
