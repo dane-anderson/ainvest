@@ -55,15 +55,7 @@ st.set_page_config(
 # -----------------------------
 # API key / OpenAI client
 # -----------------------------
-api_key = None
-
-try:
-    api_key = st.secrets.get("OPENAI_API_KEY", None)
-except Exception:
-    api_key = None
-
-if not api_key:
-    api_key = os.environ.get("OPENAI_API_KEY")
+api_key = os.environ.get("OPENAI_API_KEY") or get_env("OPENAI_API_KEY", "")
 
 client = OpenAI(api_key=api_key) if api_key else None
 
@@ -1780,16 +1772,16 @@ Recent headlines:
 
 
     try:
-        if rate_limit_openai():
-            response = client.responses.create(
-                model="gpt-4.1-mini",
-                input=prompt,
-        )
-        else:
+        if not rate_limit_openai():
             return "AI insight temporarily limited. Please try again in a few minutes."
-            text = (response.output_text or "").strip()
-            return text if text else "AI trader insight unavailable right now."
-    except Exception:
+
+        response = client.responses.create(
+            model="gpt-4.1-mini",
+            input=prompt,
+        )
+        text = (response.output_text or "").strip()
+        return text if text else "AI trader insight unavailable right now."
+    except Exception as e:
         return "AI trader insight unavailable right now."
     
 # -----------------------------
