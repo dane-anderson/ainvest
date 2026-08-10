@@ -3,7 +3,8 @@
 
 Institutional-style financial intelligence and portfolio decision platform built to simulate how modern quantitative firms structure market signals, macro regimes, portfolio construction, and probabilistic risk analysis into a unified investment workflow.
 
-AInvest combines quantitative analytics, simulation systems, AI reasoning, and real-time market data into an integrated decision engine.
+AInvest combines quantitative analytics, simulation systems, AI reasoning, and real-time market data into an integrated decision engine. Core portfolio risk analytics are powered by [QuantCore](https://github.com/dane-anderson/quantcore), a separate reusable Python library for deterministic return analysis, portfolio analytics, tail-risk modeling, and quantitative risk computation.
+
 
 ---
 
@@ -126,7 +127,13 @@ Integrated analytical engines:
 
 Advanced analytics:
 - Live price-based position sizing
-- Risk contribution breakdown by allocation sleeve
+- QuantCore-powered portfolio return and volatility analysis
+- Historical maximum drawdown
+- Historical 95% Value at Risk (VaR)
+- Historical 95% Expected Shortfall / CVaR
+- Covariance-based position risk contribution
+- Rolling 21-day annualized volatility and portfolio drawdown monitoring
+- Beta, downside capture, and SPY correlation analysis
 - Recession, inflation, rates shock, tech selloff, credit crunch, and bull market stress testing
 - Factor exposure analysis across market beta, size, value, momentum, quality, low volatility, and growth
 - Correlation heatmap for overlap and diversification analysis
@@ -163,10 +170,36 @@ Data sources:
 - yfinance
 - PostgreSQL ranked datasets
 - Precomputed cloud allocation pipelines
-
 ---
+### 2. Quantitative Computation Layer — QuantCore
 
-### 2. Quantitative Signal Layer
+AInvest uses [QuantCore](https://github.com/dane-anderson/quantcore) as a reusable deterministic computation layer for core portfolio risk analytics.
+
+Current integration includes:
+
+- Portfolio return construction
+- Annualized portfolio volatility
+- Historical maximum drawdown
+- Historical 95% Value at Risk
+- Historical 95% Expected Shortfall / CVaR
+- Annualized covariance analysis
+- Position-level volatility
+- Covariance-based portfolio risk contribution
+- Wealth-index construction
+- Rolling portfolio risk analysis
+
+Architecture:
+
+```text
+Market Data
+    ↓
+QuantCore
+    ↓
+AInvest Analytical Engines
+    ↓
+Dashboard + AI Interpretation---
+---
+### 3. Quantitative Signal Layer
 
 Transforms raw market data into structured portfolio and market signals.
 
@@ -188,7 +221,7 @@ Outputs:
 
 ---
 
-### 3. Portfolio Intelligence Layer
+### 4. Portfolio Intelligence 
 
 Performs portfolio construction, simulation, and risk analytics.
 
@@ -212,7 +245,7 @@ Capabilities:
 
 ---
 
-### 4. AI Reasoning Layer
+### 5. AI Reasoning 
 
 LLMs interpret quantitative outputs into structured investment intelligence.
 
@@ -228,7 +261,7 @@ This layer converts quantitative outputs into decision-oriented financial intell
 
 ---
 
-### 5. Presentation Layer
+### 6. Presentation 
 
 Institutional-style decision interface built in Streamlit.
 
@@ -323,16 +356,35 @@ New features added:
 
 ---
 
-## 🔁 End-to-End Flow
+ ## 🔁 End-to-End Flow
 
-1. User inputs ticker(s)  
-2. Signal engine evaluates position  
-3. Market data is retrieved  
-4. AI generates context + reasoning  
-5. Unified output is displayed  
-
+1. User selects ticker(s), portfolio inputs, or an allocation mandate
+2. AInvest retrieves and normalizes live / historical market data
+3. QuantCore calculates deterministic portfolio and risk analytics where applicable
+4. AInvest analytical engines add benchmark, regime, stress, factor, and scenario context
+5. AI interprets structured quantitative outputs
+6. Unified decision-ready output is rendered in the Streamlit interface
 ---
+### Data & Analytics
 
+- QuantCore
+- Pandas
+- NumPy
+- SciPy
+- Plotly
+- yfinance
+---
+### Systems & Architecture
+
+- QuantCore quantitative computation layer
+- Monte Carlo simulation engine
+- Portfolio allocation engine
+- Stress testing framework
+- Correlation analysis engine
+- Factor exposure system
+- Market regime classification engine
+- AI macro intelligence layer
+---
 ## Capabilities
 
 - Quantitative signal generation
