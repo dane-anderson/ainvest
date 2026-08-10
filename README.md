@@ -197,7 +197,7 @@ QuantCore
     ↓
 AInvest Analytical Engines
     ↓
-Dashboard + AI Interpretation---
+Dashboard + AI Interpretation
 ---
 ### 3. Quantitative Signal Layer
 
@@ -365,26 +365,7 @@ New features added:
 5. AI interprets structured quantitative outputs
 6. Unified decision-ready output is rendered in the Streamlit interface
 ---
-### Data & Analytics
 
-- QuantCore
-- Pandas
-- NumPy
-- SciPy
-- Plotly
-- yfinance
----
-### Systems & Architecture
-
-- QuantCore quantitative computation layer
-- Monte Carlo simulation engine
-- Portfolio allocation engine
-- Stress testing framework
-- Correlation analysis engine
-- Factor exposure system
-- Market regime classification engine
-- AI macro intelligence layer
----
 ## Capabilities
 
 - Quantitative signal generation
@@ -411,8 +392,10 @@ New features added:
 - Streamlit
 
 ### Data & Analytics
+- QuantCore
 - Pandas
 - NumPy
+- SciPy
 - Plotly
 - yfinance
 
@@ -427,6 +410,7 @@ New features added:
 - Cron-based cloud pipelines
 
 ### Systems & Architecture
+- QuantCore quantitative computation layer
 - Monte Carlo simulation engine
 - Portfolio allocation engine
 - Stress testing framework
@@ -448,11 +432,11 @@ New features added:
 
 ## 🚀 Running Locally
 
-bash git clone https://github.com/dane-anderson/ainvest.git cd ainvest pip install -r requirements.txt streamlit run app.py 
-
-Create a .streamlit/secrets.toml:
-
-toml OPENAI_API_KEY = "your-key-here" 
+```bash
+git clone https://github.com/dane-anderson/ainvest.git
+cd ainvest
+python3 -m pip install -r requirements.txt
+python3 -m streamlit run app.py
 
 ---
 
