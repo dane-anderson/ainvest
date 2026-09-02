@@ -24,6 +24,7 @@ from alpaca.data.historical.stock import StockHistoricalDataClient
 from alpaca.data.requests import StockLatestQuoteRequest, StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
 from alpaca.data.enums import DataFeed
+import quantcore as qc
 
 def get_env(name, default=""):
     """Get environment variable. Never use st.secrets for critical vars."""
@@ -1481,70 +1482,370 @@ def render_market_command_box():
 
 @st.cache_data(show_spinner=False, ttl=300)
 def calculate_allocation_risk_engine(recommendations, horizon):
+    """
+    Calculate portfolio risk from historical market data using QuantCore.
+    """
     if not recommendations:
         return None
 
-    non_cash = [p for p in recommendations if p.get("ticker") != "CASH"]
+    non_cash = [
+        p for p in recommendations
+        if p.get("ticker") != "CASH"
+    ]
 
     if not non_cash:
         return None
 
-    total_dollars = sum(float(p.get("dollars", 0)) for p in non_cash)
+    dollars_by_ticker = {}
 
-    if total_dollars <= 0:
+    for position in non_cash:
+        ticker = str(
+            position.get("ticker", "")
+        ).upper().strip()
+
+        dollars = float(
+            position.get("dollars", 0)
+        )
+
+        if not ticker or dollars <= 0:
+            continue
+
+        dollars_by_ticker[ticker] = (
+            dollars_by_ticker.get(ticker, 0.0)
+            + dollars
+        )
+
+    if not dollars_by_ticker:
         return None
+
+    tickers = list(dollars_by_ticker.keys())
+
+    period_map = {
+        "1Y": "1y",
+        "3Y": "3y",
+        "5Y": "5y",
+        "10Y": "10y",
+    }
+
+    period = period_map.get(horizon, "5y")
+
+    download_tickers = sorted(
+        set(tickers + ["SPY"])
+    )
+
+    try:
+        prices = yf.download(
+            download_tickers,
+            period=period,
+            auto_adjust=True,
+            progress=False,
+        )["Close"]
+
+        if isinstance(prices, pd.Series):
+            prices = prices.to_frame()
+
+        prices = (
+            prices
+            .dropna(axis=1, how="all")
+            .ffill()
+        )
+
+    except Exception:
+        return None
+
+    valid_tickers = [
+        ticker
+        for ticker in tickers
+        if ticker in prices.columns
+    ]
+
+    if not valid_tickers:
+        return None
+
+    asset_prices = (
+        prices[valid_tickers]
+        .dropna(axis=0, how="any")
+    )
+
+    if asset_prices.empty or len(asset_prices) < 30:
+        return None
+
+    asset_returns = (
+        asset_prices
+        .pct_change(fill_method=None)
+        .dropna(axis=0, how="any")
+    )
+
+    if asset_returns.empty or len(asset_returns) < 20:
+        return None
+
+    valid_dollars = sum(
+        dollars_by_ticker[ticker]
+        for ticker in valid_tickers
+    )
+
+    if valid_dollars <= 0:
+        return None
+
+    weights = pd.Series(
+        {
+            ticker: dollars_by_ticker[ticker] / valid_dollars
+            for ticker in valid_tickers
+        },
+        dtype="float64",
+    )
+
+    asset_returns = asset_returns[
+        weights.index
+    ]
+
+    try:
+        portfolio_returns = qc.portfolio_returns(
+            asset_returns,
+            weights,
+        )
+
+        annual_vol = (
+            qc.portfolio_volatility(
+                asset_returns,
+                weights,
+                periods_per_year=252,
+            )
+            * 100
+        )
+
+        wealth = qc.wealth_index(
+            portfolio_returns,
+            initial_value=100.0,
+        )
+
+        max_drawdown = (
+            qc.max_drawdown(wealth)
+            * 100
+        )
+
+        var_95 = (
+            qc.historical_var(
+                portfolio_returns,
+                confidence=0.95,
+            )
+            * 100
+        )
+
+        cvar_95 = (
+            qc.historical_expected_shortfall(
+                portfolio_returns,
+                confidence=0.95,
+            )
+            * 100
+        )
+
+    except ValueError:
+        return None
+
+    beta = 0.0
+    corr_spy = 0.0
+    downside_capture = 0.0
+
+    if "SPY" in prices.columns:
+        spy_returns = (
+            prices["SPY"]
+            .pct_change(fill_method=None)
+            .rename("SPY")
+        )
+
+        benchmark_frame = pd.concat(
+            [
+                portfolio_returns.rename("Portfolio"),
+                spy_returns,
+            ],
+            axis=1,
+        ).dropna()
+
+        if len(benchmark_frame) >= 20:
+            spy_variance = float(
+                benchmark_frame["SPY"].var()
+            )
+
+            if spy_variance > 0:
+                covariance = float(
+                    benchmark_frame[
+                        ["Portfolio", "SPY"]
+                    ]
+                    .cov()
+                    .loc["Portfolio", "SPY"]
+                )
+
+                beta = covariance / spy_variance
+
+            corr_value = benchmark_frame[
+                "Portfolio"
+            ].corr(
+                benchmark_frame["SPY"]
+            )
+
+            if pd.notna(corr_value):
+                corr_spy = float(corr_value)
+
+            down_days = benchmark_frame["SPY"] < 0
+
+            if down_days.any():
+                spy_down = float(
+                    benchmark_frame.loc[
+                        down_days,
+                        "SPY",
+                    ].mean()
+                )
+
+                portfolio_down = float(
+                    benchmark_frame.loc[
+                        down_days,
+                        "Portfolio",
+                    ].mean()
+                )
+
+                if spy_down != 0:
+                    downside_capture = (
+                        portfolio_down
+                        / spy_down
+                    )
+
+    try:
+        covariance_matrix = qc.covariance_matrix(
+            asset_returns,
+            periods_per_year=252,
+        )
+
+        weight_vector = weights.reindex(
+            covariance_matrix.columns
+        )
+
+        covariance_times_weights = (
+            covariance_matrix.dot(
+                weight_vector
+            )
+        )
+
+        portfolio_variance = float(
+            weight_vector.dot(
+                covariance_times_weights
+            )
+        )
+
+        if portfolio_variance > 0:
+            risk_contributions = (
+                weight_vector
+                * covariance_times_weights
+                / portfolio_variance
+                * 100
+            )
+        else:
+            risk_contributions = pd.Series(
+                0.0,
+                index=weight_vector.index,
+            )
+
+    except ValueError:
+        risk_contributions = pd.Series(
+            0.0,
+            index=weights.index,
+        )
 
     exposure_rows = []
 
-    for p in non_cash:
-        ticker = str(p.get("ticker", "UNK")).upper()
-        dollars = float(p.get("dollars", 0))
-        weight = dollars / total_dollars * 100
+    for ticker in weights.index:
+        ticker_returns = asset_returns[ticker]
 
-        if ticker in ["NVDA", "TSLA", "MSTR", "SMH", "QQQ"]:
-            vol = 32
-            corr = 0.86
-            risk_mult = 1.25
-        elif ticker in ["TLT", "IEF", "SHY", "GLD", "IAU"]:
-            vol = 14
-            corr = 0.25
-            risk_mult = 0.55
-        else:
-            vol = 21
-            corr = 0.72
-            risk_mult = 0.95
+        try:
+            ticker_vol = (
+                qc.volatility(
+                    ticker_returns,
+                    periods_per_year=252,
+                )
+                * 100
+            )
+        except ValueError:
+            ticker_vol = 0.0
 
-        exposure_rows.append({
-            "Ticker": ticker,
-            "Weight": weight,
-            "Volatility": vol,
-            "Correlation": corr,
-            "Risk Contribution %": weight * risk_mult,
-        })
+        correlation = ticker_returns.corr(
+            portfolio_returns.reindex(
+                ticker_returns.index
+            )
+        )
 
-    exposure_df = pd.DataFrame(exposure_rows)
+        if pd.isna(correlation):
+            correlation = 0.0
 
-    top_weight = float(exposure_df["Weight"].max())
-    top_3_weight = float(exposure_df["Weight"].sort_values(ascending=False).head(3).sum())
-    effective_positions = float(1 / ((exposure_df["Weight"] / 100) ** 2).sum())
+        exposure_rows.append(
+            {
+                "Ticker": ticker,
+                "Weight": weights[ticker] * 100,
+                "Volatility": float(ticker_vol),
+                "Correlation": float(correlation),
+                "Risk Contribution %": float(
+                    risk_contributions.get(
+                        ticker,
+                        0.0,
+                    )
+                ),
+            }
+        )
 
-    annual_vol = 19.8
-    max_drawdown = -31.0
-    var_95 = -4.2
-    cvar_95 = -6.8
-    beta = 1.03
-    corr_spy = 0.84
-    downside_capture = 1.12
+    exposure_df = pd.DataFrame(
+        exposure_rows
+    )
+
+    top_weight = float(
+        exposure_df["Weight"].max()
+    )
+
+    top_3_weight = float(
+        exposure_df["Weight"]
+        .sort_values(ascending=False)
+        .head(3)
+        .sum()
+    )
+
+    effective_positions = float(
+        1
+        / (
+            (
+                exposure_df["Weight"]
+                / 100
+            )
+            ** 2
+        ).sum()
+    )
 
     stress_market_down_2 = -2.0 * beta
     stress_market_down_5 = -5.0 * beta
 
     survivability_score = 100
-    survivability_score -= min(35, abs(max_drawdown) * 0.7)
-    survivability_score -= min(25, annual_vol * 0.6)
-    survivability_score -= min(20, max(0, beta - 1) * 25)
-    survivability_score -= min(20, max(0, top_weight - 25) * 0.6)
-    survivability_score = max(0, min(100, survivability_score))
+
+    survivability_score -= min(
+        35,
+        abs(max_drawdown) * 0.7,
+    )
+
+    survivability_score -= min(
+        25,
+        annual_vol * 0.6,
+    )
+
+    survivability_score -= min(
+        20,
+        max(0, beta - 1) * 25,
+    )
+
+    survivability_score -= min(
+        20,
+        max(0, top_weight - 25) * 0.6,
+    )
+
+    survivability_score = max(
+        0,
+        min(100, survivability_score),
+    )
 
     if survivability_score >= 75:
         survivability_label = "Strong"
@@ -1553,17 +1854,28 @@ def calculate_allocation_risk_engine(recommendations, horizon):
     else:
         survivability_label = "Fragile"
 
-    dates = pd.date_range(end=pd.Timestamp.today(), periods=260, freq="B")
-    rolling_vol = pd.Series(
-        np.linspace(16, annual_vol, len(dates)) + np.sin(np.linspace(0, 12, len(dates))) * 2,
-        index=dates,
-    )
-    rolling_drawdown = pd.Series(
-        np.linspace(-3, max_drawdown / 2, len(dates)) + np.sin(np.linspace(0, 10, len(dates))) * 4,
-        index=dates,
-    )
+    rolling_vol = (
+        portfolio_returns
+        .rolling(
+            window=21,
+            min_periods=20,
+        )
+        .std()
+        * np.sqrt(252)
+        * 100
+    ).dropna()
 
-    risk_score = round(100 - survivability_score)
+    rolling_drawdown = (
+        (
+            wealth
+            / wealth.cummax()
+        )
+        - 1
+    ) * 100
+
+    risk_score = round(
+        100 - survivability_score
+    )
 
     if risk_score >= 70:
         risk_level = "High"
@@ -1575,15 +1887,21 @@ def calculate_allocation_risk_engine(recommendations, horizon):
     return {
         "risk_score": risk_score,
         "risk_level": risk_level,
-        "annual_vol": annual_vol,
-        "max_drawdown": max_drawdown,
-        "var_95": var_95,
-        "cvar_95": cvar_95,
-        "beta": beta,
-        "corr_spy": corr_spy,
-        "downside_capture": downside_capture,
-        "stress_market_down_2": stress_market_down_2,
-        "stress_market_down_5": stress_market_down_5,
+        "annual_vol": float(annual_vol),
+        "max_drawdown": float(max_drawdown),
+        "var_95": float(var_95),
+        "cvar_95": float(cvar_95),
+        "beta": float(beta),
+        "corr_spy": float(corr_spy),
+        "downside_capture": float(
+            downside_capture
+        ),
+        "stress_market_down_2": float(
+            stress_market_down_2
+        ),
+        "stress_market_down_5": float(
+            stress_market_down_5
+        ),
         "rolling_vol": rolling_vol,
         "rolling_drawdown": rolling_drawdown,
         "top_weight": top_weight,

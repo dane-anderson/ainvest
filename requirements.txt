@@ -9,3 +9,4 @@ requests
 certifi
 streamlit-autorefresh
 alpaca-py
+quantcore @ git+https://github.com/dane-anderson/quantcore.git
