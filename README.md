@@ -198,8 +198,6 @@ QuantCore
 AInvest Analytical Engines
     ↓
 Dashboard + AI Interpretation
-```
-
 ---
 ### 3. Quantitative Signal Layer
 
@@ -439,7 +437,6 @@ git clone https://github.com/dane-anderson/ainvest.git
 cd ainvest
 python3 -m pip install -r requirements.txt
 python3 -m streamlit run app.py
-```
 
 ---
 
