@@ -4,7 +4,7 @@ yfinance
 openai
 plotly>=5.24.0
 psycopg2-binary
-sqlalchemy
+sqlalchemy>=2.0,<2.1
 requests
 certifi
 streamlit-autorefresh
